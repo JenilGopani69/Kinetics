@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5CAF91</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#7c38cf</color>
+    <color name="white">#fff</color>
+    <color name="background">#5CAF91</color>
+    <color name="button_selectorcolor">#D3D3D3</color>
+    <color name="white_greyish">#e4e2e2</color>
+    <color name="pauseBtn">#f29c40</color>
+    <color name="stopBtn">#f26140</color>
+</resources>

@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbarStyle="insideInset"
+    android:scrollbarSize="2dp"
+    android:orientation="vertical"
+    android:id="@+id/lineqc"
+    android:visibility="gone"
+
+    >
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <TextView
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/background"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:text="Quality Control for Task A"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/finishtask"
+        android:id="@+id/qcrecyler" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/finishtask"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:text="Finish Task"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
+        />
+
+
+
+</LinearLayout>
