@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -52,26 +47,23 @@ import proj.kinetics.Utils.MultiSelectionSpinner;
 import proj.kinetics.Utils.MySpannable;
 import proj.kinetics.Utils.RecyclerTouchListener;
 
-public class OneActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
-    private Button btnStart,btnReset;
-    ImageButton  undobtn;
+public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
+    private Button btnStart,btnReset,btnSubmit,btnComplete;
     private Handler h;
-    String data;
+    private TextView tvTime,totalunits,requiredunits,taskdescrip,unitsleft,startedtime;
+
     ArrayList<String> al=new ArrayList<>();
-    ImageButton videoattach,attachment;
-    private TextView tvTime,totalunits,requiredunits,startedtime;
+    ImageButton videoattach,attachment,undobtn;
     Toolbar toolbar;
-LinearLayout unitsdata;
+LinearLayout unitsdata,nextqcbtn;
     private Timer t;
     QCAdapter myAdapter;
     public static Button finishtask;
-LinearLayout nextqcbtn;
-    boolean touch = true;
-    MultiSelectionSpinner spinner;
-    Button btnSubmit;
-    RecyclerView units;
-    RecyclerView recyclerView;
-    TextView taskdescrip,unitsleft;
+
+
+
+    RecyclerView units,recyclerView;
+
     EditText unitsproduced;
     int count=0;
     LinearLayout linqc,lintask;
@@ -94,7 +86,7 @@ LinearLayout nextqcbtn;
         finishtask= (Button) findViewById(R.id.finishtask);
         startedtime= (TextView) findViewById(R.id.startedtime);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        for (int i=0;i<20;i++){
+        for (int i=0;i<4;i++){
             list.add("Task " + i);  // Add the item in the list
         }View openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +95,7 @@ LinearLayout nextqcbtn;
 
                 // Intialize  readable sequence of char values
                 final CharSequence[] dialogList=  list.toArray(new CharSequence[list.size()]);
-                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(OneActivity.this);
+                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(TaskActivity.this);
                 builderDialog.setTitle("SELECT TASK");
                 int count = dialogList.length;
                 boolean[] is_checked = new boolean[count];
@@ -173,6 +165,7 @@ LinearLayout nextqcbtn;
         unitsleft = (TextView) findViewById(R.id.unitsleft);
         totalunits = (TextView) findViewById(R.id.totalunits);
         btnStart = (Button) findViewById(R.id.btnStart);
+        btnComplete = (Button) findViewById(R.id.btnComplete);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
         videoattach = (ImageButton) findViewById(R.id.action_video);
@@ -183,7 +176,7 @@ LinearLayout nextqcbtn;
         videoattach.setOnClickListener(this);
         attachment.setOnClickListener(this);
 
-if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
+if (tvTime.getText().toString().equalsIgnoreCase("00:00")){
     unitsdata.setVisibility(View.GONE);
 }
 
@@ -194,12 +187,12 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
             public void onClick(View view) {
                 if (unitsproduced.getText().toString().equals("0")){
 
-                    Toast.makeText(OneActivity.this, "Cannot Submit No Units Produced", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TaskActivity.this, "Cannot Submit No Units Produced", Toast.LENGTH_SHORT).show();
                 }
 
                 else {
 
-                    new AlertDialog.Builder(OneActivity.this).setCancelable(false).setMessage("I have produced "+unitsproduced.getText().toString()+" units").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("I have produced "+unitsproduced.getText().toString()+" units").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (requiredunits.getText().toString().trim().equalsIgnoreCase(unitsproduced.getText().toString().trim())) {
@@ -207,14 +200,14 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
                             }
                             if (Integer.parseInt(unitsproduced.getText().toString().trim())>=Integer.parseInt(requiredunits.getText().toString().trim())){
 
-                                Toast.makeText(OneActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
                                 totalunits.setText(requiredunits.getText().toString());
                                                             }
                                                             else {
 
 
 
-                                Toast.makeText(OneActivity.this, "Please complete the production", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TaskActivity.this, "Please complete the production", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -238,7 +231,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
         undobtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(OneActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.VERTICAL
@@ -247,7 +240,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
         finishtask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog openDialog = new Dialog(OneActivity.this);
+                final Dialog openDialog = new Dialog(TaskActivity.this);
                 openDialog.setContentView(R.layout.customdialog);
 
                 TextView dialogTextContent = (TextView)openDialog.findViewById(R.id.dialog_text);
@@ -258,7 +251,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
                 dialogCloseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                      Intent intent=new Intent(OneActivity.this,UserProfileActivity.class);
+                      Intent intent=new Intent(TaskActivity.this,UserProfileActivity.class);
                         startActivity(intent);
 
 
@@ -278,7 +271,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
             public void onClick(View view) {
 
                 if (totalunits.getText().toString().equalsIgnoreCase("0")){
-                    Toast.makeText(OneActivity.this, "Cannot Proceed to QC Units are still Pending", Toast.LENGTH_SHORT).show();                }
+                    Toast.makeText(TaskActivity.this, "Cannot Proceed to QC Units are still Pending", Toast.LENGTH_SHORT).show();                }
                 else {
 
                     lintask.setVisibility(View.GONE);
@@ -317,17 +310,26 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
                 if (tc.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING ) {
                     TimeService.TimeContainer.getInstance().pause();
                     btnStart.setText("CONTINUE");
+                    btnComplete.setVisibility(View.GONE);
                     btnReset.setVisibility(View.VISIBLE);
                     showDialog();
                     Log.d("check","start");
                 } else {
                     btnReset.setVisibility(View.GONE);
+                    btnComplete.setVisibility(View.VISIBLE);
 
                     TimeService.TimeContainer.getInstance().start();
                     startUpdateTimer();
                     Log.d("check","stop");
-                    btnStart.setText("STOP");
+                    btnStart.setText("PAUSE");
                 }
+            }
+        });
+        btnComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimeService.TimeContainer.getInstance().pause();
+                btnComplete.setVisibility(View.GONE);
             }
         });
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -374,7 +376,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
         if (Integer.parseInt(unitsproduced.getText().toString().trim())>=Integer.parseInt(requiredunits.getText().toString().trim())){
 
             unitsleft.setText("Production Completed");
-            Toast.makeText(OneActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
         }else {
             int leftunits=Integer.parseInt(requiredunits.getText().toString().trim())-Integer.parseInt(unitsproduced.getText().toString().trim());
@@ -434,9 +436,9 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
     }
     private String getTimeString(long ms) {
         if (ms == 0) {
-            return "00:00:00";
+            return "00:00";
         } else {
-            long millis = (ms % 1000) / 10;
+          //  long millis = (ms % 1000) / 10;
             long seconds = (ms / 1000) % 60;
             long minutes = (ms / 1000) / 60;
             long hours = minutes / 60;
@@ -470,7 +472,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
                 sb.append('0');
                 sb.append('0');
             }
-            sb.append(':');
+           /* sb.append(':');
             if (millis > 0) {
                 if (millis >= 10) {
                     sb.append(millis);
@@ -481,7 +483,7 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
             } else {
                 sb.append('0');
                 sb.append('0');
-            }
+            }*/
             return sb.toString();
         }
     }
@@ -490,13 +492,36 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
         if(propertyChangeEvent.getPropertyName() == TimeService.TimeContainer.STATE_CHANGED) {
             TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
             if(t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
-                btnStart.setText("STOP");
+                btnStart.setText("PAUSE");
+                btnComplete.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "running timer", Toast.LENGTH_SHORT).show();
                 startUpdateTimer();
                 btnReset.setVisibility(View.GONE);
             } else {
-                btnStart.setText("CONTINUE");
-                btnReset.setVisibility(View.VISIBLE);
+
+
+
                 updateTimeText();
+            }
+            if (t.getCurrentState()==TimeService.TimeContainer.STATE_STOPPED){
+                Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
+                btnStart.setText("START");
+                unitsdata.setVisibility(View.GONE);
+
+                btnReset.setVisibility(View.GONE);
+            }
+            else
+            {
+                unitsdata.setVisibility(View.VISIBLE);
+
+            }
+            if (t.getCurrentState()== TimeService.TimeContainer.STATE_PAUSED){
+                Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
+
+                btnStart.setText("CONTINUE");
+
+                btnComplete.setVisibility(View.GONE);
+                btnReset.setVisibility(View.VISIBLE);
             }
             checkServiceRunning();
         }
@@ -538,7 +563,8 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
                         TimeService.TimeContainer.getInstance().start();
                         startUpdateTimer();
                         Log.d("check","stop");
-                        btnStart.setText("STOP");
+                        btnStart.setText("PAUSE");
+                        btnComplete.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -593,10 +619,14 @@ if (tvTime.getText().toString().equalsIgnoreCase("00:00:00")){
         checkServiceRunning();
         TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
         if(t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
-            btnStart.setText("STOP");
+            btnStart.setText("PAUSE");
+            btnComplete.setVisibility(View.VISIBLE);
+
             startUpdateTimer();
         } else {
             btnStart.setText("START");
+            unitsdata.setVisibility(View.GONE);
+
             updateTimeText();
         }
         TimeService.TimeContainer.getInstance().addObserver(this);

@@ -3,6 +3,7 @@ package proj.kinetics;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.StrictMode;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
+
 public class MainActivity extends AppCompatActivity {
 Button loginBtn;
 
@@ -23,6 +26,8 @@ Button loginBtn;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         loginBtn= (Button) findViewById(R.id.loginBtn);
         cd1= (CardView) findViewById(R.id.card_view);

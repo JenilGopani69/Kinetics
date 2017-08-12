@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import proj.kinetics.MyApplication;
 
 
@@ -26,6 +30,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
         boolean isConnected = activeNetwork != null
                 && activeNetwork.isConnectedOrConnecting();
 

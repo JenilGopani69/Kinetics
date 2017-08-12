@@ -9,4 +9,6 @@
     <color name="white_greyish">#e4e2e2</color>
     <color name="pauseBtn">#f29c40</color>
     <color name="stopBtn">#f26140</color>
+
+    <color name="selection">#4cdf38</color>
 </resources>

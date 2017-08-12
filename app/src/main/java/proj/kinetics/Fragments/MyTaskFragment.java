@@ -4,7 +4,6 @@ package proj.kinetics.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,15 +12,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import proj.kinetics.Adapters.ProjectsAdapter;
 import proj.kinetics.MainActivity;
 import proj.kinetics.Model.ProjectItem;
-import proj.kinetics.OneActivity;
+import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 import proj.kinetics.Utils.LinearLayoutMangerWithSmoothScroll;
 import proj.kinetics.Utils.RecyclerTouchListener;
@@ -73,7 +70,7 @@ public class MyTaskFragment extends Fragment {
             public void onItemClick(View view, int position) {
                 ProjectItem projectItem=al.get(position);
 
-                Intent intent=new Intent(getActivity(),OneActivity.class);
+                Intent intent=new Intent(getActivity(),TaskActivity.class);
                 startActivity(intent);
                 getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
                         }

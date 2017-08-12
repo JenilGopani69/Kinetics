@@ -19,7 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import proj.kinetics.OneActivity;
+import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 
 /**
@@ -151,7 +151,7 @@ public class TimeService extends Service implements PropertyChangeListener {
 
         mBuilder.setContent(contentView);
         
-        Intent notificationIntent = new Intent(this, OneActivity.class);
+        Intent notificationIntent = new Intent(this, TaskActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent = PendingIntent.getActivity(this, PendingIntent.FLAG_UPDATE_CURRENT, notificationIntent, 0);
     	mBuilder.setContentIntent(intent);

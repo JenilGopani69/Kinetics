@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import proj.kinetics.OneActivity;
+import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 
 
@@ -84,15 +84,15 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
 
                     if (checkAccumulator==3){
                     //QCFragment.finishtask.setVisibility(View.VISIBLE);
-                        OneActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
-                        OneActivity.finishtask.setEnabled(true);
-                        OneActivity.finishtask.setClickable(true);
+                        TaskActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
+                        TaskActivity.finishtask.setEnabled(true);
+                        TaskActivity.finishtask.setClickable(true);
                     }
                     else {
                         //QCFragment.finishtask.setVisibility(View.INVISIBLE);
-                        OneActivity.finishtask.setBackgroundColor(Color.GRAY);
-                        OneActivity.finishtask.setEnabled(false);
-                        OneActivity.finishtask.setClickable(false);
+                        TaskActivity.finishtask.setBackgroundColor(Color.GRAY);
+                        TaskActivity.finishtask.setEnabled(false);
+                        TaskActivity.finishtask.setClickable(false);
                     }
                 }
             };

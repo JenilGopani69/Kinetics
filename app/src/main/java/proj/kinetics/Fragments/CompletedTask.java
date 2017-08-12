@@ -155,6 +155,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
                 webView.getSettings().setAppCachePath( mActivity.getCacheDir().getAbsolutePath() );
                 webView.getSettings().setAllowFileAccess( true );
                 webView.getSettings().setAppCacheEnabled( true );
+                webView.getSettings().setJavaScriptEnabled( true );
                 webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
                 webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
                 super.onPostExecute(s);
@@ -199,11 +200,14 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
                     //webView.setWebViewClient(new CompletedProjects.MyBrowser());
                     webView.getSettings().setLoadsImagesAutomatically(true);
                     webView.getSettings().setJavaScriptEnabled(true);
+                    webView.getSettings().setUseWideViewPort(true);
+
                     webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
                     webView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
                     webView.getSettings().setAppCachePath( getActivity().getApplicationContext().getCacheDir().getAbsolutePath() );
                     webView.getSettings().setAllowFileAccess( true );
                     webView.getSettings().setAppCacheEnabled( true );
+                    webView.getSettings().setJavaScriptEnabled( true );
                     webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
                     webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
 

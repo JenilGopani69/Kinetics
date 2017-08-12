@@ -147,6 +147,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
                     document.getElementsByClass("footer").remove();
                     document.getElementsByClass("navbar").remove();
                     document.getElementsByClass("main_title").remove();
+                    Log.d("htmlcntent",""+document.getElementById("reportrange"));
 
 
 

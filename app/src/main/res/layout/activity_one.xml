@@ -5,7 +5,7 @@
     android:focusableInTouchMode="true"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".OneActivity">
+    tools:context=".TaskActivity">
 
     <include
         android:id="@+id/toolbar"
@@ -74,11 +74,15 @@
                             android:layout_marginTop="5dp"
                             android:gravity="start"
                             android:text="@string/descrip"
+                                android:layout_marginBottom="5dp"
+
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
                         <RelativeLayout android:id="@+id/openDialog"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
+                            android:layout_marginBottom="5dp"
+
                             android:orientation="horizontal"
                             android:background="@color/background">
                             <TextView android:id="@+id/text"
@@ -161,9 +165,9 @@ android:id="@+id/unitsleft"
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/units"
+
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
-                            android:scrollIndicators="start"
                             android:scrollbarSize="2dp"
                             android:scrollbars="horizontal">
 
@@ -242,7 +246,7 @@ android:id="@+id/unitsleft"
                     android:layout_alignParentTop="true"
                     android:layout_alignStart="@+id/c1"
                     android:gravity="center"
-                    android:text="00:00:00"
+                    android:text="00:00"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
                 <android.support.v7.widget.CardView
                     android:id="@+id/timercard"
@@ -328,6 +332,18 @@ android:id="@+id/unitsleft"
                                     android:text="start"
                                     android:textColor="@color/white" />
 
+
+                                <Button
+                                    android:layout_width="0dip"
+                                    android:layout_height="54dp"
+                                    android:text="STOP"
+                                    android:layout_margin="5dp"
+
+                                    android:textColor="@color/white"
+                                    android:layout_weight="1"
+                                    android:background="@color/background"
+                                    android:visibility="gone"
+                                    android:id="@+id/btnComplete"/>
                                 <Button
                                     android:id="@+id/btnReset"
                                     android:layout_width="0dip"

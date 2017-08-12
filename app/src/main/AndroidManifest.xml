@@ -24,7 +24,7 @@
         <activity android:name=".UserProfileActivity"
 
             android:screenOrientation="portrait"/>
-        <activity android:name=".OneActivity"
+        <activity android:name=".TaskActivity"
             android:screenOrientation="portrait"></activity>
         <receiver
             android:name=".BroadcastReceivers.ConnectivityReceiver"
