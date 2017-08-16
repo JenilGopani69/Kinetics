@@ -23,7 +23,7 @@ import proj.kinetics.R;
 public class UnitsAdapter extends RecyclerView.Adapter<UnitsAdapter.MyViewHolder> {
     ArrayList arrayList;
     Context context;
-    int selectedPosition=-1;
+    int selectedPosition = -1;
 
 
     public UnitsAdapter(ArrayList arrayList, Context context) {
@@ -35,9 +35,9 @@ public class UnitsAdapter extends RecyclerView.Adapter<UnitsAdapter.MyViewHolder
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         //we call inflator over here...
-        View v= LayoutInflater.from(parent.getContext()).inflate(R.layout.unitsitems,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.unitsitems, parent, false);
 
-        return new MyViewHolder(v,context,arrayList);
+        return new MyViewHolder(v, context, arrayList);
     }
 
     @Override
@@ -49,21 +49,19 @@ public class UnitsAdapter extends RecyclerView.Adapter<UnitsAdapter.MyViewHolder
             holder.itemView.setBackgroundColor(Color.parseColor("#5CAF91"));
             holder.itemView.getBackground().setAlpha(125);
 
-        }else
+        } else
             holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedPosition=position;
+                selectedPosition = position;
                 notifyDataSetChanged();
                 //Toast.makeText(context, ""+arrayList.get(position), Toast.LENGTH_SHORT).show();
 
 
             }
         });
-
-
 
 
     }
@@ -75,32 +73,31 @@ public class UnitsAdapter extends RecyclerView.Adapter<UnitsAdapter.MyViewHolder
         return arrayList.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView textView,textView2,textView3;
-Button btn;
+        TextView textView, textView2, textView3;
+        Button btn;
         Context ctx;
         CardView cdunits;
-        ArrayList<String> arrayList=new ArrayList();
-        public MyViewHolder(View itemView,Context context,ArrayList al) {
+        ArrayList<String> arrayList = new ArrayList();
+
+        public MyViewHolder(View itemView, Context context, ArrayList al) {
             super(itemView);
             itemView.setOnClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.unit);
             cdunits = (CardView) itemView.findViewById(R.id.cdunits);
 
 
-
-            arrayList=al;
-            ctx=context;
+            arrayList = al;
+            ctx = context;
         }
 
         @Override
         public void onClick(View view) {
-            int position=getAdapterPosition();
+            int position = getAdapterPosition();
 
 
-         //   Toast.makeText(ctx, ""+arrayList.get(position), Toast.LENGTH_SHORT).show();
-
+            //   Toast.makeText(ctx, ""+arrayList.get(position), Toast.LENGTH_SHORT).show();
 
 
         }

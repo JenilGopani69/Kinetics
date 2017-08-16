@@ -4,6 +4,7 @@ package proj.kinetics.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,6 +43,9 @@ public class MyTaskFragment extends Fragment {
     ProjectItem p1,p2,p3,p4,p5,p6;
     ArrayList<ProjectItem> al=new ArrayList();
     private LinearLayoutManager linearLayout;
+
+    GridLayoutManager gridLayoutManager;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,7 +53,8 @@ public class MyTaskFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_my_task, container, false);
 
         tasklist=view.findViewById(R.id.tasklist);
-        linearLayout = new LinearLayoutMangerWithSmoothScroll(getActivity());
+       linearLayout = new LinearLayoutMangerWithSmoothScroll(getActivity());
+       gridLayoutManager = new GridLayoutManager(getActivity(),2);
         tasklist.setLayoutManager(linearLayout);
         p1=new ProjectItem("Task A","","","1");
         p2=new ProjectItem("Task B","","","2");
@@ -87,6 +92,7 @@ public class MyTaskFragment extends Fragment {
 
         inflater.inflate(R.menu.three_menu, menu);
 
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -122,8 +128,35 @@ public class MyTaskFragment extends Fragment {
 
 
         }
+        if (id==R.id.action_grid){
+
+            if (tasklist.getLayoutManager()==linearLayout){
+                item.setIcon(R.mipmap.ic_list);
+
+                tasklist.setLayoutManager(gridLayoutManager);
+
+            }
+            else {
+                item.setIcon(R.mipmap.ic_grid);
+
+                tasklist.setLayoutManager(linearLayout);
+            }
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (tasklist.getLayoutManager()==linearLayout){
+            menu.findItem(R.id.action_grid).setIcon(R.mipmap.ic_grid);
+
+
+        }
+        else
+            menu.findItem(R.id.action_grid).setIcon(R.mipmap.ic_list);
+
+    }
 }

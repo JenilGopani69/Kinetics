@@ -67,7 +67,9 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.three_menu, menu);
+        inflater.inflate(R.menu.one_menu, menu);
+
+
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -247,7 +249,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
+        if (id == R.id.fragment_logout) {
             Intent intent=new Intent(getActivity(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
