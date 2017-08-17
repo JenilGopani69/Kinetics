@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import java.util.TimerTask;
 
 import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.UnitsAdapter;
+import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.MultiSelectionSpinner;
 import proj.kinetics.Utils.MySpannable;
@@ -50,22 +52,24 @@ import proj.kinetics.Utils.RecyclerTouchListener;
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
     ArrayList<String> al = new ArrayList<>();
-    ImageButton videoattach, attachment, undobtn;
+    ImageButton videoattach, attachment, undobtn,undobtn2;
     Toolbar toolbar;
     int counts=1;
-    LinearLayout unitsdata, nextqcbtn;
+    CoordinatorLayout coordinate;
+    LinearLayout unitsdatas,unitsdata, nextqcbtn;
     QCAdapter myAdapter;
-    RecyclerView units, recyclerView;
-    EditText unitsproduced;
+    RecyclerView units,units2, recyclerView;
+    EditText unitsproduced,unitsproduced2;
     int count = 0;
     LinearLayout linqc, lintask;
     ArrayList arrayList = new ArrayList();
     UnitsAdapter unitsAdapter;
+    UnitsAdapter2 unitsAdapter2;
     int recent = 0;
     List<CharSequence> list = new ArrayList<CharSequence>();
-    private Button btnStart, btnReset, btnSubmit, btnComplete;
+    private Button btnStart, btnReset, btnSubmit, btnComplete,btnSubmit2;
     private Handler h;
-    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime;
+    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime,taskdescrips,unitslefts;
     private final Runnable updateTextRunnable = new Runnable() {
         @Override
         public void run() {
@@ -153,13 +157,15 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one);
         units = (RecyclerView) findViewById(R.id.units);
+        units2 = (RecyclerView) findViewById(R.id.units2);
         finishtask = (Button) findViewById(R.id.finishtask);
         startedtime = (TextView) findViewById(R.id.startedtime);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
 
             list.add("Task  1");  // Add the item in the list
 
-        View openDialog = (View) findViewById(R.id.openDialog);
+        final View openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,6 +190,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
+
                                 ListView list = ((AlertDialog) dialog).getListView();
                                 // make selected item in the comma seprated string
 
@@ -192,8 +199,14 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                                     boolean checked = list.isItemChecked(i);
 
                                     if (checked) {
-                                        if (stringBuilder.length() > 0) stringBuilder.append(",");
-                                        stringBuilder.append(list.getItemAtPosition(i));
+                                      /*  if (stringBuilder.length() > 0) stringBuilder.append(",");
+                                        stringBuilder.append(list.getItemAtPosition(i));*/
+                                        coordinate.setVisibility(View.VISIBLE);
+                                        taskdescrips = (TextView) findViewById(R.id.taskdescrips);
+
+                                        makeTextViewResizable(taskdescrips, 3, "View More", true);
+
+                                        openDialog.setVisibility(View.GONE);
 
 
                                     }
@@ -202,7 +215,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                         /*Check string builder is empty or not. If string builder is not empty.
                           It will display on the screen.
                          */
-                                if (stringBuilder.toString().trim().equals("")) {
+                                /*if (stringBuilder.toString().trim().equals("")) {
 
                                     ((TextView) findViewById(R.id.text)).setText("SELECT SIMILAR TASK");
                                     stringBuilder.setLength(0);
@@ -210,7 +223,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                                 } else {
 
                                     ((TextView) findViewById(R.id.text)).setText(stringBuilder);
-                                }
+                                }*/
                             }
                         });
 
@@ -218,7 +231,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ((TextView) findViewById(R.id.text)).setText("SELECT SIMILAR TASK");
+
                             }
                         });
                 AlertDialog alert = builderDialog.create();
@@ -228,17 +241,21 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         });
         linqc = (LinearLayout) findViewById(R.id.lineqc);
         unitsdata = (LinearLayout) findViewById(R.id.unitsdata);
+        unitsdatas = (LinearLayout) findViewById(R.id.unitsdatas);
         lintask = (LinearLayout) findViewById(R.id.lintask);
         unitsproduced = (EditText) findViewById(R.id.unitsproduced);
+        unitsproduced2 = (EditText) findViewById(R.id.unitsproduced2);
         taskdescrip = (TextView) findViewById(R.id.taskdescrip);
         requiredunits = (TextView) findViewById(R.id.requiredunits);
         tvTime = (TextView) findViewById(R.id.tvTime);
         unitsleft = (TextView) findViewById(R.id.unitsleft);
+        unitslefts = (TextView) findViewById(R.id.unitslefts);
         totalunits = (TextView) findViewById(R.id.totalunits);
         btnStart = (Button) findViewById(R.id.btnStart);
         btnComplete = (Button) findViewById(R.id.btnComplete);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
+        undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
         videoattach = (ImageButton) findViewById(R.id.action_video);
         attachment = (ImageButton) findViewById(R.id.action_attach);
         nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
@@ -249,6 +266,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
 
         if (tvTime.getText().toString().equalsIgnoreCase("00:00")) {
             unitsdata.setVisibility(View.GONE);
+            unitsdatas.setVisibility(View.GONE);
         }
 
 
@@ -300,9 +318,19 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
             undobtn.setEnabled(false);
             undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
 
+        } if (unitsproduced2.getText().toString().equalsIgnoreCase("0")) {
+            undobtn2.setEnabled(false);
+            undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
+
         }
 
         undobtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+        undobtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
@@ -367,15 +395,20 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         arrayList.add("60");
         arrayList.add("100");
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        units.setLayoutManager(layoutManager2);
+        RecyclerView.LayoutManager layoutManager3 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        units.setLayoutManager(layoutManager3);
+        units2.setLayoutManager(layoutManager2);
 
 
         unitsAdapter = new UnitsAdapter(arrayList, this);
+        unitsAdapter2 = new UnitsAdapter2(arrayList, this);
         units.setAdapter(unitsAdapter);
+        units2.setAdapter(unitsAdapter2);
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 unitsdata.setVisibility(View.VISIBLE);
+                unitsdatas.setVisibility(View.VISIBLE);
 
                 TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
 //startedtime.setText(""+tc.getStartTime());
@@ -431,8 +464,92 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                 }
             }
         });
+        undobtn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (unitsproduced2.getText().toString().equals("0")) {
+
+                    undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
 
 
+                } else {
+                    int minus = Integer.parseInt((unitsproduced2.getText().toString())) - recent;
+
+                    unitsproduced2.setText(String.valueOf(minus));
+                    undobtn2.setEnabled(false);
+                    undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
+                }
+            }
+        });
+
+        units2.addOnItemTouchListener(new RecyclerTouchListener(this, units, new RecyclerTouchListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                recent = Integer.parseInt(arrayList.get(position).toString());
+                count = (Integer.parseInt(unitsproduced2.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
+                unitsproduced2.setText(String.valueOf(count));
+                undobtn2.setEnabled(true);
+
+                counts++;
+
+                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
+
+                    if (counts>2){
+                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
+
+                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+
+                                    totalunits.setText(requiredunits.getText().toString());
+                                }
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
+                    }
+                    else {
+                        unitslefts.setText("Production Completed");
+                        // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
+
+                        TimeService.TimeContainer.getInstance().pause();
+                        btnStart.setText("CONTINUE");
+                        btnComplete.setVisibility(View.GONE);
+                        btnReset.setVisibility(View.VISIBLE);
+                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
+
+                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+
+                                    totalunits.setText(requiredunits.getText().toString());
+                                }
+                                dialogInterface.dismiss();
+                            }
+                        }).show();
+                    }
+
+
+
+                } else {
+                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
+                    unitslefts.setText(String.valueOf(leftunits + " " + "left"));
+                }
+
+                undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undo));
+
+
+            }
+
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        }));
         units.addOnItemTouchListener(new RecyclerTouchListener(this, units, new RecyclerTouchListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -613,10 +730,11 @@ counts++;
               //  Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
                 btnStart.setText("START");
                 unitsdata.setVisibility(View.GONE);
+                unitsdatas.setVisibility(View.GONE);
 
                 btnReset.setVisibility(View.GONE);
             } else {
-                unitsdata.setVisibility(View.VISIBLE);
+                unitsdatas.setVisibility(View.VISIBLE);
 
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
@@ -734,6 +852,7 @@ counts++;
         } else {
             btnStart.setText("START");
             unitsdata.setVisibility(View.GONE);
+            unitsdatas.setVisibility(View.GONE);
 
             updateTimeText();
         }

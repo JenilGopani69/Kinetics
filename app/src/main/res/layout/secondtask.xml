@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:elevation="5dp"
-    android:layout_marginBottom="5dp"
+    android:id="@+id/coordinate"
+    android:visibility="gone"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -13,8 +14,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/c1"
-            app:cardElevation="5dp"
+            android:id="@+id/s1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/timercard"
@@ -40,11 +40,11 @@
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
                         android:gravity="start|center"
-                        android:text="TASK NAME"
+                        android:text="SECOND TASK"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                         android:textColor="@color/background" />
                     <ImageButton
-                        android:id="@+id/action_attach"
+                        android:id="@+id/action_attachs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
@@ -52,7 +52,7 @@
                         android:background="@android:color/transparent"
                         android:src="@mipmap/ic_attach" />
                     <ImageButton
-                        android:id="@+id/action_video"
+                        android:id="@+id/action_videos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
@@ -63,16 +63,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:background="@color/background"/>
-
                 <TextView
-                    android:id="@+id/taskdescrip"
+                    android:id="@+id/taskdescrips"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
                     android:gravity="start"
                     android:text="@string/descrip"
-android:textColor="@android:color/black"
+                    android:textColor="@android:color/black"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
 
@@ -92,7 +91,7 @@ android:textColor="@android:color/black"
 
 
                     <TextView
-                        android:id="@+id/requiredunits"
+                        android:id="@+id/requiredunit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -112,7 +111,7 @@ android:textColor="@android:color/black"
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/unitsdata"
+                    android:id="@+id/unitsdatas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -132,7 +131,7 @@ android:textColor="@android:color/black"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/unitsleft"
+                            android:id="@+id/unitslefts"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
@@ -150,7 +149,7 @@ android:textColor="@android:color/black"
                         android:background="#d4d1d1" />
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/units"
+                        android:id="@+id/units2"
 
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
@@ -172,7 +171,7 @@ android:textColor="@android:color/black"
                             android:orientation="horizontal">
 
                             <ImageButton
-                                android:id="@+id/undobtn"
+                                android:id="@+id/undobtn2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
@@ -186,7 +185,7 @@ android:textColor="@android:color/black"
                                 android:orientation="vertical">
 
                                 <EditText
-                                    android:id="@+id/unitsproduced"
+                                    android:id="@+id/unitsproduced2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
@@ -207,7 +206,7 @@ android:textColor="@android:color/black"
                             </LinearLayout>
 
                             <Button
-                                android:id="@+id/btnSubmit"
+                                android:id="@+id/btnSubmit2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
@@ -218,25 +217,12 @@ android:textColor="@android:color/black"
                         </LinearLayout>
                     </android.support.v7.widget.CardView>
                 </LinearLayout>
+
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
     </android.support.v4.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_anchor="@id/c1"
-        android:id="@+id/openDialog"
-app:fabSize="mini"
-        app:backgroundTint="@color/pauseBtn"
-        android:tint="@color/white"
-app:borderWidth="@dimen/cardview_compat_inset_shadow"
-        android:src="@android:drawable/ic_input_add"
-        android:hapticFeedbackEnabled="true"
-        app:layout_anchorGravity="right|end|bottom"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="150dp"
-        android:clickable="true"/>
+
 
 </android.support.design.widget.CoordinatorLayout>
