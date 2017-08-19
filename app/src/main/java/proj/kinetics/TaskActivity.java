@@ -24,6 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -36,7 +38,12 @@ import android.widget.VideoView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,6 +61,11 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn,undobtn2;
     Toolbar toolbar;
+    String string1="",string2="";
+     Animation myAnim;
+    SimpleDateFormat simpleDateFormat =
+            new SimpleDateFormat("hh:mm:ss aa");
+
     int counts=1;
     CoordinatorLayout coordinate;
     LinearLayout unitsdatas,unitsdata, nextqcbtn;
@@ -69,7 +81,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     List<CharSequence> list = new ArrayList<CharSequence>();
     private Button btnStart, btnReset, btnSubmit, btnComplete,btnSubmit2;
     private Handler h;
-    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime,taskdescrips,unitslefts;
+    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime,taskdescrips,unitslefts,recordedtym,breaktym;
     private final Runnable updateTextRunnable = new Runnable() {
         @Override
         public void run() {
@@ -160,9 +172,11 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         units2 = (RecyclerView) findViewById(R.id.units2);
         finishtask = (Button) findViewById(R.id.finishtask);
         startedtime = (TextView) findViewById(R.id.startedtime);
+        breaktym = (TextView) findViewById(R.id.breaktym);
+        recordedtym = (TextView) findViewById(R.id.recordedtym);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
-
+        myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
             list.add("Task  1");  // Add the item in the list
 
         final View openDialog = (View) findViewById(R.id.openDialog);
@@ -411,7 +425,9 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                 unitsdatas.setVisibility(View.VISIBLE);
 
                 TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
-//startedtime.setText(""+tc.getStartTime());
+                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+startedtime.setText(""+currentDateTimeString);
+
                 if (tc.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
                     TimeService.TimeContainer.getInstance().pause();
                     btnStart.setText("CONTINUE");
@@ -423,11 +439,66 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
                     btnReset.setVisibility(View.GONE);
                     btnComplete.setVisibility(View.VISIBLE);
 
-                    TimeService.TimeContainer.getInstance().start();
+                    if (btnStart.getText()=="CONTINUE") {
+                        String currentDateTimeString2 = DateFormat.getTimeInstance().format(new Date());
+
+                        Toast.makeText(TaskActivity.this, "jjj" + currentDateTimeString2, Toast.LENGTH_SHORT).show();
+                        string2 = currentDateTimeString2;
+
+                        if (string2.length()>0 && string1.length()>0){
+
+                            try {
+
+                                Date date1 = simpleDateFormat.parse(string1);
+                                Date date2 = simpleDateFormat.parse(string2);
+
+                                printDifference(date1, date2);
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else {
+
+                        }
+
+                    }                    TimeService.TimeContainer.getInstance().start();
+
                     startUpdateTimer();
                     Log.d("check", "stop");
                     btnStart.setText("PAUSE");
                 }
+            }
+
+            private void printDifference(Date startDate, Date endDate) {
+                //milliseconds
+                long different = endDate.getTime() - startDate.getTime();
+
+                System.out.println("startDate : " + startDate);
+                System.out.println("endDate : "+ endDate);
+                System.out.println("different : " + different);
+
+                long secondsInMilli = 1000;
+                long minutesInMilli = secondsInMilli * 60;
+                long hoursInMilli = minutesInMilli * 60;
+                long daysInMilli = hoursInMilli * 24;
+
+                long elapsedDays = different / daysInMilli;
+                different = different % daysInMilli;
+
+                long elapsedHours = different / hoursInMilli;
+                different = different % hoursInMilli;
+
+                long elapsedMinutes = different / minutesInMilli;
+                different = different % minutesInMilli;
+
+                long elapsedSeconds = different / secondsInMilli;
+
+                System.out.printf(
+                        "%d days, %d hours, %d minutes, %d seconds%n",
+                        elapsedDays,
+                        elapsedHours, elapsedMinutes, elapsedSeconds);
+                breaktym.setText(""+elapsedDays+""+elapsedHours+":"+elapsedMinutes+":"+elapsedSeconds+"");
             }
         });
         btnComplete.setOnClickListener(new View.OnClickListener() {
@@ -435,6 +506,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
             public void onClick(View view) {
                 TimeService.TimeContainer.getInstance().pause();
                 btnComplete.setVisibility(View.GONE);
+                recordedtym.setText(tvTime.getText().toString());
+
             }
         });
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -504,7 +577,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
 
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-                                    totalunits.setText(requiredunits.getText().toString());
+
                                 }
                                 dialogInterface.dismiss();
                             }
@@ -571,7 +644,9 @@ counts++;
 
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-                                    totalunits.setText(requiredunits.getText().toString());
+                                    btnSubmit.startAnimation(myAnim);
+
+                                   /* totalunits.setText(requiredunits.getText().toString());*/
                                 }
                                 dialogInterface.dismiss();
                             }
@@ -772,6 +847,12 @@ counts++;
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
+                        TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
+                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+
+                         string1=currentDateTimeString;
+                        Toast.makeText(TaskActivity.this, currentDateTimeString, Toast.LENGTH_SHORT).show();
+
                     }
                 });
 

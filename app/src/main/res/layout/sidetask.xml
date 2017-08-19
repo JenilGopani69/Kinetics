@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:elevation="5dp"
+    android:padding="5dp"
     android:layout_marginBottom="5dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -211,8 +212,9 @@ android:textColor="@android:color/black"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
-                                android:background="@color/background"
+                                android:background="@drawable/buttonglow"
                                 android:text="SUMBIT"
+                                android:hapticFeedbackEnabled="true"
                                 android:textColor="@color/white" />
 
                         </LinearLayout>

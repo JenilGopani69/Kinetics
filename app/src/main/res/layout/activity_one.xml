@@ -88,10 +88,17 @@
 
                             <TextView
 
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="STARTED AT "
+                                android:textColor="@color/pauseBtn"
+                                android:textStyle="bold" />
+                            <TextView
+
                                 android:id="@+id/startedtime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="(STARTED AT 00:00)"
+                                android:text="00:00"
                                 android:textColor="@color/pauseBtn"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -139,7 +146,7 @@
                                     android:layout_height="54dp"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:background="@color/background"
+                                    android:background="@drawable/buttonglow"
                                     android:text="start"
                                     android:textColor="@color/white" />
 
@@ -151,7 +158,7 @@
                                     android:layout_margin="5dp"
 
                                     android:layout_weight="1"
-                                    android:background="@color/background"
+                                    android:background="@drawable/buttonglow"
                                     android:text="STOP"
                                     android:textColor="@color/white"
                                     android:visibility="gone" />
@@ -162,7 +169,7 @@
                                     android:layout_height="54dp"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:background="@color/stopBtn"
+                                    android:background="@drawable/stopbtn"
                                     android:onClick="reset"
                                     android:text="RESET"
                                     android:textColor="@color/white"
@@ -233,7 +240,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
-
+                                    android:id="@+id/recordedtym"
                                     android:gravity="start"
                                     android:text="08h:00"
                                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
@@ -286,6 +293,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
                                     android:gravity="end"
+                                    android:id="@+id/breaktym"
 
                                     android:text="02h:00m"
                                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
