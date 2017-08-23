@@ -60,7 +60,7 @@
                 android:orientation="vertical">
 
                 <EditText
-                    android:id="@+id/login_emailid"
+                    android:id="@+id/txtUsername"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="2dp"
@@ -78,7 +78,7 @@
 
 
                 <EditText
-                    android:id="@+id/login_password"
+                    android:id="@+id/txtPassword"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="2dp"

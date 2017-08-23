@@ -2,6 +2,8 @@ package proj.kinetics.Fragments;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -12,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,10 +33,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.MainActivity;
 import proj.kinetics.R;
+import proj.kinetics.Utils.SessionManagement;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,6 +48,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
     ViewGroup container;
     Document doc=null;
     TextView internetid;
+    SessionManagement session;
     String url="http://66.201.99.67/~kinetics/users/completed.html";
     private Activity mActivity;
 
@@ -61,7 +67,18 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.container = container;
+        session = new SessionManagement(getActivity());
+        session.checkLogin();
 
+        // get user data from session
+        HashMap<String, String> user = session.getUserDetails();
+
+        // name
+        String name = user.get(SessionManagement.KEY_USERNAME);
+
+        // password
+        String password = user.get(SessionManagement.KEY_PASSWORD);
+        Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
         return inflater.inflate(R.layout.fragment_completed_task, container, false);
     }
     @Override
@@ -175,7 +192,6 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
     }
 
-
     private class MyBrowser extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
@@ -250,10 +266,30 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.fragment_logout) {
-            Intent intent=new Intent(getActivity(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.app_name);
+
+            builder.setIcon(R.mipmap.ic_alert);
+            builder.setMessage("Do you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            session.logoutUser();
+
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+
+            alert.show();
+
+
+
 
 
         }

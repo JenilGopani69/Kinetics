@@ -10,8 +10,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import proj.kinetics.Model.ProjectItem;
+import proj.kinetics.Model.Task;
 import proj.kinetics.R;
 
 /**
@@ -19,12 +21,12 @@ import proj.kinetics.R;
  */
 
 public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyViewHolder> {
-    ArrayList arrayList;
+    List<Task> list;
     Context context;
 
 
-    public ProjectsAdapter(ArrayList arrayList, Context context) {
-        this.arrayList = arrayList;
+    public ProjectsAdapter( List<Task> list, Context context) {
+        this.list = list;
         this.context = context;
     }
 
@@ -34,19 +36,22 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
         //we call inflator over here...
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
-        return new MyViewHolder(v, context, arrayList);
+        return new MyViewHolder(v, context, list);
 
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        ProjectItem getSet = (ProjectItem) arrayList.get(position);
-        holder.name.setText(getSet.getName());
+        Task getSet = (Task) list.get(position);
+        holder.name.setText(getSet.getTaskName());
         Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
         holder.itemView.startAnimation(animation);
         holder.priorityid.setText(getSet.getPriority());
-        //holder.descript.setText(getSet.getDescription());
+        holder.pname.setText("~"+getSet.getProjectName());
+        holder.estimated_time.setText(getSet.getEstimatedTime());
+
+        holder.duedate.setText(getSet.getDuedate());
         //holder.nooftask.setText(getSet.getNooftask());
 
 
@@ -56,22 +61,24 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
     public int getItemCount() {
 
         //return the size of arraylist
-        return arrayList.size();
+        return list.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView name, descript, nooftask, priorityid;
+        TextView name, duedate, pname, priorityid,estimated_time;
 
         Context ctx;
-        ArrayList<ProjectItem> arrayList = new ArrayList();
+        List<Task> arrayList = new ArrayList();
 
-        public MyViewHolder(View itemView, Context context, ArrayList al) {
+        public MyViewHolder(View itemView, Context context, List<Task> al) {
             super(itemView);
             itemView.setOnClickListener(this);
             name = (TextView) itemView.findViewById(R.id.name);
-            descript = (TextView) itemView.findViewById(R.id.description);
+            duedate = (TextView) itemView.findViewById(R.id.duedate);
             priorityid = (TextView) itemView.findViewById(R.id.priorityid);
+            pname = (TextView) itemView.findViewById(R.id.pname);
+            estimated_time = (TextView) itemView.findViewById(R.id.estimated_time);
 
 
             arrayList = al;
@@ -81,7 +88,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
-            ProjectItem data = arrayList.get(position);
+            Task data = arrayList.get(position);
             //  Toast.makeText(ctx, ""+data.getName(), Toast.LENGTH_SHORT).show();
 
             // openBottomSheet(view);

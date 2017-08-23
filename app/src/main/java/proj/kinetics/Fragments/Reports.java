@@ -2,6 +2,8 @@ package proj.kinetics.Fragments;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -23,16 +25,19 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.MainActivity;
 import proj.kinetics.R;
 import proj.kinetics.MyApplication;
+import proj.kinetics.Utils.SessionManagement;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +54,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
     public Reports() {
         // Required empty public constructor
     }
+    SessionManagement session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,18 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.container=container;
+        session = new SessionManagement(getActivity());
+        session.checkLogin();
+        // get user data from session
+        HashMap<String, String> user = session.getUserDetails();
+
+        // name
+        String name = user.get(SessionManagement.KEY_USERNAME);
+
+        // email
+        String email = user.get(SessionManagement.KEY_PASSWORD);
+        Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
+
         return inflater.inflate(R.layout.fragment_reports, container, false);
     }
     @Override
@@ -84,10 +102,24 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.fragment_logout) {
-            Intent intent=new Intent(getActivity(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.app_name);
+            builder.setIcon(R.mipmap.ic_alert);
+            builder.setMessage("Do you want to logout?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            session.logoutUser();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+
 
 
         }

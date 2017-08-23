@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +43,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,29 +53,28 @@ import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.TimerWidget.TimeService;
-import proj.kinetics.Utils.MultiSelectionSpinner;
 import proj.kinetics.Utils.MySpannable;
 import proj.kinetics.Utils.RecyclerTouchListener;
 import proj.kinetics.Utils.SessionManagement;
 
-public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
+public class NoTaskActivity extends AppCompatActivity implements View.OnClickListener {
     public static Button finishtask;
     String taskname;
     ArrayList<String> al = new ArrayList<>();
-    ImageButton videoattach, attachment, undobtn,undobtn2;
+    ImageButton videoattach, attachment, undobtn, undobtn2;
     Toolbar toolbar;
-    String string1="",string2="";
-     Animation myAnim;
+    String string1 = "", string2 = "";
+    Animation myAnim;
     SharedPreferences sharedPreferences;
     SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat("hh:mm:ss aa");
 
-    int counts=1;
+    int counts = 1;
     CoordinatorLayout coordinate;
-    LinearLayout unitsdatas,unitsdata, nextqcbtn;
+    LinearLayout unitsdatas, unitsdata, nextqcbtn;
     QCAdapter myAdapter;
-    RecyclerView units,units2, recyclerView;
-    EditText unitsproduced,unitsproduced2;
+    RecyclerView units, units2, recyclerView;
+    EditText unitsproduced, unitsproduced2;
     int count = 0;
     LinearLayout linqc, lintask;
     ArrayList arrayList = new ArrayList();
@@ -84,9 +82,9 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     UnitsAdapter2 unitsAdapter2;
     int recent = 0;
     List<CharSequence> list = new ArrayList<CharSequence>();
-    private Button btnStart, btnReset, btnSubmit, btnComplete,btnSubmit2;
+    private Button btnStart, btnReset, btnSubmit, btnComplete, btnSubmit2;
     private Handler h;
-    private TextView tvtask,tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime,taskdescrips,unitslefts,recordedtym,breaktym;
+    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrips, unitslefts, recordedtym, breaktym;
     private final Runnable updateTextRunnable = new Runnable() {
         @Override
         public void run() {
@@ -95,7 +93,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     };
     private Timer t;
     private SessionManagement session;
-SharedPreferences.Editor editor;
+    SharedPreferences.Editor editor;
+
     public static void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean viewMore) {
 
         if (tv.getTag() == null) {
@@ -174,9 +173,9 @@ SharedPreferences.Editor editor;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one);
-        taskname=getIntent().getStringExtra("taskname");
-        sharedPreferences=getSharedPreferences("tasktimer",MODE_PRIVATE);
-        editor=sharedPreferences.edit();
+        taskname = getIntent().getStringExtra("taskname");
+        sharedPreferences = getSharedPreferences("tasktimer", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         session = new SessionManagement(getApplicationContext());
         session.checkLogin();
         // get user data from session
@@ -187,7 +186,7 @@ SharedPreferences.Editor editor;
 
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
-        Toast.makeText(getApplicationContext(), "LoggedIN" +name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "LoggedIN" + name, Toast.LENGTH_SHORT).show();
         units = (RecyclerView) findViewById(R.id.units);
         units2 = (RecyclerView) findViewById(R.id.units2);
         finishtask = (Button) findViewById(R.id.finishtask);
@@ -197,7 +196,7 @@ SharedPreferences.Editor editor;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
         myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
-            list.add("Task  1");  // Add the item in the list
+        list.add("Task  1");  // Add the item in the list
 
         final View openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
@@ -206,7 +205,7 @@ SharedPreferences.Editor editor;
 
                 // Intialize  readable sequence of char values
                 final CharSequence[] dialogList = list.toArray(new CharSequence[list.size()]);
-                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(TaskActivity.this);
+                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(NoTaskActivity.this);
                 builderDialog.setTitle("SELECT TASK");
                 int count = dialogList.length;
                 boolean[] is_checked = new boolean[count];
@@ -282,7 +281,6 @@ SharedPreferences.Editor editor;
         taskdescrip = (TextView) findViewById(R.id.taskdescrip);
         requiredunits = (TextView) findViewById(R.id.requiredunits);
         tvTime = (TextView) findViewById(R.id.tvTime);
-        tvtask = (TextView) findViewById(R.id.task);
         unitsleft = (TextView) findViewById(R.id.unitsleft);
         unitslefts = (TextView) findViewById(R.id.unitslefts);
         totalunits = (TextView) findViewById(R.id.totalunits);
@@ -303,47 +301,17 @@ SharedPreferences.Editor editor;
             unitsdata.setVisibility(View.GONE);
             unitsdatas.setVisibility(View.GONE);
         }
-tvtask.setText(taskname);
+
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (unitsproduced.getText().toString().equals("0")) {
 
-                    Toast.makeText(TaskActivity.this, "Cannot Submit No Units Produced", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("I have produced " + unitsproduced.getText().toString() + " units").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (requiredunits.getText().toString().trim().equalsIgnoreCase(unitsproduced.getText().toString().trim())) {
-                                totalunits.setText(unitsproduced.getText().toString());
-                            }
-                            if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
-
-
-                                new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-
-
-                                            totalunits.setText(requiredunits.getText().toString());
-
-                                        dialogInterface.dismiss();
-                                    }
-                                }).show();
-                              // Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
-
-                                totalunits.setText(requiredunits.getText().toString());
-                            } else {
-
-
-                                Toast.makeText(TaskActivity.this, "Please complete the production", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-                    }).show();
+                    Toast.makeText(NoTaskActivity.this, "Cannot Submit No Units Produced", Toast.LENGTH_SHORT).show();
                 }
+
+
             }
         });
         al.add("Checklist 1");
@@ -353,7 +321,8 @@ tvtask.setText(taskname);
             undobtn.setEnabled(false);
             undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
 
-        } if (unitsproduced2.getText().toString().equalsIgnoreCase("0")) {
+        }
+        if (unitsproduced2.getText().toString().equalsIgnoreCase("0")) {
             undobtn2.setEnabled(false);
             undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
 
@@ -362,13 +331,13 @@ tvtask.setText(taskname);
         undobtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NoTaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
         undobtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NoTaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL
@@ -377,7 +346,7 @@ tvtask.setText(taskname);
         finishtask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog openDialog = new Dialog(TaskActivity.this);
+                final Dialog openDialog = new Dialog(NoTaskActivity.this);
                 openDialog.setContentView(R.layout.customdialog);
 
                 TextView dialogTextContent = (TextView) openDialog.findViewById(R.id.dialog_text);
@@ -387,12 +356,7 @@ tvtask.setText(taskname);
                 dialogCloseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        sharedPreferences=getSharedPreferences("tasktimer",MODE_PRIVATE);
-                        editor=sharedPreferences.edit();
-                        editor.clear();
-                        editor.apply();
-                        TimeService.TimeContainer.getInstance().stopAndReset();
-                        Intent intent = new Intent(TaskActivity.this, UserProfileActivity.class);
+                        Intent intent = new Intent(NoTaskActivity.this, UserProfileActivity.class);
                         startActivity(intent);
 
 
@@ -412,7 +376,7 @@ tvtask.setText(taskname);
             public void onClick(View view) {
 
                 if (totalunits.getText().toString().equalsIgnoreCase("0")) {
-                    Toast.makeText(TaskActivity.this, "Cannot Proceed to QC Units are still Pending", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NoTaskActivity.this, "Cannot Proceed to QC Units are still Pending", Toast.LENGTH_SHORT).show();
                 } else {
 
                     lintask.setVisibility(View.GONE);
@@ -439,7 +403,7 @@ tvtask.setText(taskname);
         units.setLayoutManager(layoutManager3);
         units2.setLayoutManager(layoutManager2);
 
-        Toast.makeText(this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
+
         unitsAdapter = new UnitsAdapter(arrayList, this);
         unitsAdapter2 = new UnitsAdapter2(arrayList, this);
         units.setAdapter(unitsAdapter);
@@ -447,59 +411,13 @@ tvtask.setText(taskname);
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                unitsdata.setVisibility(View.VISIBLE);
-                unitsdatas.setVisibility(View.VISIBLE);
-                editor.putString("task",taskname);
+                Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
 
-                editor.commit();
-                Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
+                if (taskname.equalsIgnoreCase(sharedPreferences.getString("task", ""))) {
+                    Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
 
-                TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
-                String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                    }
 
-                if (tc.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
-                    TimeService.TimeContainer.getInstance().pause();
-                    startedtime.setText(""+currentDateTimeString);
-
-                    btnStart.setText("CONTINUE");
-                    btnComplete.setVisibility(View.GONE);
-                    btnReset.setVisibility(View.VISIBLE);
-                    showDialog();
-                    Log.d("check", "start");
-                } else {
-                    btnReset.setVisibility(View.GONE);
-                    btnComplete.setVisibility(View.VISIBLE);
-
-                    if (btnStart.getText()=="CONTINUE") {
-                        String currentDateTimeString2 = DateFormat.getTimeInstance().format(new Date());
-
-                        Toast.makeText(TaskActivity.this, "jjj" + currentDateTimeString2, Toast.LENGTH_SHORT).show();
-                        string2 = currentDateTimeString2;
-
-                        if (string2.length()>0 && string1.length()>0){
-
-                            try {
-
-                                Date date1 = simpleDateFormat.parse(string1);
-                                Date date2 = simpleDateFormat.parse(string2);
-
-                                printDifference(date1, date2);
-
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        else {
-
-                        }
-
-                    }                    TimeService.TimeContainer.getInstance().start();
-
-                    startUpdateTimer();
-                    Log.d("check", "stop");
-                    btnStart.setText("PAUSE");
-                    btnComplete.setVisibility(View.VISIBLE);
-                }
             }
 
             private void printDifference(Date startDate, Date endDate) {
@@ -507,7 +425,7 @@ tvtask.setText(taskname);
                 long different = endDate.getTime() - startDate.getTime();
 
                 System.out.println("startDate : " + startDate);
-                System.out.println("endDate : "+ endDate);
+                System.out.println("endDate : " + endDate);
                 System.out.println("different : " + different);
 
                 long secondsInMilli = 1000;
@@ -530,7 +448,7 @@ tvtask.setText(taskname);
                         "%d days, %d hours, %d minutes, %d seconds%n",
                         elapsedDays,
                         elapsedHours, elapsedMinutes, elapsedSeconds);
-                breaktym.setText(""+elapsedDays+""+elapsedHours+":"+elapsedMinutes+":"+elapsedSeconds+"");
+                breaktym.setText("" + elapsedDays + "" + elapsedHours + ":" + elapsedMinutes + ":" + elapsedSeconds + "");
             }
         });
         btnComplete.setOnClickListener(new View.OnClickListener() {
@@ -601,21 +519,20 @@ tvtask.setText(taskname);
 
                 if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                    if (counts>2){
-                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    if (counts > 2) {
+                        new AlertDialog.Builder(NoTaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(NoTaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
 
                                 }
                                 dialogInterface.dismiss();
                             }
                         }).show();
-                    }
-                    else {
+                    } else {
                         unitslefts.setText("Production Completed");
                         // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
@@ -623,12 +540,12 @@ tvtask.setText(taskname);
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
                         btnReset.setVisibility(View.VISIBLE);
-                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        new AlertDialog.Builder(NoTaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(NoTaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
                                     totalunits.setText(requiredunits.getText().toString());
                                 }
@@ -636,7 +553,6 @@ tvtask.setText(taskname);
                             }
                         }).show();
                     }
-
 
 
                 } else {
@@ -664,17 +580,17 @@ tvtask.setText(taskname);
                 unitsproduced.setText(String.valueOf(count));
                 undobtn.setEnabled(true);
 
-counts++;
+                counts++;
 
                 if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                    if (counts>2){
-                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    if (counts > 2) {
+                        new AlertDialog.Builder(NoTaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(NoTaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
                                     btnSubmit.startAnimation(myAnim);
 
@@ -683,8 +599,7 @@ counts++;
                                 dialogInterface.dismiss();
                             }
                         }).show();
-                    }
-                    else {
+                    } else {
                         unitsleft.setText("Production Completed");
                         // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
@@ -692,12 +607,12 @@ counts++;
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
                         btnReset.setVisibility(View.VISIBLE);
-                        new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        new AlertDialog.Builder(NoTaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                                    Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(NoTaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
                                     totalunits.setText(requiredunits.getText().toString());
                                 }
@@ -705,7 +620,6 @@ counts++;
                             }
                         }).show();
                     }
-
 
 
                 } else {
@@ -818,126 +732,24 @@ counts++;
         }
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-        if (propertyChangeEvent.getPropertyName() == TimeService.TimeContainer.STATE_CHANGED) {
-            TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
-            if (t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
-                btnStart.setText("PAUSE");
-                unitsdata.setVisibility(View.VISIBLE);
-                unitsdatas.setVisibility(View.VISIBLE);
-                btnComplete.setVisibility(View.VISIBLE);
-               Toast.makeText(this, "running timer", Toast.LENGTH_SHORT).show();
-                startUpdateTimer();
-                btnReset.setVisibility(View.GONE);
-            } else {
 
 
-                updateTimeText();
-            }
-            if (t.getCurrentState() == TimeService.TimeContainer.STATE_STOPPED) {
-               Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
-                btnStart.setText("START");
-                unitsdata.setVisibility(View.GONE);
-                unitsdatas.setVisibility(View.GONE);
-
-                btnReset.setVisibility(View.GONE);
-            } else {
-                unitsdatas.setVisibility(View.VISIBLE);
-
-            }
-            if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
-               Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
-
-                btnStart.setText("CONTINUE");
-
-                btnComplete.setVisibility(View.GONE);
-                btnReset.setVisibility(View.VISIBLE);
-            }
-            checkServiceRunning();
-        }
-    }
-
-    public void showDialog() {
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
-        builder.setTitle("Select Reason");
-        builder.setCancelable(false);
-
-        //list of items
-        String[] items = getResources().getStringArray(R.array.pausereason);
-        builder.setSingleChoiceItems(items, 0,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // item selected logic
-                    }
-                });
-
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // positive button logic
-                        TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
-                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-
-                         string1=currentDateTimeString;
-                        Toast.makeText(TaskActivity.this, currentDateTimeString, Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-        String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // negative button logic
-                        btnReset.setVisibility(View.GONE);
-
-                        TimeService.TimeContainer.getInstance().start();
-                        startUpdateTimer();
-                        Log.d("check", "stop");
-                        btnStart.setText("PAUSE");
-                        btnComplete.setVisibility(View.VISIBLE);
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        // display dialog
-        dialog.show();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        /*if (!(taskname.equalsIgnoreCase(sharedPreferences.getString("task","")))){
-            Intent intent=new Intent(this,NoTaskActivity.class);
-            intent.putExtra("taskname",taskname);
-            startActivity(intent);
-        }*/
-        Toast.makeText(this, "resart", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void onPause() {
-
         super.onPause();
         if (t != null) {
             t.cancel();
             t = null;
         }
-        TimeService.TimeContainer.getInstance().removeObserver(this);
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+          Intent intent=new Intent(NoTaskActivity.this,UserProfileActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -969,60 +781,10 @@ counts++;
     @Override
     public void onResume() {
         super.onResume();
-if (tvtask.getText().toString().equalsIgnoreCase(sharedPreferences.getString("task",""))) {
-    checkServiceRunning();
-    TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
-    if (t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
 
-
-        startUpdateTimer();
-        unitsdata.setVisibility(View.VISIBLE);
-        unitsdatas.setVisibility(View.VISIBLE);
-        // btnStart.setText("PAUSE");
-        btnComplete.setVisibility(View.VISIBLE);
-        btnStart.setText("PAUSE");
-        Toast.makeText(this, "resume running timer", Toast.LENGTH_SHORT).show();
-    }
-    if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
-        btnStart.setText("CONTINUE");
-        unitsdata.setVisibility(View.VISIBLE);
-        unitsdatas.setVisibility(View.VISIBLE);
-        btnComplete.setVisibility(View.GONE);
-        btnReset.setVisibility(View.VISIBLE);
-        updateTimeText();
-
-    }
-    if (t.getCurrentState() == TimeService.TimeContainer.STATE_STOPPED) {
-        btnStart.setText("START");
-
-        unitsdata.setVisibility(View.GONE);
-        unitsdatas.setVisibility(View.GONE);
-
-        updateTimeText();
-
-    }
-
-    TimeService.TimeContainer.getInstance().addObserver(this);
-}
-else {
-    Toast.makeText(this, "Start Your work", Toast.LENGTH_SHORT).show();
-}
-if (sharedPreferences.getString("task","").length()>0){
-    if (!(tvtask.getText().toString().matches(sharedPreferences.getString("task","")))){
-        Intent intent=new Intent(this,NoTaskActivity.class);
-        intent.putExtra("taskname",taskname);
-        startActivity(intent);
-    }
-
-}
-/*
-if (sharedPreferences.getString("task","").isEmpty()){
-
-}*/
 
 
     }
-
 
     @Override
     public void onClick(View view) {

@@ -1,5 +1,6 @@
 package proj.kinetics.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,34 +26,14 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE "+TABLE_NAME+" (\n" +
-                "  `id` int(11) NOT NULL,\n" +
-                "  `projects_id` int(11) DEFAULT NULL,\n" +
-                "  `details` text,\n" +
-                "  `estimated_time` varchar(10) DEFAULT NULL,\n" +
-                "  `start_datetime` datetime DEFAULT NULL,\n" +
-                "  `end_datetime` datetime DEFAULT NULL,\n" +
-                "  `duration` varchar(10) DEFAULT NULL,\n" +
-                "  `quantity` int(11) DEFAULT NULL,\n" +
-                "  `amount` varchar(45) DEFAULT NULL,\n" +
-                "  `assigned_to` int(11) DEFAULT NULL,\n" +
-                "  `status` varchar(1) DEFAULT NULL,\n" +
-                "  `assigned_datetime` datetime DEFAULT NULL,\n" +
-                "  `attachment_link` text,\n" +
-                "  `video_link` text,\n" +
-                "  `audit_created_date` datetime DEFAULT NULL,\n" +
-                "  `audit_updated_date` datetime DEFAULT NULL,\n" +
-                "  `audit_updated_by` int(11) DEFAULT NULL,\n" +
-                "  `audit_created_by` int(11) DEFAULT NULL,\n" +
-                "  `audit_ip` varchar(45) DEFAULT NULL,\n" +
-                "  PRIMARY KEY (`id`)\n" +
-                ") ");
+       sqLiteDatabase.execSQL("create table task(id integer primary key autoincrement,name text, duedate date, )");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
     public boolean isRecordExists(String columnName, String tableName, String id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -62,5 +43,23 @@ public class MyDbHelper extends SQLiteOpenHelper {
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
+    }
+    public  void insertData(String name){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        ContentValues contentValues=new ContentValues();
+
+        contentValues.put("name",name);
+            sqLiteDatabase.insert("task",null,contentValues);
+
+
+    }
+    public Cursor getData(){
+        SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
+
+        Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
+
+
+        return c;
+
     }
 }

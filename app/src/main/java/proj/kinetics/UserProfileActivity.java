@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,10 +38,11 @@ import proj.kinetics.Fragments.CompletedTask;
 import proj.kinetics.Fragments.MyTaskFragment;
 import proj.kinetics.Fragments.Reports;
 import proj.kinetics.Utils.NonSwipeableViewPager;
+import proj.kinetics.Utils.SessionManagement;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-
+    SessionManagement session;
     static boolean mIsLocked = false;
     ViewPagerAdapter adapter;
     private Toolbar toolbar;
@@ -59,6 +61,18 @@ public class UserProfileActivity extends AppCompatActivity {
         tv.setTextSize(20);
         tv.setTypeface(Typeface.SANS_SERIF);
         Calendar c = Calendar.getInstance();
+        session = new SessionManagement(getApplicationContext());
+        session.checkLogin();
+
+        // get user data from session
+        HashMap<String, String> user = session.getUserDetails();
+
+        // username
+        String username = user.get(SessionManagement.KEY_USERNAME);
+
+
+        // password
+        String email = user.get(SessionManagement.KEY_PASSWORD);
 
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy hh:mm aaa");
         String formattedDate = df.format(c.getTime());
