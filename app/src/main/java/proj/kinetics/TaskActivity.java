@@ -53,15 +53,24 @@ import java.util.TimerTask;
 import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
+import proj.kinetics.Model.Dependenttask;
+import proj.kinetics.Model.Example;
+import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.TimerWidget.TimeService;
+import proj.kinetics.Utils.ApiClient;
+import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.Utils.MultiSelectionSpinner;
 import proj.kinetics.Utils.MySpannable;
+import proj.kinetics.Utils.PDFTools;
 import proj.kinetics.Utils.RecyclerTouchListener;
 import proj.kinetics.Utils.SessionManagement;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
-    String taskname;
+    String taskid;
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn,undobtn2;
     Toolbar toolbar;
@@ -174,7 +183,7 @@ SharedPreferences.Editor editor;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one);
-        taskname=getIntent().getStringExtra("taskname");
+        taskid=getIntent().getStringExtra("taskid");
         sharedPreferences=getSharedPreferences("tasktimer",MODE_PRIVATE);
         editor=sharedPreferences.edit();
         session = new SessionManagement(getApplicationContext());
@@ -187,6 +196,8 @@ SharedPreferences.Editor editor;
 
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
+
+
         Toast.makeText(getApplicationContext(), "LoggedIN" +name, Toast.LENGTH_SHORT).show();
         units = (RecyclerView) findViewById(R.id.units);
         units2 = (RecyclerView) findViewById(R.id.units2);
@@ -197,7 +208,34 @@ SharedPreferences.Editor editor;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
         myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        linqc = (LinearLayout) findViewById(R.id.lineqc);
+        unitsdata = (LinearLayout) findViewById(R.id.unitsdata);
+        unitsdatas = (LinearLayout) findViewById(R.id.unitsdatas);
+        lintask = (LinearLayout) findViewById(R.id.lintask);
+        unitsproduced = (EditText) findViewById(R.id.unitsproduced);
+        unitsproduced2 = (EditText) findViewById(R.id.unitsproduced2);
+        taskdescrip = (TextView) findViewById(R.id.taskdescrip);
+        requiredunits = (TextView) findViewById(R.id.requiredunits);
+        tvTime = (TextView) findViewById(R.id.tvTime);
+        tvtask = (TextView) findViewById(R.id.task);
+        unitsleft = (TextView) findViewById(R.id.unitsleft);
+        unitslefts = (TextView) findViewById(R.id.unitslefts);
+        totalunits = (TextView) findViewById(R.id.totalunits);
+        btnStart = (Button) findViewById(R.id.btnStart);
+        btnComplete = (Button) findViewById(R.id.btnComplete);
+        btnSubmit = (Button) findViewById(R.id.btnSubmit);
+        undobtn = (ImageButton) findViewById(R.id.undobtn);
+        undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
+        videoattach = (ImageButton) findViewById(R.id.action_video);
+        attachment = (ImageButton) findViewById(R.id.action_attach);
+        nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
+        recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
+        btnReset = (Button) findViewById(R.id.btnReset);
+        videoattach.setOnClickListener(this);
+        attachment.setOnClickListener(this);
             list.add("Task  1");  // Add the item in the list
+getTaskDetails();
+
 
         final View openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
@@ -273,37 +311,13 @@ SharedPreferences.Editor editor;
 
             }
         });
-        linqc = (LinearLayout) findViewById(R.id.lineqc);
-        unitsdata = (LinearLayout) findViewById(R.id.unitsdata);
-        unitsdatas = (LinearLayout) findViewById(R.id.unitsdatas);
-        lintask = (LinearLayout) findViewById(R.id.lintask);
-        unitsproduced = (EditText) findViewById(R.id.unitsproduced);
-        unitsproduced2 = (EditText) findViewById(R.id.unitsproduced2);
-        taskdescrip = (TextView) findViewById(R.id.taskdescrip);
-        requiredunits = (TextView) findViewById(R.id.requiredunits);
-        tvTime = (TextView) findViewById(R.id.tvTime);
-        tvtask = (TextView) findViewById(R.id.task);
-        unitsleft = (TextView) findViewById(R.id.unitsleft);
-        unitslefts = (TextView) findViewById(R.id.unitslefts);
-        totalunits = (TextView) findViewById(R.id.totalunits);
-        btnStart = (Button) findViewById(R.id.btnStart);
-        btnComplete = (Button) findViewById(R.id.btnComplete);
-        btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        undobtn = (ImageButton) findViewById(R.id.undobtn);
-        undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
-        videoattach = (ImageButton) findViewById(R.id.action_video);
-        attachment = (ImageButton) findViewById(R.id.action_attach);
-        nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
-        recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
-        btnReset = (Button) findViewById(R.id.btnReset);
-        videoattach.setOnClickListener(this);
-        attachment.setOnClickListener(this);
+
 
         if (tvTime.getText().toString().equalsIgnoreCase("00:00")) {
             unitsdata.setVisibility(View.GONE);
             unitsdatas.setVisibility(View.GONE);
         }
-tvtask.setText(taskname);
+
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -449,7 +463,7 @@ tvtask.setText(taskname);
             public void onClick(View view) {
                 unitsdata.setVisibility(View.VISIBLE);
                 unitsdatas.setVisibility(View.VISIBLE);
-                editor.putString("task",taskname);
+                editor.putString("task",taskid);
 
                 editor.commit();
                 Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
@@ -726,6 +740,36 @@ counts++;
         }));
     }
 
+    private void getTaskDetails() {
+        ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> responseBodyCall=apiInterface.getTaskDetails(taskid);
+        responseBodyCall.enqueue(new Callback<TaskDetails>() {
+            @Override
+            public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
+                tvtask.setText(response.body().getTaskname());
+                requiredunits.setText(response.body().getQuantity());
+                taskdescrip.setText(response.body().getTaskdescription());
+                List<Dependenttask> dependent= response.body().getDependenttask();
+
+                if (dependent==null){
+
+                }else {
+                    Log.d("datta",""+dependent.size());
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+            }
+        });
+
+
+
+    }
+
     private void updateTimeText() {
 
 
@@ -969,7 +1013,7 @@ counts++;
     @Override
     public void onResume() {
         super.onResume();
-if (tvtask.getText().toString().equalsIgnoreCase(sharedPreferences.getString("task",""))) {
+if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
     checkServiceRunning();
     TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
     if (t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
@@ -1008,9 +1052,9 @@ else {
     Toast.makeText(this, "Start Your work", Toast.LENGTH_SHORT).show();
 }
 if (sharedPreferences.getString("task","").length()>0){
-    if (!(tvtask.getText().toString().matches(sharedPreferences.getString("task","")))){
+    if (!(taskid.matches(sharedPreferences.getString("task","")))){
         Intent intent=new Intent(this,NoTaskActivity.class);
-        intent.putExtra("taskname",taskname);
+        intent.putExtra("taskname",taskid);
         startActivity(intent);
     }
 
@@ -1028,6 +1072,12 @@ if (sharedPreferences.getString("task","").isEmpty()){
     public void onClick(View view) {
         if (view.getId() == R.id.action_attach) {
             Toast.makeText(this, "No Attachment", Toast.LENGTH_SHORT).show();
+            if (PDFTools.isPDFSupported(TaskActivity.this)){
+                PDFTools.showPDFUrl(TaskActivity.this,"http://66.201.99.67/~kinetics/uploads/2_Screenshot_from_2017-06-06_19-03-55.png");
+            }
+            else {
+                PDFTools.askToOpenPDFThroughGoogleDrive(TaskActivity.this,"http://66.201.99.67/~kinetics/uploads/2_Screenshot_from_2017-06-06_19-03-55.png");
+            }
 
         }
         if (view.getId() == R.id.action_video) {

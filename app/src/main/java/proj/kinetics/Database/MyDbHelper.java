@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "kinetic.db";
-    private static final String TABLE_NAME = "tasks";
+    private static final String TABLE_NAME = "usertaskjson";
     private static final int DATABASE_VERSION = 1;
 
 
@@ -26,7 +26,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-       sqLiteDatabase.execSQL("create table task(id integer primary key autoincrement,name text, duedate date, )");
+       sqLiteDatabase.execSQL("create table usertaskjson(id integer primary key autoincrement,jsondata varchar(100))");
 
     }
 
@@ -44,22 +44,39 @@ public class MyDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
-    public  void insertData(String name){
+    public  void insertData(String jsondata){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
 
-        contentValues.put("name",name);
-            sqLiteDatabase.insert("task",null,contentValues);
+        contentValues.put("jsondata",jsondata);
+            sqLiteDatabase.insert(TABLE_NAME,null,contentValues);
 
+
+    }
+    public boolean isDataExists(){
+        SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
+
+        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME,null);
+
+        boolean exists = (c.getCount() > 0);
+        return exists;
 
     }
     public Cursor getData(){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
 
-        Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
+        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME,null);
 
 
         return c;
+
+    }
+    public void removeAll()
+    {
+        // db.delete(String tableName, String whereClause, String[] whereArgs);
+        // If whereClause is null, it will delete all rows.
+        SQLiteDatabase db = this.getWritableDatabase(); // helper is object extends SQLiteOpenHelper
+        db.delete(TABLE_NAME, null, null);
 
     }
 }

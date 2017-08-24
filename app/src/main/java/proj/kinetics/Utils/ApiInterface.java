@@ -3,9 +3,11 @@ package proj.kinetics.Utils;
 import okhttp3.ResponseBody;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.Task;
+import proj.kinetics.Model.TaskDetails;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -22,4 +24,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @POST("gettaskdetail.php")
     Call<Example> getTaskLists(@Field("username") String username);
+
+    @GET("gettaskdetailbyid.php")
+    Call<TaskDetails>getTaskDetails(@Query("id") String id);
 }

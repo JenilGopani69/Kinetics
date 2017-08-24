@@ -8,6 +8,9 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Task {
+    @SerializedName("task_id")
+    @Expose
+    private String taskId;
     @SerializedName("task_name")
     @Expose
     private String taskName;
@@ -29,6 +32,14 @@ public class Task {
     @SerializedName("project_id")
     @Expose
     private String projectId;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public String getTaskName() {
         return taskName;
@@ -85,5 +96,4 @@ public class Task {
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
-
 }

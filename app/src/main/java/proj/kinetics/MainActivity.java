@@ -2,6 +2,7 @@ package proj.kinetics;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.StrictMode;
@@ -40,7 +41,7 @@ Button loginBtn;
     EditText txtUsername, txtPassword;
 
 
-
+MyDbHelper myDbHelper;
 
 ProgressDialog progressdialog;
     CardView cd1;
@@ -48,14 +49,8 @@ ProgressDialog progressdialog;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-/*myDbHelper=new MyDbHelper(getApplicationContext());
-        myDbHelper.insertData("Task A");
-        myDbHelper.insertData("Task B");
-        myDbHelper.insertData("Task C");
-        myDbHelper.insertData("Task D");
-        myDbHelper.insertData("Task E");
-        myDbHelper.insertData("Task F");
-        myDbHelper.insertData("Task G");*/
+myDbHelper=new MyDbHelper(getApplicationContext());
+
         // Session Manager
         session = new SessionManagement(getApplicationContext());
 progressdialog=new ProgressDialog(MainActivity.this);
@@ -83,9 +78,17 @@ progressdialog=new ProgressDialog(MainActivity.this);
                     // username = test
                     // password = test
                     progressdialog.show();
-                    getUserLogin(username,password);
 
-                }
+                            getUserLogin(username, password);
+
+
+
+
+                        }
+
+
+
+
 
 
             }
@@ -103,9 +106,10 @@ progressdialog=new ProgressDialog(MainActivity.this);
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     try {
-                        Log.d("checkout",""+response.body().string());
+
 String data=response.body().string();
 
+                        Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
                             if (progressdialog.isShowing()){
                                 progressdialog.dismiss();
                                 session.createLoginSession(username, password);

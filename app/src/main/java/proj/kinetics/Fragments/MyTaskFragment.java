@@ -107,10 +107,10 @@ SessionManagement session;
                 Task task=list.get(position);
 
                 Intent intent=new Intent(getActivity(),TaskActivity.class);
-                intent.putExtra("taskname",task.getTaskName());
+                intent.putExtra("taskid",task.getTaskId());
                 startActivity(intent);
                 getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
-                Toast.makeText(getActivity(), ""+task.getTaskName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), ""+task.getTaskId(), Toast.LENGTH_SHORT).show();
                         }
             @Override
             public void onItemLongClick(View view, int position) {

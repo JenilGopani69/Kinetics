@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     public static final String BASE_URL = "http://66.201.99.67/~kinetics/api/";
+
     private static Retrofit retrofit = null;
 
 
