@@ -1073,10 +1073,10 @@ if (sharedPreferences.getString("task","").isEmpty()){
         if (view.getId() == R.id.action_attach) {
             Toast.makeText(this, "No Attachment", Toast.LENGTH_SHORT).show();
             if (PDFTools.isPDFSupported(TaskActivity.this)){
-                PDFTools.showPDFUrl(TaskActivity.this,"http://66.201.99.67/~kinetics/uploads/2_Screenshot_from_2017-06-06_19-03-55.png");
+                PDFTools.showPDFUrl(TaskActivity.this,"http://www.pdf995.com/samples/pdf.pdf");
             }
             else {
-                PDFTools.askToOpenPDFThroughGoogleDrive(TaskActivity.this,"http://66.201.99.67/~kinetics/uploads/2_Screenshot_from_2017-06-06_19-03-55.png");
+                PDFTools.askToOpenPDFThroughGoogleDrive(TaskActivity.this,"http://www.pdf995.com/samples/pdf.pdf");
             }
 
         }
