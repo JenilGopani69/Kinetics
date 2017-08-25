@@ -10,6 +10,15 @@ import java.util.List;
  */
 
 public class TaskDetails {
+    @SerializedName("code")
+    @Expose
+    private Integer code;
+    @SerializedName("message")
+    @Expose
+    private String message;
+    @SerializedName("id")
+    @Expose
+    private String id;
     @SerializedName("taskname")
     @Expose
     private String taskname;
@@ -34,9 +43,36 @@ public class TaskDetails {
     @SerializedName("video_link")
     @Expose
     private String videoLink;
+    @SerializedName("qualitycheck")
+    @Expose
+    private List<Qualitycheck> qualitycheck = null;
     @SerializedName("dependenttask")
     @Expose
     private List<Dependenttask> dependenttask = null;
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getTaskname() {
         return taskname;
@@ -102,6 +138,14 @@ public class TaskDetails {
         this.videoLink = videoLink;
     }
 
+    public List<Qualitycheck> getQualitycheck() {
+        return qualitycheck;
+    }
+
+    public void setQualitycheck(List<Qualitycheck> qualitycheck) {
+        this.qualitycheck = qualitycheck;
+    }
+
     public List<Dependenttask> getDependenttask() {
         return dependenttask;
     }
@@ -109,5 +153,6 @@ public class TaskDetails {
     public void setDependenttask(List<Dependenttask> dependenttask) {
         this.dependenttask = dependenttask;
     }
+
 
 }

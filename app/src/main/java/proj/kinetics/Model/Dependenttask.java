@@ -3,12 +3,17 @@ package proj.kinetics.Model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by sai on 24/8/17.
  */
 
 public class Dependenttask {
 
+    @SerializedName("id")
+    @Expose
+    private String id;
     @SerializedName("taskname")
     @Expose
     private String taskname;
@@ -33,6 +38,17 @@ public class Dependenttask {
     @SerializedName("video_link")
     @Expose
     private String videoLink;
+    @SerializedName("qualitycheck")
+    @Expose
+    private List<Qualitycheck> qualitycheck = null;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getTaskname() {
         return taskname;
@@ -96,6 +112,14 @@ public class Dependenttask {
 
     public void setVideoLink(String videoLink) {
         this.videoLink = videoLink;
+    }
+
+    public List<Qualitycheck> getQualitycheck() {
+        return qualitycheck;
+    }
+
+    public void setQualitycheck(List<Qualitycheck> qualitycheck) {
+        this.qualitycheck = qualitycheck;
     }
 
 }

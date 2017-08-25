@@ -55,6 +55,7 @@ import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
+import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.ApiClient;
@@ -76,11 +77,14 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     Toolbar toolbar;
     String string1="",string2="";
      Animation myAnim;
+    String d_taskdescription="",d_taskname="",d_taskquantity="";
+    TextView requiredunit;
     SharedPreferences sharedPreferences;
     SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat("hh:mm:ss aa");
-
+    View openDialog;
     int counts=1;
+    TextView task;
     CoordinatorLayout coordinate;
     LinearLayout unitsdatas,unitsdata, nextqcbtn;
     QCAdapter myAdapter;
@@ -233,11 +237,11 @@ SharedPreferences.Editor editor;
         btnReset = (Button) findViewById(R.id.btnReset);
         videoattach.setOnClickListener(this);
         attachment.setOnClickListener(this);
-            list.add("Task  1");  // Add the item in the list
+
 getTaskDetails();
 
 
-        final View openDialog = (View) findViewById(R.id.openDialog);
+        openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,7 +279,11 @@ getTaskDetails();
                                         stringBuilder.append(list.getItemAtPosition(i));*/
                                         coordinate.setVisibility(View.VISIBLE);
                                         taskdescrips = (TextView) findViewById(R.id.taskdescrips);
-
+                                        requiredunit = (TextView) findViewById(R.id.requiredunit);
+                                        task = (TextView) findViewById(R.id.task2);
+                                        requiredunit.setText(d_taskquantity);
+                                        task.setText(d_taskname);
+                                        taskdescrips.setText(d_taskdescription);
                                         makeTextViewResizable(taskdescrips, 3, "View More", true);
 
                                         openDialog.setVisibility(View.GONE);
@@ -419,8 +427,7 @@ getTaskDetails();
         finishtask.setBackgroundColor(Color.GRAY);
         finishtask.setEnabled(false);
         finishtask.setClickable(false);
-        myAdapter = new QCAdapter(al, this);
-        recyclerView.setAdapter(myAdapter);
+
         nextqcbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -440,7 +447,6 @@ getTaskDetails();
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        makeTextViewResizable(taskdescrip, 3, "View More", true);
         arrayList.add("1");
         arrayList.add("10");
         arrayList.add("20");
@@ -550,8 +556,9 @@ getTaskDetails();
         btnComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(TaskActivity.this, "stopped", Toast.LENGTH_SHORT).show();
                 TimeService.TimeContainer.getInstance().pause();
-                btnComplete.setVisibility(View.GONE);
+                btnStart.setText("CONTINUE");
                 recordedtym.setText(tvTime.getText().toString());
 
             }
@@ -747,14 +754,28 @@ counts++;
             @Override
             public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
                 tvtask.setText(response.body().getTaskname());
+
+
                 requiredunits.setText(response.body().getQuantity());
                 taskdescrip.setText(response.body().getTaskdescription());
+                makeTextViewResizable(taskdescrip, 3, "View More", true);
                 List<Dependenttask> dependent= response.body().getDependenttask();
-
+                List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
+                myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
+                recyclerView.setAdapter(myAdapter);
                 if (dependent==null){
+openDialog.setVisibility(View.GONE);
 
                 }else {
+                    Dependenttask dep=dependent.get(0);
                     Log.d("datta",""+dependent.size());
+                    openDialog.setVisibility(View.VISIBLE);
+
+                    d_taskdescription=dep.getTaskdescription();
+                    d_taskname=dep.getTaskname();
+                    Log.d("sds",""+dep.getQuantity()+""+dep.getAmount());
+                    d_taskquantity=dep.getQuantity();
+                    list.add(d_taskname);  // Add the item in the list
                 }
 
 

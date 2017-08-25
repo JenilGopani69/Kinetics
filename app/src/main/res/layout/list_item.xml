@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="10dp"
+        android:padding="2dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -37,7 +37,6 @@
                     <TextView
                         android:layout_weight="1"
                         android:id="@+id/name"
-
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -45,6 +44,7 @@
                     <TextView
                         android:layout_weight="1"
 android:id="@+id/pname"
+
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -63,52 +63,53 @@ android:id="@+id/pname"
 
 
                     <TextView
-                        android:layout_weight="1"
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
+android:layout_marginRight="10dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-
+                        android:maxLines="2"
+android:layout_weight="1"
                         android:text="DUE DATE" />
 
                     <TextView
-
-                        android:id="@+id/duedate"
+                        android:maxLines="2"
+                        android:minLines="1"
+                        android:scrollbars = "vertical"
                         android:layout_weight="1"
-
-                        android:layout_width="match_parent"                        android:layout_height="wrap_content"
+                        android:id="@+id/duedate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:text="17.07.2017"
                         android:textColor="@color/colorPrimaryDark" />
                     />
                 </TableRow>
 
 
-                <TableRow>
+                <TableRow android:layout_width="match_parent"
+                    android:layout_marginTop="6dp"
+
+                    android:layout_height="wrap_content">
 
 
 
                     <TextView
                         android:id="@+id/textView"
-                        android:layout_weight="1"
-
-                        android:layout_width="match_parent"                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:layout_gravity="start"
+                        android:layout_marginRight="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
 
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
 
-                        android:layout_marginRight="3dp"
                         android:text="EST. TIME" />
 
                     <TextView
 
-                        android:layout_weight="1"
 android:text="25 hr"
                         android:id="@+id/estimated_time"
-                        android:layout_width="match_parent"                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:layout_gravity="start"
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimaryDark" />
 
 
@@ -117,31 +118,31 @@ android:text="25 hr"
 
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:layout_width="match_parent"
+                    android:layout_marginTop="6dp"
+
+                    android:layout_height="wrap_content">
 
 
 
                     <TextView
 
-                        android:layout_weight="1"
 
-                        android:layout_width="match_parent"                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:layout_gravity="start"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+android:layout_gravity="start"
+                        android:gravity="start"
 
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-
-                        android:layout_marginRight="3dp"
-                        android:text="PRIORITY" />
+                        android:layout_marginRight="10dp"                        android:text="PRIORITY" />
 
                     <TextView
 
-                        android:layout_weight="1"
+
                         android:text="1"
                         android:id="@+id/priorityid"
-                        android:layout_width="match_parent"                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:layout_gravity="start"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimaryDark" />
 
 

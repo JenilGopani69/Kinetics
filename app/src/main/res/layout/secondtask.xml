@@ -33,7 +33,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/task"
+                        android:id="@+id/task2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="left|center"

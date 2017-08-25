@@ -14,7 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 
@@ -24,11 +26,11 @@ import proj.kinetics.R;
  */
 
 public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
-    ArrayList arrayList;
+    List<Qualitycheck> arrayList;
     Context context;
    static int checkAccumulator;
 
-    public QCAdapter(ArrayList arrayList, Context context) {
+    public QCAdapter(List<Qualitycheck> arrayList, Context context) {
         this.arrayList = arrayList;
         this.context = context;
         checkAccumulator = 0;
@@ -46,7 +48,8 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
-        holder.textView.setText(""+arrayList.get(position));
+        Qualitycheck qualitycheck=arrayList.get(position);
+        holder.textView.setText(qualitycheck.getDescripton());
 
 
 
@@ -67,8 +70,8 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
         Context ctx;
         CheckBox checkBox1;
         ImageView profile_imageview;
-        ArrayList<String> arrayList=new ArrayList();
-        public MyViewHolder(View itemView, final Context context, ArrayList al) {
+        List<Qualitycheck> arrayList=new ArrayList();
+        public MyViewHolder(View itemView, final Context context, final List<Qualitycheck> al) {
             super(itemView);
             itemView.setOnClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.header_textview);
@@ -82,7 +85,7 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
                     countCheck(isChecked);
                     Log.i("MAIN", checkAccumulator + "");
 
-                    if (checkAccumulator==3){
+                    if (checkAccumulator==arrayList.size()){
                     //QCFragment.finishtask.setVisibility(View.VISIBLE);
                         TaskActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
                         TaskActivity.finishtask.setEnabled(true);

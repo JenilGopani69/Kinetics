@@ -369,8 +369,8 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
         finishtask.setBackgroundColor(Color.GRAY);
         finishtask.setEnabled(false);
         finishtask.setClickable(false);
-        myAdapter = new QCAdapter(al, this);
-        recyclerView.setAdapter(myAdapter);
+        /*myAdapter = new QCAdapter(al, this);
+        recyclerView.setAdapter(myAdapter);*/
         nextqcbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

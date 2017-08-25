@@ -108,20 +108,37 @@ progressdialog=new ProgressDialog(MainActivity.this);
                     try {
 
 String data=response.body().string();
+                        Log.d("iftrue", data);
 
-                        Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
-                            if (progressdialog.isShowing()){
+                        JSONObject jsonObject=new JSONObject(data);
+                        String dataresponse=jsonObject.getString("message");
+                        Log.d("iftrue", dataresponse);
+
+                       if(dataresponse.equalsIgnoreCase("success")){
+
+
+
+                            Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
+                            if (progressdialog.isShowing()) {
                                 progressdialog.dismiss();
                                 session.createLoginSession(username, password);
-                                Intent intent=new Intent(MainActivity.this,UserProfileActivity.class);
+                                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                                 startActivity(intent);
-                                overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                            }
 
-
+                       } else {
+                           if (progressdialog.isShowing()) {
+                               progressdialog.dismiss();
+                           }
+                            Toast.makeText(MainActivity.this, "Enter Valid Username", Toast.LENGTH_SHORT).show();
                         }
 
 
+
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }else {
