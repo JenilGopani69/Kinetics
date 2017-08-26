@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -51,11 +52,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import proj.kinetics.Adapters.QCAdapter;
+import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.Qualitycheck;
+import proj.kinetics.Model.Qualitycheck_;
+import proj.kinetics.Model.Task;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.ApiClient;
@@ -71,7 +75,8 @@ import retrofit2.Response;
 
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
-    String taskid;
+    QCAdapter_ qcAd;
+    String taskid,dependentaskid;
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn,undobtn2;
     Toolbar toolbar;
@@ -86,12 +91,13 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     int counts=1;
     TextView task;
     CoordinatorLayout coordinate;
-    LinearLayout unitsdatas,unitsdata, nextqcbtn;
+    LinearLayout unitsdatas,unitsdata, nextqcbtn,qcrecylerdependent;
     QCAdapter myAdapter;
     RecyclerView units,units2, recyclerView;
     EditText unitsproduced,unitsproduced2;
     int count = 0;
-    LinearLayout linqc, lintask;
+    LinearLayout linqc,taskd;
+    LinearLayout  lintask;
     ArrayList arrayList = new ArrayList();
     UnitsAdapter unitsAdapter;
     UnitsAdapter2 unitsAdapter2;
@@ -209,6 +215,7 @@ SharedPreferences.Editor editor;
         startedtime = (TextView) findViewById(R.id.startedtime);
         breaktym = (TextView) findViewById(R.id.breaktym);
         recordedtym = (TextView) findViewById(R.id.recordedtym);
+        taskd = (LinearLayout) findViewById(R.id.taskd);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
         myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
@@ -288,7 +295,7 @@ getTaskDetails();
 
                                         openDialog.setVisibility(View.GONE);
 
-
+getDependentask();
                                     }
                                 }
 
@@ -709,7 +716,7 @@ counts++;
                         unitsleft.setText("Production Completed");
                         // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
-                        TimeService.TimeContainer.getInstance().pause();
+                        TimeService.TimeContainer.getInstance().stopAndReset();
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
                         btnReset.setVisibility(View.VISIBLE);
@@ -760,22 +767,26 @@ counts++;
                 taskdescrip.setText(response.body().getTaskdescription());
                 makeTextViewResizable(taskdescrip, 3, "View More", true);
                 List<Dependenttask> dependent= response.body().getDependenttask();
+
+
                 List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
+                Qualitycheck q1= qualitychecks.get(0);
+
                 myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
                 recyclerView.setAdapter(myAdapter);
                 if (dependent==null){
 openDialog.setVisibility(View.GONE);
 
                 }else {
-                    Dependenttask dep=dependent.get(0);
-                    Log.d("datta",""+dependent.size());
-                    openDialog.setVisibility(View.VISIBLE);
 
+                    Dependenttask dep=dependent.get(0);
                     d_taskdescription=dep.getTaskdescription();
                     d_taskname=dep.getTaskname();
-                    Log.d("sds",""+dep.getQuantity()+""+dep.getAmount());
                     d_taskquantity=dep.getQuantity();
-                    list.add(d_taskname);  // Add the item in the list
+                    list.add(d_taskname);
+                    openDialog.setVisibility(View.VISIBLE);
+
+
                 }
 
 
@@ -790,6 +801,41 @@ openDialog.setVisibility(View.GONE);
 
 
     }
+
+    private void getDependentask() {
+
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> responseBodyCall = apiInterface.getTaskDetails(taskid);
+responseBodyCall.enqueue(new Callback<TaskDetails>() {
+    @Override
+    public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
+
+        List<Dependenttask> dependenttask=response.body().getDependenttask();
+        Dependenttask dep=dependenttask.get(0);
+        List<Qualitycheck_> qualitycheck_s=dep.getQualitycheck();
+
+        Qualitycheck_ qualitycheck_=qualitycheck_s.get(4);
+        RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        qcrecylerdependent.setLayoutManager(layoutManager);
+        taskd.setVisibility(View.VISIBLE);
+        qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
+        qcrecylerdependent.setAdapter(qcAd);
+
+        Log.d("sds",""+qualitycheck_.getDescripton());
+
+
+
+    }
+
+    @Override
+    public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+    }
+});
+
+    }
+
 
     private void updateTimeText() {
 
@@ -1034,6 +1080,7 @@ openDialog.setVisibility(View.GONE);
     @Override
     public void onResume() {
         super.onResume();
+
 if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
     checkServiceRunning();
     TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();

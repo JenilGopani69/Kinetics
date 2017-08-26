@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -76,7 +77,8 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     RecyclerView units, units2, recyclerView;
     EditText unitsproduced, unitsproduced2;
     int count = 0;
-    LinearLayout linqc, lintask;
+    LinearLayout linqc;
+    LinearLayout  lintask;
     ArrayList arrayList = new ArrayList();
     UnitsAdapter unitsAdapter;
     UnitsAdapter2 unitsAdapter2;

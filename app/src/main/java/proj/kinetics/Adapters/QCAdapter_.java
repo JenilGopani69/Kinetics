@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,21 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import proj.kinetics.Model.Qualitycheck;
-import proj.kinetics.TaskActivity;
+import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.R;
+import proj.kinetics.TaskActivity;
 
 
 /**
  * Created by sai on 19/7/17.
  */
 
-public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
-    List<Qualitycheck> arrayList;
+public class QCAdapter_ extends RecyclerView.Adapter<QCAdapter_.MyViewHolder> {
+    List<Qualitycheck_> arrayList;
     Context context;
     ArrayList<String> al=new ArrayList<>();
    static int checkAccumulator;
 
-    public QCAdapter(List<Qualitycheck> arrayList, Context context) {
+    public QCAdapter_(List<Qualitycheck_> arrayList, Context context) {
         this.arrayList = arrayList;
         this.context = context;
         checkAccumulator = 0;
@@ -49,9 +49,9 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
 
-        Qualitycheck qualitycheck=arrayList.get(position);
+        Qualitycheck_ qualitycheck=arrayList.get(position);
         holder.textView.setText(qualitycheck.getDescripton());
-
+        Toast.makeText(context, ""+qualitycheck.getDescripton(), Toast.LENGTH_SHORT).show();
         holder.checkBox1.setChecked(arrayList.get(position).getSelected());
 
         holder.checkBox1.setTag(position);
@@ -107,8 +107,8 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
         Context ctx;
         CheckBox checkBox1;
         ImageView profile_imageview;
-        List<Qualitycheck> arrayList=new ArrayList();
-        public MyViewHolder(View itemView, final Context context, final List<Qualitycheck> al) {
+        List<Qualitycheck_> arrayList=new ArrayList();
+        public MyViewHolder(View itemView, final Context context, final List<Qualitycheck_> al) {
             super(itemView);
             itemView.setOnClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.header_textview);

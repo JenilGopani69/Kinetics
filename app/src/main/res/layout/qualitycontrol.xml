@@ -3,43 +3,89 @@
     android:layout_height="match_parent"
     android:scrollbarStyle="insideInset"
     android:scrollbarSize="2dp"
+android:visibility="gone"
     android:orientation="vertical"
     android:id="@+id/lineqc"
-    android:visibility="gone"
 
     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
 
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
     <TextView
         android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:id="@+id/taskqcname"
         android:textColor="@color/background"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:text="Quality Control for Task A"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/qcrecyler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/finishtask"
+                android:layout_marginTop="5dp"
+                android:scrollbarStyle="insideOverlay" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:visibility="gone"
+
+            android:id="@+id/taskd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+
+                android:id="@+id/dependentttaskqc"
+                android:textColor="@color/background"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:text="Quality Control for Task B"/>
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_marginTop="5dp"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/finishtask"
-        android:id="@+id/qcrecyler" />
-
-    <Button
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/finishtask"
-        android:textColor="@color/white"
-        android:layout_centerHorizontal="true"
-        android:text="Finish Task"
-        android:padding="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="5dp"
-        />
+        android:scrollbarStyle="insideOverlay"
 
+        android:layout_above="@+id/finishtask"
+            android:id="@+id/qcrecylerdependent" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/finishtask"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true"
+                android:text="Finish Task"
+                android:padding="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

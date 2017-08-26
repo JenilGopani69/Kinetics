@@ -4,10 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by sai on 25/8/17.
+ * Created by sai on 26/8/17.
  */
 
-public class Qualitycheck {
+public class Qualitycheck_ {
     private boolean isSelected;
 
     public boolean getSelected() {
@@ -72,5 +72,6 @@ public class Qualitycheck {
     public void setVideoLink(String videoLink) {
         this.videoLink = videoLink;
     }
+
 
 }

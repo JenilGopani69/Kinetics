@@ -1,6 +1,7 @@
 package proj.kinetics.Utils;
 
 import okhttp3.ResponseBody;
+import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.Task;
 import proj.kinetics.Model.TaskDetails;
@@ -17,6 +18,7 @@ import retrofit2.http.Query;
 
 public interface ApiInterface {
 
+
     @FormUrlEncoded
     @POST("gettaskdetail.php")
     Call<ResponseBody> getTaskList(@Field("username") String username);
@@ -27,4 +29,6 @@ public interface ApiInterface {
 
     @GET("gettaskdetailbyid.php")
     Call<TaskDetails>getTaskDetails(@Query("id") String id);
+
+
 }

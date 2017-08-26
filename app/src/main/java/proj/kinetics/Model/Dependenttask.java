@@ -10,7 +10,6 @@ import java.util.List;
  */
 
 public class Dependenttask {
-
     @SerializedName("id")
     @Expose
     private String id;
@@ -40,7 +39,7 @@ public class Dependenttask {
     private String videoLink;
     @SerializedName("qualitycheck")
     @Expose
-    private List<Qualitycheck> qualitycheck = null;
+    private List<Qualitycheck_> qualitycheck = null;
 
     public String getId() {
         return id;
@@ -114,12 +113,14 @@ public class Dependenttask {
         this.videoLink = videoLink;
     }
 
-    public List<Qualitycheck> getQualitycheck() {
+    public List<Qualitycheck_> getQualitycheck() {
         return qualitycheck;
     }
 
-    public void setQualitycheck(List<Qualitycheck> qualitycheck) {
+    public void setQualitycheck(List<Qualitycheck_> qualitycheck) {
         this.qualitycheck = qualitycheck;
     }
+
+
 
 }

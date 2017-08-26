@@ -154,5 +154,4 @@ public class TaskDetails {
         this.dependenttask = dependenttask;
     }
 
-
 }
