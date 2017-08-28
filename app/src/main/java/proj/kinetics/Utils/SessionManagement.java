@@ -9,6 +9,8 @@ import java.util.HashMap;
 import proj.kinetics.MainActivity;
 import proj.kinetics.TimerWidget.TimeService;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by sai on 21/8/17.
  */
@@ -19,6 +21,8 @@ public class SessionManagement {
 
     // Editor for Shared preferences
     SharedPreferences.Editor editor;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor2;
 
     // Context
     Context _context;
@@ -34,6 +38,7 @@ public class SessionManagement {
 
     // User name (make variable public to access from outside)
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_USERID = "userId";
 
     // Email address (make variable public to access from outside)
     public static final String KEY_PASSWORD = "password";
@@ -47,12 +52,13 @@ public class SessionManagement {
 
     //CREATE LOGIN SESSION
 
-    public void createLoginSession(String username, String password){
+    public void createLoginSession(String username, String password,String userId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
         // Storing name in pref
         editor.putString(KEY_USERNAME, username);
+        editor.putString(KEY_USERID, userId);
 
         // Storing email in pref
         editor.putString(KEY_PASSWORD, password);
@@ -65,6 +71,7 @@ public class SessionManagement {
         HashMap<String, String> user = new HashMap<String, String>();
         // user name
         user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
+        user.put(KEY_USERID, pref.getString(KEY_USERID, null));
 
         // user email id
         user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
@@ -106,6 +113,10 @@ public class SessionManagement {
             Intent i = new Intent(_context, MainActivity.class);
             // Closing all the Activities
 
+            sharedPreferences=_context.getSharedPreferences("tasktimer",MODE_PRIVATE);
+            editor2=sharedPreferences.edit();
+            editor2.clear();
+            editor2.apply();
 
             // Add new Flag to start new Activity
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

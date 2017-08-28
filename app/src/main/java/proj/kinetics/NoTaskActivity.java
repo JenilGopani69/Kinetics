@@ -51,16 +51,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import proj.kinetics.Adapters.QCAdapter;
+import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
+import proj.kinetics.Model.Dependenttask;
+import proj.kinetics.Model.Qualitycheck;
+import proj.kinetics.Model.Qualitycheck_;
+import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.TimerWidget.TimeService;
+import proj.kinetics.Utils.ApiClient;
+import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.Utils.MySpannable;
 import proj.kinetics.Utils.RecyclerTouchListener;
 import proj.kinetics.Utils.SessionManagement;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NoTaskActivity extends AppCompatActivity implements View.OnClickListener {
     public static Button finishtask;
     String taskname;
+    String taskid;
+    QCAdapter_ qcAd;
+
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn, undobtn2;
     Toolbar toolbar;
@@ -69,7 +82,9 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     SharedPreferences sharedPreferences;
     SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat("hh:mm:ss aa");
+     View openDialog;
 
+    String d_taskdescription="",d_taskname="",d_taskquantity="";
     int counts = 1;
     CoordinatorLayout coordinate;
     LinearLayout unitsdatas, unitsdata, nextqcbtn;
@@ -77,7 +92,7 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     RecyclerView units, units2, recyclerView;
     EditText unitsproduced, unitsproduced2;
     int count = 0;
-    LinearLayout linqc;
+    LinearLayout linqc,taskd;
     LinearLayout  lintask;
     ArrayList arrayList = new ArrayList();
     UnitsAdapter unitsAdapter;
@@ -86,7 +101,7 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     List<CharSequence> list = new ArrayList<CharSequence>();
     private Button btnStart, btnReset, btnSubmit, btnComplete, btnSubmit2;
     private Handler h;
-    private TextView tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrips, unitslefts, recordedtym, breaktym;
+    private TextView tvtask,tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrips, unitslefts, recordedtym, breaktym;
     private final Runnable updateTextRunnable = new Runnable() {
         @Override
         public void run() {
@@ -175,13 +190,15 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one);
-        taskname = getIntent().getStringExtra("taskname");
+
+        taskid=getIntent().getStringExtra("taskid");
         sharedPreferences = getSharedPreferences("tasktimer", MODE_PRIVATE);
         editor = sharedPreferences.edit();
         session = new SessionManagement(getApplicationContext());
         session.checkLogin();
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
+        tvtask = (TextView) findViewById(R.id.task);
 
         // name
         String name = user.get(SessionManagement.KEY_USERNAME);
@@ -199,8 +216,7 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
         myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
         list.add("Task  1");  // Add the item in the list
-
-        final View openDialog = (View) findViewById(R.id.openDialog);
+openDialog = (View) findViewById(R.id.openDialog);
         openDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,6 +291,8 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
         linqc = (LinearLayout) findViewById(R.id.lineqc);
+        taskd = (LinearLayout) findViewById(R.id.taskd);
+
         unitsdata = (LinearLayout) findViewById(R.id.unitsdata);
         unitsdatas = (LinearLayout) findViewById(R.id.unitsdatas);
         lintask = (LinearLayout) findViewById(R.id.lintask);
@@ -413,12 +431,24 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
 
-                if (taskname.equalsIgnoreCase(sharedPreferences.getString("task", ""))) {
-                    Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(NoTaskActivity.this).setMessage("Cannot Proceed Task is already running").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
 
                     }
+                }).setCancelable(true).show();
+               /* if (taskid.equalsIgnoreCase(sharedPreferences.getString("task", ""))) {
+                    //Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
+new AlertDialog.Builder(NoTaskActivity.this).setMessage("Cannot Proceed").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+        dialogInterface.dismiss();
+    }
+}).setCancelable(true).show();
+                    }*/
 
             }
 
@@ -640,6 +670,7 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         }));
+getTaskDetails();
     }
 
     private void updateTimeText() {
@@ -759,7 +790,86 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
+    private void getTaskDetails() {
+        ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> responseBodyCall=apiInterface.getTaskDetails(taskid);
+        responseBodyCall.enqueue(new Callback<TaskDetails>() {
+            @Override
+            public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
+                tvtask.setText(response.body().getTaskname());
 
+
+                requiredunits.setText(response.body().getQuantity());
+                taskdescrip.setText(response.body().getTaskdescription());
+                makeTextViewResizable(taskdescrip, 3, "View More", true);
+                List<Dependenttask> dependent= response.body().getDependenttask();
+
+
+                List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
+
+                myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
+                recyclerView.setAdapter(myAdapter);
+                if (dependent==null){
+                    openDialog.setVisibility(View.GONE);
+
+                }else {
+
+                    Dependenttask dep=dependent.get(0);
+                    d_taskdescription=dep.getTaskdescription();
+                    d_taskname=dep.getTaskname();
+                    d_taskquantity=dep.getQuantity();
+                    list.add(d_taskname);
+                    openDialog.setVisibility(View.VISIBLE);
+
+
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+            }
+        });
+
+
+
+    }
+
+    private void getDependentask() {
+
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> responseBodyCall = apiInterface.getTaskDetails(taskid);
+        responseBodyCall.enqueue(new Callback<TaskDetails>() {
+            @Override
+            public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
+
+                List<Dependenttask> dependenttask=response.body().getDependenttask();
+                Dependenttask dep=dependenttask.get(0);
+                List<Qualitycheck_> qualitycheck_s=dep.getQualitycheck();
+
+                Qualitycheck_ qualitycheck_=qualitycheck_s.get(4);
+                RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                qcrecylerdependent.setLayoutManager(layoutManager);
+                taskd.setVisibility(View.VISIBLE);
+                qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
+                qcrecylerdependent.setAdapter(qcAd);
+
+                Log.d("sds",""+qualitycheck_.getDescripton());
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+            }
+        });
+
+    }
     private void showVideo() {
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.videolayout, null);

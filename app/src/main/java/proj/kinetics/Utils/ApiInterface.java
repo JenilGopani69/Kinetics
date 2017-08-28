@@ -10,6 +10,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -29,6 +31,17 @@ public interface ApiInterface {
 
     @GET("gettaskdetailbyid.php")
     Call<TaskDetails>getTaskDetails(@Query("id") String id);
+
+    @FormUrlEncoded
+    @PUT("updatetasktimer.php")
+    Call<ResponseBody> updateTask(
+                          @Field("user_id") String id,
+                          @Field("taskId") int taskId,
+                          @Field("duration") String duration,
+                          @Field("amount") String amount,
+                          @Field("pausereasonId") String pauseid,
+                          @Field("pausetime") String pausetime);
+
 
 
 }

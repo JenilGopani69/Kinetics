@@ -4,6 +4,7 @@ package proj.kinetics.Fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,6 +42,8 @@ import proj.kinetics.Utils.SessionManagement;
 import retrofit2.Call;
 import retrofit2.Callback;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -50,6 +53,7 @@ SessionManagement session;
     public MyTaskFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +74,6 @@ SessionManagement session;
         view = inflater.inflate(R.layout.fragment_my_task, container, false);
         session = new SessionManagement(getActivity());
         session.checkLogin();
-
 
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
@@ -181,7 +184,9 @@ SessionManagement session;
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+
                             session.logoutUser();
+
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {

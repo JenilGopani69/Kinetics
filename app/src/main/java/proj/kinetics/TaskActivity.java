@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import okhttp3.ResponseBody;
 import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
@@ -76,7 +77,7 @@ import retrofit2.Response;
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
     QCAdapter_ qcAd;
-    String taskid,dependentaskid;
+    String taskid,dependentaskid,userId;
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn,undobtn2;
     Toolbar toolbar;
@@ -89,6 +90,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
             new SimpleDateFormat("hh:mm:ss aa");
     View openDialog;
     int counts=1;
+    String[] items;
+    int getpauseselection=0;
     TextView task;
     CoordinatorLayout coordinate;
     LinearLayout unitsdatas,unitsdata, nextqcbtn,qcrecylerdependent;
@@ -203,7 +206,7 @@ SharedPreferences.Editor editor;
 
         // name
         String name = user.get(SessionManagement.KEY_USERNAME);
-
+userId=user.get(SessionManagement.KEY_USERID);
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
 
@@ -357,6 +360,8 @@ getDependentask();
 
 
                                             totalunits.setText(requiredunits.getText().toString());
+                                        updateTaskDetails(userId,taskid,recordedtym.getText().toString(),totalunits.getText().toString(),getpauseselection,breaktym.getText().toString());
+
 
                                         dialogInterface.dismiss();
                                     }
@@ -542,6 +547,10 @@ getDependentask();
                 long hoursInMilli = minutesInMilli * 60;
                 long daysInMilli = hoursInMilli * 24;
 
+
+
+
+
                 long elapsedDays = different / daysInMilli;
                 different = different % daysInMilli;
 
@@ -551,13 +560,16 @@ getDependentask();
                 long elapsedMinutes = different / minutesInMilli;
                 different = different % minutesInMilli;
 
+
                 long elapsedSeconds = different / secondsInMilli;
+
+
 
                 System.out.printf(
                         "%d days, %d hours, %d minutes, %d seconds%n",
                         elapsedDays,
                         elapsedHours, elapsedMinutes, elapsedSeconds);
-                breaktym.setText(""+elapsedDays+""+elapsedHours+":"+elapsedMinutes+":"+elapsedSeconds+"");
+                breaktym.setText("0"+elapsedHours+":0"+elapsedMinutes+":0"+elapsedSeconds+"");
             }
         });
         btnComplete.setOnClickListener(new View.OnClickListener() {
@@ -566,7 +578,11 @@ getDependentask();
                 Toast.makeText(TaskActivity.this, "stopped", Toast.LENGTH_SHORT).show();
                 TimeService.TimeContainer.getInstance().pause();
                 btnStart.setText("CONTINUE");
+                btnReset.setVisibility(View.VISIBLE);
+                btnComplete.setVisibility(View.GONE);
                 recordedtym.setText(tvTime.getText().toString());
+
+
 
             }
         });
@@ -589,12 +605,22 @@ getDependentask();
 
 
                 } else {
-                    int minus = Integer.parseInt((unitsproduced.getText().toString())) - recent;
+                    if ((Integer.parseInt(unitsproduced.getText().toString().trim()))<(Integer.parseInt(requiredunits.getText().toString().trim())))
+                    {
 
-                    unitsproduced.setText(String.valueOf(minus));
-                    undobtn.setEnabled(false);
-                    undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
-                }
+
+
+                        int minus = Integer.parseInt((unitsproduced.getText().toString())) - recent;
+
+                        unitsproduced.setText(String.valueOf(minus));
+                        int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
+
+                        unitsleft.setText(leftunits+" "+"left");
+                        undobtn.setEnabled(false);
+                        undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
+                    }
+                    }
+
             }
         });
         undobtn2.setOnClickListener(new View.OnClickListener() {
@@ -627,7 +653,7 @@ getDependentask();
 
                 counts++;
 
-                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
+                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) > Integer.parseInt(requiredunits.getText().toString().trim())) {
 
                     if (counts>2){
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -659,6 +685,8 @@ getDependentask();
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
                                     totalunits.setText(requiredunits.getText().toString());
+                                    undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
+                                    undobtn.setEnabled(false);
                                 }
                                 dialogInterface.dismiss();
                             }
@@ -669,6 +697,7 @@ getDependentask();
 
                 } else {
                     int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
+
                     unitslefts.setText(String.valueOf(leftunits + " " + "left"));
                 }
 
@@ -689,14 +718,21 @@ getDependentask();
 
                 recent = Integer.parseInt(arrayList.get(position).toString());
                 count = (Integer.parseInt(unitsproduced.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
-                unitsproduced.setText(String.valueOf(count));
+
+                if ((Integer.parseInt(unitsproduced.getText().toString().trim())< (Integer.parseInt(requiredunits.getText().toString().trim())))){
+                    unitsproduced.setText(String.valueOf(count));
+
+                }
                 undobtn.setEnabled(true);
 
-counts++;
+counts++;                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
+                unitsleft.setText(String.valueOf(leftunits + " " + "left"));
 
-                if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                    if (counts>2){
+
+                if (Integer.parseInt(unitsproduced.getText().toString().trim()) ==Integer.parseInt(requiredunits.getText().toString().trim())) {
+
+                    if (counts>=2){
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -705,6 +741,7 @@ counts++;
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
                                     btnSubmit.startAnimation(myAnim);
+
 
                                    /* totalunits.setText(requiredunits.getText().toString());*/
                                 }
@@ -736,11 +773,7 @@ counts++;
 
 
 
-                } else {
-                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
-                    unitsleft.setText(String.valueOf(leftunits + " " + "left"));
                 }
-
                 undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undo));
 
 
@@ -752,6 +785,27 @@ counts++;
 
             }
         }));
+    }
+
+
+
+    private void updateTaskDetails(String userId, String taskid, String duration,String amt,int pauseid,String pausetime) {
+        ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
+        int id=pauseid+1;
+        Toast.makeText(this, "user-"+userId+"taskid- "+taskid+" "+duration+" "+amt+" "+id+" "+pausetime, Toast.LENGTH_SHORT).show();
+        Call<ResponseBody> responseBody=apiInterface.updateTask(userId,Integer.parseInt(taskid),duration,amt,String.valueOf(id),pausetime);
+
+            responseBody.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Toast.makeText(TaskActivity.this, "updated", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(TaskActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 
     private void getTaskDetails() {
@@ -877,7 +931,7 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
 
     private String getTimeString(long ms) {
         if (ms == 0) {
-            return "00:00";
+            return "00:00:00";
         } else {
             //  long millis = (ms % 1000) / 10;
             long seconds = (ms / 1000) % 60;
@@ -889,6 +943,11 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
                 sb.append(hours);
                 sb.append(':');
             }
+            else {
+                sb.append('0');
+                sb.append('0');
+            }
+            sb.append(':');
             if (minutes > 0) {
                 minutes = minutes % 60;
                 if (minutes >= 10) {
@@ -978,12 +1037,14 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
         builder.setCancelable(false);
 
         //list of items
-        String[] items = getResources().getStringArray(R.array.pausereason);
+      items = getResources().getStringArray(R.array.pausereason);
         builder.setSingleChoiceItems(items, 0,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // item selected logic
+                        getpauseselection=which;
+                        Toast.makeText(TaskActivity.this, ""+items[which], Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -1122,7 +1183,7 @@ else {
 if (sharedPreferences.getString("task","").length()>0){
     if (!(taskid.matches(sharedPreferences.getString("task","")))){
         Intent intent=new Intent(this,NoTaskActivity.class);
-        intent.putExtra("taskname",taskid);
+        intent.putExtra("taskid",taskid);
         startActivity(intent);
     }
 

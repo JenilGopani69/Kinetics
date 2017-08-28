@@ -112,16 +112,18 @@ String data=response.body().string();
 
                         JSONObject jsonObject=new JSONObject(data);
                         String dataresponse=jsonObject.getString("message");
+                        String userId=jsonObject.getString("user_id");
                         Log.d("iftrue", dataresponse);
 
                        if(dataresponse.equalsIgnoreCase("success")){
 
 
 
-                            Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
+
+                           // Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
                             if (progressdialog.isShowing()) {
                                 progressdialog.dismiss();
-                                session.createLoginSession(username, password);
+                                session.createLoginSession(username, password,userId);
                                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                                 startActivity(intent);
                                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
