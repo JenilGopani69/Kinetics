@@ -51,7 +51,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
         holder.pname.setText("~"+getSet.getProjectName());
         holder.estimated_time.setText(getSet.getEstimatedTime());
 
-        holder.duedate.setText(getSet.getDuedate());
+        holder.duedate.setText(getSet.getRequiredTime());
         //holder.nooftask.setText(getSet.getNooftask());
 
 

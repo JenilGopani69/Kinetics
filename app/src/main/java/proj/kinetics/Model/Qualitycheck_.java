@@ -73,5 +73,4 @@ public class Qualitycheck_ {
         this.videoLink = videoLink;
     }
 
-
 }

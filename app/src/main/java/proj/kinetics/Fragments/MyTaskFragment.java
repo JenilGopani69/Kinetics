@@ -49,6 +49,7 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class MyTaskFragment extends Fragment {
     private View view;
+    String username,password;
 SessionManagement session;
     public MyTaskFragment() {
         // Required empty public constructor
@@ -79,11 +80,11 @@ SessionManagement session;
         HashMap<String, String> user = session.getUserDetails();
 
         // name
-        String username = user.get(SessionManagement.KEY_USERNAME);
+         username = user.get(SessionManagement.KEY_USERNAME);
+         password = user.get(SessionManagement.KEY_PASSWORD);
         Toast.makeText(getActivity(), "LoggedIN"+username, Toast.LENGTH_SHORT).show();
         // password
-        String password = user.get(SessionManagement.KEY_PASSWORD);
-        getTaskDetail(username);
+
         tasklist=view.findViewById(R.id.tasklist);
 
 
@@ -120,20 +121,31 @@ SessionManagement session;
 
             }
         }));
+        getTaskDetail(username,password);
 
         return view;
     }
 
-    private void getTaskDetail(String username) {
+    private void getTaskDetail(String username, String password) {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
-        Call<Example> responseBodyCall=apiInterface.getTaskLists(username);
+        Call<Example> responseBodyCall=apiInterface.getTaskLists(username,password);
         responseBodyCall.enqueue(new Callback<Example>() {
             @Override
             public void onResponse(Call<Example> call, retrofit2.Response<Example> response) {
-                Log.d("hhhh",""+response.body().getTask());
-               list=response.body().getTask();
-                projadapter=new ProjectsAdapter(list,getActivity());
-                tasklist.setAdapter(projadapter);
+                String data=response.body().getMessage();
+               
+                if (data.equalsIgnoreCase("success"))
+                {
+                    Log.d("hhhh",""+response.body().getTask());
+                    list=response.body().getTask();
+                    projadapter=new ProjectsAdapter(list,getActivity());
+                    tasklist.setAdapter(projadapter);
+                }
+                else {
+                    Toast.makeText(getActivity(), ""+response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    
+                }
+               
             }
 
             @Override

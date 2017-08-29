@@ -100,7 +100,7 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
     private void getUserLogin(final String username, final String password) {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
-        Call<ResponseBody> responseBodyCall=apiInterface.getTaskList(username);
+        Call<ResponseBody> responseBodyCall=apiInterface.getTaskList(username,password);
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -112,24 +112,24 @@ String data=response.body().string();
 
                         JSONObject jsonObject=new JSONObject(data);
                         String dataresponse=jsonObject.getString("message");
-                        String userId=jsonObject.getString("user_id");
-                        Log.d("iftrue", dataresponse);
+                        if (dataresponse.equalsIgnoreCase("success")) {
+                            String userId = jsonObject.getString("user_id");
+                            Log.d("iftrue", dataresponse);
 
-                       if(dataresponse.equalsIgnoreCase("success")){
+                            if (dataresponse.equalsIgnoreCase("success")) {
 
 
+                                // Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
+                                if (progressdialog.isShowing()) {
+                                    progressdialog.dismiss();
+                                    session.createLoginSession(username, password, userId);
+                                    Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                                }
 
-
-                           // Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();
-                            if (progressdialog.isShowing()) {
-                                progressdialog.dismiss();
-                                session.createLoginSession(username, password,userId);
-                                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                                startActivity(intent);
-                                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                             }
-
-                       } else {
+                        }else {
                            if (progressdialog.isShowing()) {
                                progressdialog.dismiss();
                            }

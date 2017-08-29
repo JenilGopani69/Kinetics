@@ -121,6 +121,4 @@ public class Dependenttask {
         this.qualitycheck = qualitycheck;
     }
 
-
-
 }

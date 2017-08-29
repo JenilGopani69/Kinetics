@@ -297,6 +297,7 @@ getTaskDetails();
                                         makeTextViewResizable(taskdescrips, 3, "View More", true);
 
                                         openDialog.setVisibility(View.GONE);
+                                        btnStart.setEnabled(true);
 
 getDependentask();
                                     }
@@ -591,6 +592,7 @@ getDependentask();
             public void onClick(View view) {
                 TimeService.TimeContainer.getInstance().reset();
                 updateTimeText2();
+                btnReset.setVisibility(View.GONE);
                 btnStart.setText("START");
             }
         });
@@ -814,34 +816,51 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
         responseBodyCall.enqueue(new Callback<TaskDetails>() {
             @Override
             public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
-                tvtask.setText(response.body().getTaskname());
+
+                String data=response.body().getMessage();
+                Log.d("taskdetail",data);
+                if (data.equalsIgnoreCase("success")){
+                    tvtask.setText(response.body().getTaskname());
 
 
-                requiredunits.setText(response.body().getQuantity());
-                taskdescrip.setText(response.body().getTaskdescription());
-                makeTextViewResizable(taskdescrip, 3, "View More", true);
-                List<Dependenttask> dependent= response.body().getDependenttask();
+                    requiredunits.setText(response.body().getQuantity());
+                    taskdescrip.setText(response.body().getTaskdescription());
+                    makeTextViewResizable(taskdescrip, 3, "View More", true);
+                    List<Dependenttask> dependent= response.body().getDependenttask();
 
 
-                List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
-                Qualitycheck q1= qualitychecks.get(0);
+                    List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
+                    if (qualitychecks==null){
 
-                myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
-                recyclerView.setAdapter(myAdapter);
-                if (dependent==null){
-openDialog.setVisibility(View.GONE);
-
-                }else {
-
-                    Dependenttask dep=dependent.get(0);
-                    d_taskdescription=dep.getTaskdescription();
-                    d_taskname=dep.getTaskname();
-                    d_taskquantity=dep.getQuantity();
-                    list.add(d_taskname);
-                    openDialog.setVisibility(View.VISIBLE);
+                    }else {
 
 
+                        myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
+                        recyclerView.setAdapter(myAdapter);
+
+                    }
+                    if (dependent==null){
+                        openDialog.setVisibility(View.GONE);
+                        btnStart.setEnabled(true);
+
+                    }else {
+                        btnStart.setEnabled(false);
+
+                        Dependenttask dep = dependent.get(0);
+                        d_taskdescription = dep.getTaskdescription();
+                        d_taskname = dep.getTaskname();
+                        d_taskquantity = dep.getQuantity();
+                        list.add(d_taskname);
+                        openDialog.setVisibility(View.VISIBLE);
+                    }
                 }
+                else {
+                    Toast.makeText(TaskActivity.this, ""+response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
 
 
             }
@@ -863,21 +882,44 @@ openDialog.setVisibility(View.GONE);
 responseBodyCall.enqueue(new Callback<TaskDetails>() {
     @Override
     public void onResponse(Call<TaskDetails> call, Response<TaskDetails> response) {
+        String data=response.body().getMessage();
 
-        List<Dependenttask> dependenttask=response.body().getDependenttask();
-        Dependenttask dep=dependenttask.get(0);
-        List<Qualitycheck_> qualitycheck_s=dep.getQualitycheck();
+        if (data.equalsIgnoreCase("success"))
+        {
+            List<Dependenttask> dependenttask=response.body().getDependenttask();
+            if (dependenttask==null){
 
-        Qualitycheck_ qualitycheck_=qualitycheck_s.get(4);
-        RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        qcrecylerdependent.setLayoutManager(layoutManager);
-        taskd.setVisibility(View.VISIBLE);
-        qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
-        qcrecylerdependent.setAdapter(qcAd);
+            }else {
+                Dependenttask dep=dependenttask.get(0);
+                List<Qualitycheck_> qualitycheck_s=dep.getQualitycheck();
+                if (qualitycheck_s==null){
 
-        Log.d("sds",""+qualitycheck_.getDescripton());
+                }
+                else {
+                    Qualitycheck_ qualitycheck_=qualitycheck_s.get(4);
+                    RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                    qcrecylerdependent.setLayoutManager(layoutManager);
+                    taskd.setVisibility(View.VISIBLE);
+                    qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
+                    qcrecylerdependent.setAdapter(qcAd);
 
+                    Log.d("sds",""+qualitycheck_.getDescripton());
+                }
+            }
+
+
+
+
+
+
+
+        }
+        else
+        {
+
+            Toast.makeText(TaskActivity.this, ""+response.body().getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
 
     }

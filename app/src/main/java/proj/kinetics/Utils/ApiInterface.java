@@ -22,12 +22,12 @@ public interface ApiInterface {
 
 
     @FormUrlEncoded
-    @POST("gettaskdetail.php")
-    Call<ResponseBody> getTaskList(@Field("username") String username);
+    @POST("login.php")
+    Call<ResponseBody> getTaskList(@Field("username") String username,@Field("password") String password);
 
     @FormUrlEncoded
-    @POST("gettaskdetail.php")
-    Call<Example> getTaskLists(@Field("username") String username);
+    @POST("login.php")
+    Call<Example> getTaskLists(@Field("username") String username,@Field("password") String password);
 
     @GET("gettaskdetailbyid.php")
     Call<TaskDetails>getTaskDetails(@Query("id") String id);
@@ -35,7 +35,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @PUT("updatetasktimer.php")
     Call<ResponseBody> updateTask(
-                          @Field("user_id") String id,
+                          @Field("userId") String id,
                           @Field("taskId") int taskId,
                           @Field("duration") String duration,
                           @Field("amount") String amount,

@@ -11,12 +11,35 @@ import java.util.List;
 
 public class Example {
 
+
+    @SerializedName("code")
+    @Expose
+    private Integer code;
+    @SerializedName("message")
+    @Expose
+    private String message;
     @SerializedName("user_id")
     @Expose
     private String userId;
     @SerializedName("task")
     @Expose
     private List<Task> task = null;
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public String getUserId() {
         return userId;
@@ -33,6 +56,5 @@ public class Example {
     public void setTask(List<Task> task) {
         this.task = task;
     }
-
 
 }
