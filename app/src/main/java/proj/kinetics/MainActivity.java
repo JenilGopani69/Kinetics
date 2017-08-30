@@ -10,11 +10,14 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -39,7 +42,7 @@ Button loginBtn;
 
     SessionManagement session;
     EditText txtUsername, txtPassword;
-
+CheckBox show_hide_password;
 
 MyDbHelper myDbHelper;
 
@@ -65,6 +68,20 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtPassword = (EditText) findViewById(R.id.txtPassword);
+        show_hide_password = (CheckBox) findViewById(R.id.show_hide_password);
+        show_hide_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    txtPassword.setTransformationMethod(null);
+                }
+                else {
+
+                    txtPassword.setTransformationMethod(new PasswordTransformationMethod());
+
+                }
+            }
+        });
         loginBtn= (Button) findViewById(R.id.loginBtn);
         cd1= (CardView) findViewById(R.id.card_view);
         loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +96,17 @@ progressdialog=new ProgressDialog(MainActivity.this);
                     // password = test
                     progressdialog.show();
 
-                            getUserLogin(username, password);
+
+                    boolean isconnected=ConnectivityReceiver.isConnected();
+                    if (isconnected){
+                        getUserLogin(username, password);
+                    }
+                    else {
+                        progressdialog.dismiss();
+                        Toast.makeText(MainActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+
+                    }
+
 
 
 
@@ -97,6 +124,8 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
 
     }
+
+
 
     private void getUserLogin(final String username, final String password) {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
@@ -117,6 +146,10 @@ String data=response.body().string();
                             Log.d("iftrue", dataresponse);
 
                             if (dataresponse.equalsIgnoreCase("success")) {
+                                if (!(myDbHelper.isDataExists())){
+
+                                    myDbHelper.insertData(data);
+                                }
 
 
                                 // Toast.makeText(MainActivity.this, "data inserted"+response.body().string(), Toast.LENGTH_SHORT).show();

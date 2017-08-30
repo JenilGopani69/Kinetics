@@ -130,4 +130,18 @@ public class Task {
         this.priority = priority;
     }
 
+
+    public Task(String taskId, String projectId, String projectName, String taskName, String estimatedTime, String requiredTime, String status, String totalQty, String doneQty, String taskDetails, String priority) {
+        this.taskId = taskId;
+        this.projectId = projectId;
+        this.projectName = projectName;
+        this.taskName = taskName;
+        this.estimatedTime = estimatedTime;
+        this.requiredTime = requiredTime;
+        this.status = status;
+        this.totalQty = totalQty;
+        this.doneQty = doneQty;
+        this.taskDetails = taskDetails;
+        this.priority = priority;
+    }
 }

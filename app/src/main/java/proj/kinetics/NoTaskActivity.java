@@ -192,6 +192,7 @@ public class NoTaskActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_one);
 
         taskid=getIntent().getStringExtra("taskid");
+        taskname=getIntent().getStringExtra("taskname");
         sharedPreferences = getSharedPreferences("tasktimer", MODE_PRIVATE);
         editor = sharedPreferences.edit();
         session = new SessionManagement(getApplicationContext());
@@ -433,10 +434,11 @@ openDialog = (View) findViewById(R.id.openDialog);
             public void onClick(View view) {
 
                 //Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
-                new AlertDialog.Builder(NoTaskActivity.this).setMessage("Cannot Proceed Task is already running").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(NoTaskActivity.this).setMessage("Cannot Proceed "+taskname+" is already running").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
+
 
                     }
                 }).setCancelable(true).show();

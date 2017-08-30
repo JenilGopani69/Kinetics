@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
@@ -38,8 +39,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,6 +62,8 @@ import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
+import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
+import proj.kinetics.Database.MyDbHelper;
 import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.Qualitycheck;
@@ -77,6 +85,8 @@ import retrofit2.Response;
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
     QCAdapter_ qcAd;
+    String taskname;
+    MyDbHelper myDbHelper;
     String taskid,dependentaskid,userId;
     ArrayList<String> al = new ArrayList<>();
     ImageButton videoattach, attachment, undobtn,undobtn2;
@@ -118,6 +128,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     private Timer t;
     private SessionManagement session;
 SharedPreferences.Editor editor;
+    private String data;
+
     public static void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean viewMore) {
 
         if (tv.getTag() == null) {
@@ -198,6 +210,7 @@ SharedPreferences.Editor editor;
         setContentView(R.layout.activity_one);
         taskid=getIntent().getStringExtra("taskid");
         sharedPreferences=getSharedPreferences("tasktimer",MODE_PRIVATE);
+        myDbHelper=new MyDbHelper(getApplicationContext());
         editor=sharedPreferences.edit();
         session = new SessionManagement(getApplicationContext());
         session.checkLogin();
@@ -248,10 +261,9 @@ userId=user.get(SessionManagement.KEY_USERID);
         videoattach.setOnClickListener(this);
         attachment.setOnClickListener(this);
 
-getTaskDetails();
-
 
         openDialog = (View) findViewById(R.id.openDialog);
+
         openDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,7 +311,7 @@ getTaskDetails();
                                         openDialog.setVisibility(View.GONE);
                                         btnStart.setEnabled(true);
 
-getDependentask();
+                                        getDependentask();
                                     }
                                 }
 
@@ -485,6 +497,8 @@ getDependentask();
                 editor.putString("task",taskid);
 
                 editor.commit();
+
+
                 Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
 
                 TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
@@ -567,10 +581,25 @@ getDependentask();
 
 
                 System.out.printf(
-                        "%d days, %d hours, %d minutes, %d seconds%n",
+                        "%02d days, %02d hours, %02d minutes, %02d seconds%n",
                         elapsedDays,
                         elapsedHours, elapsedMinutes, elapsedSeconds);
-                breaktym.setText("0"+elapsedHours+":0"+elapsedMinutes+":0"+elapsedSeconds+"");
+
+                String curtime=String.format("%02d:%02d:%02d", elapsedHours, elapsedMinutes,elapsedSeconds);
+
+
+                boolean isConnect=ConnectivityReceiver.isConnected();
+                if (isConnect){
+                    //server api
+                }
+                else {
+
+                    myDbHelper.insertPause(userId,taskid,String.valueOf(getpauseselection),curtime);
+                }
+
+
+
+                breaktym.setText(curtime);
             }
         });
         btnComplete.setOnClickListener(new View.OnClickListener() {
@@ -730,7 +759,23 @@ getDependentask();
 counts++;                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
                 unitsleft.setText(String.valueOf(leftunits + " " + "left"));
 
+                boolean isConnect=ConnectivityReceiver.isConnected();
 
+                if (isConnect){
+
+                }else
+                {
+                    if (myDbHelper.isTaskTimerExists(taskid)){
+                        Toast.makeText(TaskActivity.this, "updated", Toast.LENGTH_SHORT).show();
+                        myDbHelper.updateTaskTimer(userId, taskid, unitsproduced.getText().toString(), startedtime.getText().toString(),tvTime.getText().toString());
+
+                    }
+                    else {
+                        Toast.makeText(TaskActivity.this, "inserted", Toast.LENGTH_SHORT).show();
+
+                        myDbHelper.insertTaskTimer(userId, taskid, unitsproduced.getText().toString(), startedtime.getText().toString(), recordedtym.getText().toString());
+                    }
+                }
 
                 if (Integer.parseInt(unitsproduced.getText().toString().trim()) ==Integer.parseInt(requiredunits.getText().toString().trim())) {
 
@@ -787,8 +832,122 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
 
             }
         }));
+
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        if (isConnected) {
+            getTaskDetails();
+
+
+        }
+        else {
+            getOfflineTaskData();
+            if (myDbHelper.isTaskTimerExists(taskid)){
+
+                Cursor c=myDbHelper.getTaskTimerDetails(taskid);
+                if (c.getCount()>0){
+                    if (c.moveToFirst()){
+                        do {
+                            Log.d("checkamount",c.getString(c.getColumnIndex("amount")));
+                            unitsproduced.setText(c.getString(c.getColumnIndex("amount")));
+                            recordedtym.setText(c.getString(c.getColumnIndex("stop_time")));
+                        }while (c.moveToNext());
+                    }
+                }
+
+            }
+
+        }
+
+
+
+
+
     }
 
+    private void getOfflineTaskData() {
+
+
+        Cursor c=myDbHelper.getTaskData(taskid);
+
+        if (c.getCount()>0){
+            if (c.moveToFirst()){
+
+                do {
+                    data=c.getString(1);
+                    Log.d("ooflinedata",data);
+
+
+                }while (c.moveToNext());
+
+                JSONObject jsonobject= null;
+                try {
+                    jsonobject = new JSONObject(data);
+                    String message=jsonobject.getString("message");
+                    Log.d("offlinetask",message);
+                    if (message.equalsIgnoreCase("success")){
+                        tvtask.setText(jsonobject.getString("taskname"));
+                        editor.putString("taskname",tvtask.getText().toString());
+                        taskdescrip.setText(jsonobject.getString("taskdescription"));
+                        makeTextViewResizable(taskdescrip, 3, "View More", true);
+                        requiredunits.setText(jsonobject.getString("quantity"));
+
+
+
+                        JSONArray json_task=jsonobject.getJSONArray("dependenttask");
+                        if (json_task!=null){
+
+                            for (int i=0;i<json_task.length();i++){
+
+                                JSONObject jsond_obj=json_task.getJSONObject(i);
+                                String id,taskname,taskdescription,quantity,estimated_time,duration,amount,pdf_link,video_link;
+                                id=jsond_obj.getString("id");
+                                taskname=jsond_obj.getString("taskname");
+                                taskdescription=jsond_obj.getString("taskdescription");
+                                quantity=jsond_obj.getString("quantity");
+                                estimated_time=jsond_obj.getString("estimated_time");
+                                duration=jsond_obj.getString("duration");
+                                amount=jsond_obj.getString("amount");
+
+                        d_taskdescription=taskdescription;
+                                d_taskname=taskname;
+                                d_taskquantity=quantity;
+
+                                Log.d("this is called",taskname);
+                                list.add(taskname);
+                                openDialog.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        else {
+                            Log.d("this is called","No");
+                            openDialog.setVisibility(View.GONE);
+                            Toast.makeText(this, "No Similar Task", Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    }
+                } catch (JSONException e) {
+                    openDialog.setVisibility(View.GONE);
+                    Toast.makeText(this, "No Similar Task", Toast.LENGTH_SHORT).show();
+
+                    e.printStackTrace();
+                }
+
+                }
+            }
+            else {
+            new AlertDialog.Builder(TaskActivity.this).setTitle("No Records found.").setMessage("Please Sync your data when internet is available.").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                    finish();
+                }
+            }).show();
+            Toast.makeText(this, "No rec found", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
 
 
     private void updateTaskDetails(String userId, String taskid, String duration,String amt,int pauseid,String pausetime) {
@@ -810,6 +969,49 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
             });
     }
 
+    private void getTaskDetailsOffline(String id){
+        ApiInterface api=ApiClient.getClient().create(ApiInterface.class);
+        Call<ResponseBody> response=api.getTaskDetailsOffline(id);
+        response.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                String data= null;
+                try {
+                    data = response.body().string();
+
+                    JSONObject jsonObject = new JSONObject(data);
+                    String dataresponse = jsonObject.getString("message");
+                    String id = jsonObject.getString("id");
+                    if (dataresponse.equalsIgnoreCase("success")) {
+                        Log.d("iftask", data);
+
+                        if (dataresponse.equalsIgnoreCase("success")) {
+                            if (!(myDbHelper.isTaskDataExists(id))) {
+
+                                myDbHelper.insertTaskData(data,id);
+                            }
+                            else {
+                                myDbHelper.updateTaskData(data,id);
+                            }
+                        }
+                    }
+                }catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        } );
+    }
     private void getTaskDetails() {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
         Call<TaskDetails> responseBodyCall=apiInterface.getTaskDetails(taskid);
@@ -821,9 +1023,10 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                 Log.d("taskdetail",data);
                 if (data.equalsIgnoreCase("success")){
                     tvtask.setText(response.body().getTaskname());
-
-
+                    getTaskDetailsOffline(response.body().getId());
                     requiredunits.setText(response.body().getQuantity());
+                    editor.putString("taskname",tvtask.getText().toString());
+
                     taskdescrip.setText(response.body().getTaskdescription());
                     makeTextViewResizable(taskdescrip, 3, "View More", true);
                     List<Dependenttask> dependent= response.body().getDependenttask();
@@ -1226,6 +1429,7 @@ if (sharedPreferences.getString("task","").length()>0){
     if (!(taskid.matches(sharedPreferences.getString("task","")))){
         Intent intent=new Intent(this,NoTaskActivity.class);
         intent.putExtra("taskid",taskid);
+        intent.putExtra("taskname",sharedPreferences.getString("taskname",""));
         startActivity(intent);
     }
 

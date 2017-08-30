@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +33,7 @@ import java.util.List;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import proj.kinetics.Adapters.ProjectsAdapter;
+import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.Database.MyDbHelper;
 import proj.kinetics.MainActivity;
 import proj.kinetics.Model.Example;
@@ -50,6 +57,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class MyTaskFragment extends Fragment {
     private View view;
     String username,password;
+    MyDbHelper myDbHelper;
 SessionManagement session;
     public MyTaskFragment() {
         // Required empty public constructor
@@ -62,12 +70,13 @@ SessionManagement session;
     }
     RecyclerView tasklist;
     ProjectsAdapter projadapter;
+    String data;
     ProjectItem p1,p2,p3,p4,p5,p6;
     ArrayList<ProjectItem> al=new ArrayList();
     private LinearLayoutManager linearLayout;
     List<Task> list=new ArrayList<>();
     GridLayoutManager gridLayoutManager;
-
+SwipeRefreshLayout swipeRefresh;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,13 +84,17 @@ SessionManagement session;
         view = inflater.inflate(R.layout.fragment_my_task, container, false);
         session = new SessionManagement(getActivity());
         session.checkLogin();
-
+        myDbHelper=new MyDbHelper(getActivity());
+        swipeRefresh=view.findViewById(R.id.swipeRefresh);
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
 
         // name
          username = user.get(SessionManagement.KEY_USERNAME);
          password = user.get(SessionManagement.KEY_PASSWORD);
+
+
+
         Toast.makeText(getActivity(), "LoggedIN"+username, Toast.LENGTH_SHORT).show();
         // password
 
@@ -121,9 +134,89 @@ SessionManagement session;
 
             }
         }));
-        getTaskDetail(username,password);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                boolean isConnected = ConnectivityReceiver.isConnected();
+                if (isConnected) {
+                    getTaskDetail(username, password);
 
+                }
+                else {
+                    if (list==null){
+                        getOfflineData();
+                    }
+                    else {
+                        list.clear();
+                        getOfflineData();
+                    }
+
+                }
+            }
+        });
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        if (isConnected) {
+            getTaskDetail(username, password);
+
+        }
+        else {
+            getOfflineData();
+        }
         return view;
+    }
+
+    private void getOfflineData() {
+
+        Cursor c=myDbHelper.getData();
+
+        if (c.getCount()>0){
+            if (c.moveToFirst()){
+                do {
+                     data=c.getString(1);
+                }while (c.moveToNext());
+
+                try {
+                    JSONObject jsonobject=new JSONObject(data);
+                    String message=jsonobject.getString("message");
+                    Log.d("offline",message);
+                    swipeRefresh.setRefreshing(false);
+
+                    JSONArray jsonArray=jsonobject.getJSONArray("task");
+                        for (int i=0;i<jsonArray.length();i++){
+                            JSONObject childobj=jsonArray.getJSONObject(i);
+                            String task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,priority,task_details;
+                            task_id=childobj.getString("task_id");
+                            Log.d("checkoffline",""+jsonArray.length());
+
+                            task_details=childobj.getString("task_details");
+                            project_id=childobj.getString("project_id");
+                            project_name=childobj.getString("project_name");
+                            task_name=childobj.getString("task_name");
+                            estimated_time=childobj.getString("estimated_time");
+                            required_time=childobj.getString("required_time");
+                            status=childobj.getString("status");
+                            done_qtytask_details=childobj.getString("done_qty");
+                            total_qty=childobj.getString("total_qty");
+                            priority=childobj.getString("priority");
+                                Task task=new Task(task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,task_details,priority);
+                            list.add(task);
+
+                        }projadapter=new ProjectsAdapter(list,getActivity());
+                        tasklist.setAdapter(projadapter);
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }
+
+
+
     }
 
     private void getTaskDetail(String username, String password) {
@@ -136,6 +229,7 @@ SessionManagement session;
                
                 if (data.equalsIgnoreCase("success"))
                 {
+                    swipeRefresh.setRefreshing(false);
                     Log.d("hhhh",""+response.body().getTask());
                     list=response.body().getTask();
                     projadapter=new ProjectsAdapter(list,getActivity());

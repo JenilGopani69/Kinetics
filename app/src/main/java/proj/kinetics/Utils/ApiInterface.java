@@ -32,6 +32,12 @@ public interface ApiInterface {
     @GET("gettaskdetailbyid.php")
     Call<TaskDetails>getTaskDetails(@Query("id") String id);
 
+
+
+    @GET("gettaskdetailbyid.php")
+    Call<ResponseBody>getTaskDetailsOffline(@Query("id") String id);
+
+
     @FormUrlEncoded
     @PUT("updatetasktimer.php")
     Call<ResponseBody> updateTask(
