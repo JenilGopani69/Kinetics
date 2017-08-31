@@ -144,11 +144,16 @@ String data=response.body().string();
                         if (dataresponse.equalsIgnoreCase("success")) {
                             String userId = jsonObject.getString("user_id");
                             Log.d("iftrue", dataresponse);
+                            Log.d("iftrue", userId);
 
                             if (dataresponse.equalsIgnoreCase("success")) {
-                                if (!(myDbHelper.isDataExists())){
+                                deleteDatabase("kinetic.db");
+                                if (!(myDbHelper.isDataExists(userId))){
 
-                                    myDbHelper.insertData(data);
+                                    myDbHelper.insertData(userId,data);
+                                }
+                                else {
+                                    myDbHelper.updateData(data,userId);
                                 }
 
 
@@ -177,14 +182,14 @@ String data=response.body().string();
                         e.printStackTrace();
                     }
                 }else {
-                    Toast.makeText(MainActivity.this, "no respnse", Toast.LENGTH_SHORT).show();
+                    Log.d("response","no response");
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                Log.d("response",""+t.getMessage());
             }
         });
     }
@@ -195,7 +200,6 @@ String data=response.body().string();
         if (session.isLoggedIn()==true){
             Intent intent=new Intent(MainActivity.this,UserProfileActivity.class);
             startActivity(intent);
-            overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
         }
     }
 

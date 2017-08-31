@@ -92,12 +92,12 @@ tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
     public void onTabSelected(TabLayout.Tab tab) {
 
         if (tab.getPosition()==1){
-            Toast.makeText(UserProfileActivity.this, tab.getText(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(UserProfileActivity.this, tab.getText(), Toast.LENGTH_SHORT).show();
 
 
         }
         if (tab.getPosition()==2){
-            Toast.makeText(UserProfileActivity.this, tab.getText(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(UserProfileActivity.this, tab.getText(), Toast.LENGTH_SHORT).show();
         }
 
     }

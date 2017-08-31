@@ -192,20 +192,24 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
             @Override
             protected void onPostExecute(Document s) {
-                webView.loadDataWithBaseURL(url,s.toString(),"text/html","utf-8","");
-                webView.setWebViewClient(new MyBrowser());
-                webView.getSettings().setLoadWithOverviewMode(true);
-                webView.getSettings().setUseWideViewPort(true);
-                webView.getSettings().setLoadsImagesAutomatically(true);
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                webView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
-                webView.getSettings().setAppCachePath( mActivity.getCacheDir().getAbsolutePath() );
-                webView.getSettings().setAllowFileAccess( true );
-                webView.getSettings().setAppCacheEnabled( true );
-                webView.getSettings().setJavaScriptEnabled( true );
-                webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
-                webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
+                if (s!=null) {
+                    webView.loadDataWithBaseURL(url, s.toString(), "text/html", "utf-8", "");
+                    webView.setWebViewClient(new MyBrowser());
+                    webView.getSettings().setLoadWithOverviewMode(true);
+                    webView.getSettings().setUseWideViewPort(true);
+                    webView.getSettings().setLoadsImagesAutomatically(true);
+                    webView.getSettings().setJavaScriptEnabled(true);
+                    webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+                    webView.getSettings().setAppCacheMaxSize(5 * 1024 * 1024); // 5MB
+                    webView.getSettings().setAppCachePath(mActivity.getCacheDir().getAbsolutePath());
+                    webView.getSettings().setAllowFileAccess(true);
+                    webView.getSettings().setAppCacheEnabled(true);
+                    webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+                    webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+                }
+                else {
+                    Toast.makeText(mActivity, "Internet Connection Lost", Toast.LENGTH_SHORT).show();
+                }
                 super.onPostExecute(s);
             }
         }.execute();

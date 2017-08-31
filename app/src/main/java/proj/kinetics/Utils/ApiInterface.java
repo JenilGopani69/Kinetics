@@ -44,9 +44,9 @@ public interface ApiInterface {
                           @Field("userId") String id,
                           @Field("taskId") int taskId,
                           @Field("duration") String duration,
-                          @Field("amount") String amount,
-                          @Field("pausereasonId") String pauseid,
-                          @Field("pausetime") String pausetime);
+                          @Field("amount") String amount
+                         /* @Field("pausereasonId") String pauseid,
+                          @Field("pausetime") String pausetime*/);
 
 
 

@@ -70,7 +70,7 @@ SessionManagement session;
     }
     RecyclerView tasklist;
     ProjectsAdapter projadapter;
-    String data;
+    String data,userId;
     ProjectItem p1,p2,p3,p4,p5,p6;
     ArrayList<ProjectItem> al=new ArrayList();
     private LinearLayoutManager linearLayout;
@@ -92,10 +92,11 @@ SwipeRefreshLayout swipeRefresh;
         // name
          username = user.get(SessionManagement.KEY_USERNAME);
          password = user.get(SessionManagement.KEY_PASSWORD);
+        userId = user.get(SessionManagement.KEY_USERID);
 
 
 
-        Toast.makeText(getActivity(), "LoggedIN"+username, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "LoggedIN"+username, Toast.LENGTH_SHORT).show();
         // password
 
         tasklist=view.findViewById(R.id.tasklist);
@@ -167,7 +168,7 @@ SwipeRefreshLayout swipeRefresh;
 
     private void getOfflineData() {
 
-        Cursor c=myDbHelper.getData();
+        Cursor c=myDbHelper.getData(userId);
 
         if (c.getCount()>0){
             if (c.moveToFirst()){
@@ -261,6 +262,22 @@ SwipeRefreshLayout swipeRefresh;
     @Override
     public void onResume() {
         super.onResume();
+
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        if (isConnected) {
+            getTaskDetail(username, password);
+
+        }
+        else {
+            if (list==null){
+                getOfflineData();
+            }
+            else {
+                list.clear();
+                getOfflineData();
+            }
+
+        }
        /* if (projadapter.getItemCount()>0) {
             al.clear();
 

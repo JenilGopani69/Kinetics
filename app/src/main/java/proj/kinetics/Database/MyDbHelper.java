@@ -16,6 +16,8 @@ public class MyDbHelper extends SQLiteOpenHelper {
     private static final String TABLE_NAME2 = "taskdetail";
     private static final String TABLE_NAME3 = "updatetasktimer";
     private static final String TABLE_NAME4 = "pausedetails";
+    private static final String TABLE_NAME5 = "dependenttask";
+    private static final String TABLE_NAME6 = "qc";
     private static final int DATABASE_VERSION = 1;
 
 
@@ -29,13 +31,23 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-       sqLiteDatabase.execSQL("create table usertaskjson(id integer primary key autoincrement,jsondata varchar(1000))");
+       sqLiteDatabase.execSQL("create table usertaskjson(userid integer primary key,jsondata varchar(1000))");
        sqLiteDatabase.execSQL("create table taskdetail(taskid integer primary key,jsontaskdetail varchar(1000))");
 
         //update task timer
 
         sqLiteDatabase.execSQL("create table updatetasktimer(id integer primary key autoincrement,user_id text,task_id text,amount text,start_time text,stop_time text)");
         sqLiteDatabase.execSQL("create table pausedetails(id integer primary key autoincrement,user_id text,task_id text,pause_id text,pause_time text)");
+
+
+        //qc update
+        sqLiteDatabase.execSQL("create table qc(taskid integer primary key,userid text, qcstatus text)");
+
+
+        //update dependent task timer
+        sqLiteDatabase.execSQL("create table dependenttask(taskid integer primary key,userid text,dtaskid text,amount text,duration text)");
+
+
 
 
 
@@ -46,6 +58,9 @@ public class MyDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME2);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME3);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME4);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME5);
         onCreate(sqLiteDatabase);
     }
     public boolean isRecordExists(String columnName, String tableName, String id) {
@@ -57,29 +72,39 @@ public class MyDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
-    public  void insertData(String jsondata){
+    public  void insertData(String userid,String jsondata){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
 
         contentValues.put("jsondata",jsondata);
+        contentValues.put("userid",userid);
             sqLiteDatabase.insert(TABLE_NAME,null,contentValues);
 
 
     }
-    public boolean isDataExists(){
+    public  void updateData(String jsondata,String userid){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        ContentValues contentValues=new ContentValues();
+
+        contentValues.put("jsondata",jsondata);
+        sqLiteDatabase.update(TABLE_NAME,contentValues,"userid=?",new String[]{userid});
+
+
+    }
+    public boolean isDataExists(String user_id){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
 
-        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME,null);
+        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME+" where userid=?",new String[]{user_id});
 
         boolean exists = (c.getCount() > 0);
         return exists;
 
     }
 
-    public Cursor getData(){
+    public Cursor getData(String userId){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
 
-        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME,null);
+        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME+" where userId=?",new String[]{userId});
 
 
         return c;
@@ -113,7 +138,17 @@ public class MyDbHelper extends SQLiteOpenHelper {
         return exists;
 
     }
-    public Cursor getTaskData(String taskid) {
+
+    public boolean isUserDataExists(String userId){
+        SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
+
+        Cursor c=sqLiteDatabase.rawQuery("select * from "+TABLE_NAME2+" where user_id=?",new String[]{userId});
+
+        boolean exists = (c.getCount() > 0);
+        return exists;
+
+    }
+    public Cursor getTaskDataBytaskid(String taskid) {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
         Cursor c = sqLiteDatabase.rawQuery("select * from " + TABLE_NAME2+" where taskid=?", new String[]{taskid});
@@ -121,6 +156,16 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
         return c;
     }
+
+    public Cursor getTaskDataByuser_id(String user_id) {
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+
+        Cursor c = sqLiteDatabase.rawQuery("select * from " + TABLE_NAME2+" where user_id=?", new String[]{user_id});
+
+
+        return c;
+    }
+
     public  void updateTaskData(String jsondata,String taskid){
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
@@ -197,25 +242,37 @@ public class MyDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public  void updatetPause(String user_id,String task_id,String pause_id,String pause_time){
+   //similar task
+          //  sqLiteDatabase.execSQL("create table dependenttask(taskid integer primary key,userid text,dtaskid text,amount text,duration text)");
+
+
+    public void insertDependentTask(String userid,String taskid,String dtaskid)
+    {
+
         SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
         ContentValues contentValues=new ContentValues();
-
-        contentValues.put("user_id",user_id);
-        contentValues.put("pause_id",pause_id);
-        contentValues.put("pause_time",pause_time);
-        sqLiteDatabase.update(TABLE_NAME4,contentValues,"task_id=?",new String[]{task_id});
-
+        contentValues.put("userid",userid);
+        contentValues.put("taskid",taskid);
+        contentValues.put("dtaskid",dtaskid);
+        sqLiteDatabase.insert(TABLE_NAME5,null,contentValues);
 
     }
 
-
-    /*public void removeAll()
+    public void updateDependentTask(String dtaskid,String amount,String duration)
     {
-        // db.delete(String tableName, String whereClause, String[] whereArgs);
-        // If whereClause is null, it will delete all rows.
-        SQLiteDatabase db = this.getWritableDatabase(); // helper is object extends SQLiteOpenHelper
-        db.delete(TABLE_NAME, null, null);
+    SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+    ContentValues contentValues=new ContentValues();
 
-    }*/
+    contentValues.put("dtaskid",dtaskid);
+    contentValues.put("amount",amount);
+    contentValues.put("duration",duration);
+
+    sqLiteDatabase.update(TABLE_NAME5,contentValues,"dtaskid=?",new String[]{dtaskid});
+    }
+
+
+
+
+
+
 }
