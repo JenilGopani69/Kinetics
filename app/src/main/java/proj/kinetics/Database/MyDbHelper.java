@@ -270,8 +270,22 @@ public class MyDbHelper extends SQLiteOpenHelper {
     sqLiteDatabase.update(TABLE_NAME5,contentValues,"dtaskid=?",new String[]{dtaskid});
     }
 
+        
 
 
+    public void insertqcstatus(String taskid,String userid,String qcstatus)
+    {
+
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        ContentValues contentValues=new ContentValues();
+        contentValues.put("taskid",taskid);
+        contentValues.put("userid",userid);
+        contentValues.put("qcstatus",qcstatus);
+        sqLiteDatabase.insert(TABLE_NAME6,null,contentValues);
+
+
+
+    }
 
 
 

@@ -200,7 +200,7 @@ public class NoTaskActivity extends AppCompatActivity {
 
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
-        Toast.makeText(getApplicationContext(), "LoggedIN" + name, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "LoggedIN" + name, Toast.LENGTH_SHORT).show();
         units = (RecyclerView) findViewById(R.id.units);
         units2 = (RecyclerView) findViewById(R.id.units2);
         finishtask = (Button) findViewById(R.id.finishtask);

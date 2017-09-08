@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import proj.kinetics.Model.Qualitycheck;
+import proj.kinetics.QCActivity;
 import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 
@@ -74,16 +75,16 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
                 }
 
                 if (arrayList.size()==al.size()){
-                    TaskActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
-                    TaskActivity.finishtask.setEnabled(true);
-                    TaskActivity.finishtask.setClickable(true);
+                    QCActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
+                    QCActivity.finishtask.setEnabled(true);
+                    QCActivity.finishtask.setClickable(true);
                     Toast.makeText(context, "done", Toast.LENGTH_SHORT).show();
                 }
                 else {
-    TaskActivity.finishtask.setBackgroundColor(Color.GRAY);
-    TaskActivity.finishtask.setEnabled(false);
-    TaskActivity.finishtask.setClickable(false);
-    Toast.makeText(context, "pending", Toast.LENGTH_SHORT).show();
+    QCActivity.finishtask.setBackgroundColor(Color.GRAY);
+                    QCActivity.finishtask.setEnabled(false);
+                    QCActivity.finishtask.setClickable(false);
+                    Toast.makeText(context, "pending", Toast.LENGTH_SHORT).show();
                 }
 
             }

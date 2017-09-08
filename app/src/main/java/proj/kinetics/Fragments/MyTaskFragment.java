@@ -34,6 +34,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import proj.kinetics.Adapters.ProjectsAdapter;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
+import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Database.MyDbHelper;
 import proj.kinetics.MainActivity;
 import proj.kinetics.Model.Example;
@@ -41,6 +42,7 @@ import proj.kinetics.Model.ProjectItem;
 import proj.kinetics.Model.Task;
 import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
+import proj.kinetics.UserProfileActivity;
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.Utils.LinearLayoutMangerWithSmoothScroll;
@@ -58,6 +60,7 @@ public class MyTaskFragment extends Fragment {
     private View view;
     String username,password;
     MyDbHelper myDbHelper;
+    DBHelper dbHelper;
 SessionManagement session;
     public MyTaskFragment() {
         // Required empty public constructor
@@ -68,6 +71,7 @@ SessionManagement session;
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+    Cursor cursor;
     RecyclerView tasklist;
     ProjectsAdapter projadapter;
     String data,userId;
@@ -81,6 +85,11 @@ SwipeRefreshLayout swipeRefresh;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        dbHelper=new DBHelper(getActivity());
+
+
+
+
         view = inflater.inflate(R.layout.fragment_my_task, container, false);
         session = new SessionManagement(getActivity());
         session.checkLogin();
@@ -93,6 +102,7 @@ SwipeRefreshLayout swipeRefresh;
          username = user.get(SessionManagement.KEY_USERNAME);
          password = user.get(SessionManagement.KEY_PASSWORD);
         userId = user.get(SessionManagement.KEY_USERID);
+        cursor=dbHelper.getTask(userId);
 
 
 
@@ -128,7 +138,7 @@ SwipeRefreshLayout swipeRefresh;
                 intent.putExtra("taskid",task.getTaskId());
                 startActivity(intent);
                 getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
-                Toast.makeText(getActivity(), ""+task.getTaskId(), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(getActivity(), ""+task.getTaskId(), Toast.LENGTH_SHORT).show();
                         }
             @Override
             public void onItemLongClick(View view, int position) {
@@ -145,11 +155,11 @@ SwipeRefreshLayout swipeRefresh;
                 }
                 else {
                     if (list==null){
-                        getOfflineData();
+                        getOfflineTask();
                     }
                     else {
                         list.clear();
-                        getOfflineData();
+                        getOfflineTask();
                     }
 
                 }
@@ -157,14 +167,57 @@ SwipeRefreshLayout swipeRefresh;
         });
         boolean isConnected = ConnectivityReceiver.isConnected();
         if (isConnected) {
-            getTaskDetail(username, password);
+          //  getTaskDetail(username, password);
+            getOfflineTask();
+
 
         }
         else {
-            getOfflineData();
+            getOfflineTask();
         }
         return view;
     }
+
+
+
+    private void getOfflineTask() {
+        swipeRefresh.setRefreshing(false);
+        if (cursor.getCount()>0)
+        {
+            if (cursor.moveToFirst())
+            {
+                do {
+                    String task_id,project_id,project_name = null,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,priority,task_details;
+
+                    task_id=cursor.getString(cursor.getColumnIndex("task_id"));
+                    project_id=cursor.getString(cursor.getColumnIndex("projects_id"));
+                    task_name=cursor.getString(cursor.getColumnIndex("task_name"));
+
+
+
+                    project_name = dbHelper.getProjectName(project_id);
+
+                    estimated_time=cursor.getString(cursor.getColumnIndex("estimated_time"));
+                    required_time=cursor.getString(cursor.getColumnIndex("required_time"));
+                    status=cursor.getString(cursor.getColumnIndex("status"));
+                    total_qty=cursor.getString(cursor.getColumnIndex("total_qty"));
+                    done_qtytask_details=cursor.getString(cursor.getColumnIndex("done_qty"));
+                    task_details=cursor.getString(cursor.getColumnIndex("task_details"));
+                    priority=cursor.getString(cursor.getColumnIndex("priority_id"));
+
+                    Task task=new Task(task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,task_details,priority);
+                    list.add(task);
+
+                }
+
+                while (cursor.moveToNext());
+                projadapter=new ProjectsAdapter(list,getActivity());
+                tasklist.setAdapter(projadapter);
+
+            }
+        }
+    }
+
 
     private void getOfflineData() {
 
@@ -222,32 +275,81 @@ SwipeRefreshLayout swipeRefresh;
 
     private void getTaskDetail(String username, String password) {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
-        Call<Example> responseBodyCall=apiInterface.getTaskLists(username,password);
-        responseBodyCall.enqueue(new Callback<Example>() {
-            @Override
-            public void onResponse(Call<Example> call, retrofit2.Response<Example> response) {
-                String data=response.body().getMessage();
-               
-                if (data.equalsIgnoreCase("success"))
-                {
-                    swipeRefresh.setRefreshing(false);
-                    Log.d("hhhh",""+response.body().getTask());
-                    list=response.body().getTask();
-                    projadapter=new ProjectsAdapter(list,getActivity());
-                    tasklist.setAdapter(projadapter);
-                }
-                else {
-                    Toast.makeText(getActivity(), ""+response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    
-                }
-               
-            }
+        Call<ResponseBody> responseBodyCall=apiInterface.getTaskList(username,password);
+    responseBodyCall.enqueue(new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+            if (response.isSuccessful()){
+                try {
+                    String data=response.body().string();
+                    JSONObject jsonObject=new JSONObject(data);
+                    String dataresponse=jsonObject.getString("message");
+                    if (dataresponse.equalsIgnoreCase("success")) {
+                        String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link = null, dependent_task_id = null, video_link = null;
 
-            @Override
-            public void onFailure(Call<Example> call, Throwable t) {
+                        user_id = jsonObject.getString("user_id");
+                        JSONArray jsonArray = jsonObject.getJSONArray("task");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jobj = jsonArray.getJSONObject(i);
 
+                            task_id = jobj.getString("task_id");
+                            project_id = jobj.getString("project_id");
+                            project_name = jobj.getString("project_name");
+                            task_name = jobj.getString("task_name");
+                            estimated_time = jobj.getString("estimated_time");
+                            required_time = jobj.getString("required_time");
+                            status = jobj.getString("status");
+                            total_qty = jobj.getString("total_qty");
+                            done_qty = jobj.getString("done_qty");
+                            task_details = jobj.getString("task_details");
+                            priority_id = jobj.getString("priority");
+
+
+
+                            if (dbHelper.isProjectExisting(project_id)){
+                                dbHelper.updateProject(project_id,project_name,user_id);
+
+                            }
+                            else {
+                                dbHelper.addProject(project_id, project_name, user_id);
+
+                            }
+                            if (dbHelper.istaskExisting(task_id)){
+                                dbHelper.updateTask(task_id, task_name,project_id,priority_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link, dependent_task_id, video_link, user_id);
+
+                            }
+                            else {
+                                dbHelper.addTask(task_id, task_name,project_id,priority_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link, dependent_task_id, video_link, user_id);
+
+                            }swipeRefresh.setRefreshing(false);
+                            if (list!=null)
+                            {
+                                list.clear();
+                                getOfflineTask();
+                            }
+                            else {
+                                getOfflineTask();
+                            }
+
+
+
+                        }
+                    }
+
+                  //  Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+        }
+    });
     }
 
     @Override
@@ -270,11 +372,11 @@ SwipeRefreshLayout swipeRefresh;
         }
         else {
             if (list==null){
-                getOfflineData();
+                getOfflineTask();
             }
             else {
                 list.clear();
-                getOfflineData();
+                getOfflineTask();
             }
 
         }
@@ -322,7 +424,7 @@ SwipeRefreshLayout swipeRefresh;
 
 
         }
-        if (id==R.id.action_grid){
+       /* if (id==R.id.action_grid){
 
             if (tasklist.getLayoutManager()==linearLayout){
                 item.setIcon(R.mipmap.ic_list);
@@ -335,13 +437,13 @@ SwipeRefreshLayout swipeRefresh;
 
                 tasklist.setLayoutManager(linearLayout);
             }
-        }
+        }*/
 
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+   /* @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         if (tasklist.getLayoutManager()==linearLayout){
@@ -352,5 +454,5 @@ SwipeRefreshLayout swipeRefresh;
         else
             menu.findItem(R.id.action_grid).setIcon(R.mipmap.ic_list);
 
-    }
+    }*/
 }

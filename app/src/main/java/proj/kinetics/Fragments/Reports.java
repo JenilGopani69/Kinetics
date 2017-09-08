@@ -81,7 +81,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
-        Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
 
         return inflater.inflate(R.layout.fragment_reports, container, false);
     }

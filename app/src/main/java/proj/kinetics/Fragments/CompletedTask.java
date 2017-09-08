@@ -49,7 +49,8 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
     Document doc=null;
     TextView internetid;
     SessionManagement session;
-    String url="http://66.201.99.67/~kinetics/users/completed.html";
+   // String url="http://66.201.99.67/~kinetics/users/completed.html";
+   String url="http://kinetics.local/completedprojects.php?user_id=2&viewreport=&key=9yESZ6XB4ey5afG9";
     private Activity mActivity;
 
     public CompletedTask() {
@@ -78,7 +79,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
         // password
         String password = user.get(SessionManagement.KEY_PASSWORD);
-        Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
         return inflater.inflate(R.layout.fragment_completed_task, container, false);
     }
     @Override
@@ -139,7 +140,9 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
         webView = view.findViewById(R.id.webcompleted);
         internetid = view.findViewById(R.id.internetid2);
 
-        checkConnection(container);
+
+        webView.loadUrl(url);
+       // checkConnection(container);
 
     }
 

@@ -15,7 +15,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -31,6 +30,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".TaskActivity"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".NoTaskActivity"
@@ -59,15 +59,17 @@
         <service
             android:name=".TimerWidget.TimeService"
             android:enabled="true"
-            android:launchMode="singleTask"></service>
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".TimerWidget.ServiceStartActivity"
             android:documentLaunchMode="always"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:theme="@style/Theme.CompleteTransparent"></activity>
-        <activity android:name=".Main2Activity"></activity>
+            android:theme="@style/Theme.CompleteTransparent" />
+        <activity android:name=".QCActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true"></activity>
     </application>
 
 </manifest>

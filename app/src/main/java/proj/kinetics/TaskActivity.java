@@ -64,6 +64,7 @@ import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
+import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Database.MyDbHelper;
 import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
@@ -88,6 +89,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     public static Button finishtask;
     QCAdapter_ qcAd;
     String taskname;
+    DBHelper dbHelper;
     MyDbHelper myDbHelper;
 
 
@@ -97,7 +99,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     Toolbar toolbar;
     String string1="",string2="";
      Animation myAnim;
-    String d_taskdescription="",d_taskname="",d_taskquantity="";
+    String d_taskdescription="",d_taskname="",d_taskquantity="",d_task_id;
     TextView requiredunit;
     SharedPreferences sharedPreferences;
 
@@ -219,7 +221,7 @@ SharedPreferences.Editor editor;
         setContentView(R.layout.activity_one);
         taskid=getIntent().getStringExtra("taskid");
         sharedPreferences=getSharedPreferences("tasktimer",MODE_PRIVATE);
-
+dbHelper=new DBHelper(TaskActivity.this);
         myDbHelper=new MyDbHelper(getApplicationContext());
         editor=sharedPreferences.edit();
 
@@ -237,14 +239,14 @@ userId=user.get(SessionManagement.KEY_USERID);
         String email = user.get(SessionManagement.KEY_PASSWORD);
 
 
-        Toast.makeText(getApplicationContext(), "LoggedIN" +name, Toast.LENGTH_SHORT).show();
+    //    Toast.makeText(getApplicationContext(), "LoggedIN" +name, Toast.LENGTH_SHORT).show();
         units = (RecyclerView) findViewById(R.id.units);
         units2 = (RecyclerView) findViewById(R.id.units2);
         finishtask = (Button) findViewById(R.id.finishtask);
         startedtime = (TextView) findViewById(R.id.startedtime);
         breaktym = (TextView) findViewById(R.id.breaktym);
         recordedtym = (TextView) findViewById(R.id.recordedtym);
-        taskd = (LinearLayout) findViewById(R.id.taskd);
+        //taskd = (LinearLayout) findViewById(R.id.taskd);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinate);
         myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
@@ -256,6 +258,7 @@ userId=user.get(SessionManagement.KEY_USERID);
         unitsproduced2 = (EditText) findViewById(R.id.unitsproduced2);
         taskdescrip = (TextView) findViewById(R.id.taskdescrip);
         requiredunits = (TextView) findViewById(R.id.requiredunits);
+        requiredunit = (TextView) findViewById(R.id.requiredunit);
         tvTime = (TextView) findViewById(R.id.tvTime);
         tvtask = (TextView) findViewById(R.id.task);
         unitsleft = (TextView) findViewById(R.id.unitsleft);
@@ -269,13 +272,15 @@ userId=user.get(SessionManagement.KEY_USERID);
         videoattach = (ImageButton) findViewById(R.id.action_video);
         attachment = (ImageButton) findViewById(R.id.action_attach);
         nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
-        recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
+      //  recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
         btnReset = (Button) findViewById(R.id.btnReset);
         videoattach.setOnClickListener(this);
         attachment.setOnClickListener(this);
 
 
         openDialog = (View) findViewById(R.id.openDialog);
+
+openDialog.setVisibility(View.GONE);
 
         openDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,6 +325,11 @@ userId=user.get(SessionManagement.KEY_USERID);
                                         task.setText(d_taskname);
                                         taskdescrips.setText(d_taskdescription);
                                         makeTextViewResizable(taskdescrips, 3, "View More", true);
+
+
+Log.d("ggg",d_taskquantity);
+                                        //here d_stask is added
+                                       timerSession.addStask(d_task_id,d_taskquantity);
 
                                         openDialog.setVisibility(View.GONE);
                                         //btnStart.setEnabled(true);
@@ -422,19 +432,19 @@ userId=user.get(SessionManagement.KEY_USERID);
         undobtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
         undobtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+               /// Toast.makeText(TaskActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL
+      /*  RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL
                 , false);
-        recyclerView.setLayoutManager(layoutManager);
-        finishtask.setOnClickListener(new View.OnClickListener() {
+        recyclerView.setLayoutManager(layoutManager);*/
+        /*finishtask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Dialog openDialog = new Dialog(TaskActivity.this);
@@ -465,7 +475,7 @@ userId=user.get(SessionManagement.KEY_USERID);
         });
         finishtask.setBackgroundColor(Color.GRAY);
         finishtask.setEnabled(false);
-        finishtask.setClickable(false);
+        finishtask.setClickable(false);*/
 
         nextqcbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -476,7 +486,11 @@ userId=user.get(SessionManagement.KEY_USERID);
                 } else {
 
                     lintask.setVisibility(View.GONE);
-                    linqc.setVisibility(View.VISIBLE);
+                    Intent intent=new Intent(TaskActivity.this,QCActivity.class);
+                    intent.putExtra("taskid",taskid);
+                    startActivity(intent);
+
+                    //linqc.setVisibility(View.VISIBLE);
                     nextqcbtn.setVisibility(View.GONE);
                 }
 
@@ -498,7 +512,7 @@ userId=user.get(SessionManagement.KEY_USERID);
         units.setLayoutManager(layoutManager3);
         units2.setLayoutManager(layoutManager2);
 
-        Toast.makeText(this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
         unitsAdapter = new UnitsAdapter(arrayList, this);
         unitsAdapter2 = new UnitsAdapter2(arrayList, this);
         units.setAdapter(unitsAdapter);
@@ -513,7 +527,7 @@ userId=user.get(SessionManagement.KEY_USERID);
                 editor.commit();
 
 
-                Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
 
                 TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
                 String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
@@ -524,7 +538,7 @@ userId=user.get(SessionManagement.KEY_USERID);
 
                     btnStart.setText("CONTINUE");
                     btnComplete.setVisibility(View.GONE);
-                    btnReset.setVisibility(View.VISIBLE);
+                   // btnReset.setVisibility(View.VISIBLE);
                     showDialog();
                     Log.d("check", "start");
                 } else {
@@ -534,7 +548,7 @@ userId=user.get(SessionManagement.KEY_USERID);
                     if (btnStart.getText()=="CONTINUE") {
                         String currentDateTimeString2 = DateFormat.getTimeInstance().format(new Date());
 
-                        Toast.makeText(TaskActivity.this, "jjj" + currentDateTimeString2, Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(TaskActivity.this, "jjj" + currentDateTimeString2, Toast.LENGTH_SHORT).show();
                         string2 = currentDateTimeString2;
 
                         if (string2.length()>0 && string1.length()>0){
@@ -619,12 +633,20 @@ userId=user.get(SessionManagement.KEY_USERID);
         btnComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(TaskActivity.this, "stopped", Toast.LENGTH_SHORT).show();
-                TimeService.TimeContainer.getInstance().pause();
-                btnStart.setText("CONTINUE");
-                btnReset.setVisibility(View.VISIBLE);
-                btnComplete.setVisibility(View.GONE);
                 recordedtym.setText(tvTime.getText().toString());
+                totalunits.setText(unitsproduced.getText().toString());
+editor.clear();
+                editor.commit();
+
+                timerSession.clearTimer();
+              //  Toast.makeText(TaskActivity.this, "stopped", Toast.LENGTH_SHORT).show();
+                TimeService.TimeContainer.getInstance().stopAndReset();
+                tvTime.setText(recordedtym.getText().toString());
+
+                btnStart.setText("Start");
+                //btnReset.setVisibility(View.VISIBLE);
+                btnComplete.setVisibility(View.GONE);
+
 
 
 
@@ -704,6 +726,8 @@ userId=user.get(SessionManagement.KEY_USERID);
                         int leftunits = Integer.parseInt(requiredunit.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
 
                         unitslefts.setText(leftunits+" "+"left");
+                        Log.d("mylog",""+unitsproduced2.getText().toString()+" "+tvTime.getText().toString()+" "+unitslefts.getText().toString());
+                        timerSession.addStaskDetails(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitslefts.getText().toString());
 
                         undobtn2.setEnabled(false);
                         undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
@@ -721,16 +745,11 @@ userId=user.get(SessionManagement.KEY_USERID);
             @Override
             public void onItemClick(View view, int position) {
 
-                recent = Integer.parseInt(arrayList.get(position).toString());
-                count = (Integer.parseInt(unitsproduced2.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
-                unitsproduced2.setText(String.valueOf(count));
-                undobtn2.setEnabled(true);
 
-                counts++;
+                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) >= Integer.parseInt(requiredunit.getText().toString().trim()))
+                {
 
-                if (Integer.parseInt(unitsproduced2.getText().toString().trim()) > Integer.parseInt(requiredunits.getText().toString().trim())) {
-
-                    if (counts>2){
+                    if (counts>=2){
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -738,7 +757,7 @@ userId=user.get(SessionManagement.KEY_USERID);
 
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-
+                                    btnSubmit2.startAnimation(myAnim);
                                 }
                                 dialogInterface.dismiss();
                             }
@@ -751,7 +770,7 @@ userId=user.get(SessionManagement.KEY_USERID);
                         TimeService.TimeContainer.getInstance().pause();
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
-                        btnReset.setVisibility(View.VISIBLE);
+                       // btnReset.setVisibility(View.VISIBLE);
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -759,9 +778,9 @@ userId=user.get(SessionManagement.KEY_USERID);
 
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-                                    totalunits.setText(requiredunits.getText().toString());
-                                    undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
-                                    undobtn2.setEnabled(false);
+                                    totalunits.setText(requiredunit.getText().toString());
+                                    /*undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
+                                    undobtn2.setEnabled(false);*/
                                 }
                                 dialogInterface.dismiss();
                             }
@@ -770,10 +789,34 @@ userId=user.get(SessionManagement.KEY_USERID);
 
 
 
-                } else {
-                    int leftunits = Integer.parseInt(requiredunit.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
+                }
+                else {
+                    recent = Integer.parseInt(arrayList.get(position).toString());
+                    count = (Integer.parseInt(unitsproduced2.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
 
+                    if (count< (Integer.parseInt(requiredunit.getText().toString().trim()))){
+                        unitsproduced2.setText(String.valueOf(count));
+
+                    }
+                    else{
+                        unitsproduced2.setText(requiredunit.getText().toString());
+
+                    }
+
+                    undobtn2.setEnabled(true);
+                    counts++;
+                    int leftunits = Integer.parseInt(requiredunit.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
                     unitslefts.setText(String.valueOf(leftunits + " " + "left"));
+                    if(unitsproduced2.getText().toString().equalsIgnoreCase("")) {
+
+                    } else {
+                        Log.d("mylog2",""+unitsproduced2.getText().toString()+" "+tvTime.getText().toString()+" "+unitslefts.getText().toString());
+
+
+                        timerSession.addStaskDetails(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitslefts.getText().toString());
+
+                    }
+
                 }
 
                 undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undo));
@@ -791,21 +834,10 @@ userId=user.get(SessionManagement.KEY_USERID);
             @Override
             public void onItemClick(View view, int position) {
 
-                recent = Integer.parseInt(arrayList.get(position).toString());
-                count = (Integer.parseInt(unitsproduced.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
-
-                if ((Integer.parseInt(unitsproduced.getText().toString().trim())< (Integer.parseInt(requiredunits.getText().toString().trim())))){
-                    unitsproduced.setText(String.valueOf(count));
-
-                }
-                undobtn.setEnabled(true);
-
-counts++;                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
-                unitsleft.setText(String.valueOf(leftunits + " " + "left"));
 
                 boolean isConnect=ConnectivityReceiver.isConnected();
 
-                if (isConnect) {
+            /*    if (isConnect) {
                     if(unitsproduced.getText().toString().equalsIgnoreCase("")) {
 
                     } else {
@@ -830,10 +862,13 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                         myDbHelper.insertTaskTimer(userId, taskid, unitsproduced.getText().toString(), startedtime.getText().toString(), recordedtym.getText().toString());
                     }
                 }
+*/
+                if (Integer.parseInt(unitsproduced.getText().toString().trim()) >=Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                if (Integer.parseInt(unitsproduced.getText().toString().trim()) ==Integer.parseInt(requiredunits.getText().toString().trim())) {
+
 
                     if (counts>=2){
+                        unitsproduced.setText(requiredunits.getText().toString());
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -857,7 +892,7 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                         TimeService.TimeContainer.getInstance().stopAndReset();
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
-                        btnReset.setVisibility(View.VISIBLE);
+                       // btnReset.setVisibility(View.VISIBLE);
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -875,6 +910,40 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
 
 
                 }
+                else {
+                  //  Toast.makeText(TaskActivity.this, "this", Toast.LENGTH_SHORT).show();
+                    recent = Integer.parseInt(arrayList.get(position).toString());
+                    count = (Integer.parseInt(unitsproduced.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
+
+
+                    if (count<Integer.parseInt(requiredunits.getText().toString().trim())){
+                        Log.d("mmmmm",""+count);
+
+                        unitsproduced.setText(String.valueOf(count));
+                    }
+                    else {
+                        unitsproduced.setText(requiredunits.getText().toString());
+                    }
+
+                   /* if ((Integer.parseInt(unitsproduced.getText().toString().trim())< (Integer.parseInt(requiredunits.getText().toString().trim())))){
+
+                        unitsproduced.setText(String.valueOf(count));
+
+                    }*/
+
+                    undobtn.setEnabled(true);
+
+                    counts++;
+                    int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
+                    unitsleft.setText(String.valueOf(leftunits + " " + "left"));
+                    if (unitsproduced.getText().toString().equalsIgnoreCase("")){
+
+                    }
+                    else {
+                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString());
+                    }
+
+                }
                 undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undo));
 
 
@@ -890,8 +959,14 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
         boolean isConnected = ConnectivityReceiver.isConnected();
         if (isConnected) {
             getTaskDetails();
-
+            getOfflineTaskData();
+            Log.d("dddddddd","asdasd");
+            //getTaskDetailsOffline();
             HashMap<String,String> hashMap=timerSession.getTaskDetails();
+            HashMap<String,String> hashMap2=timerSession.getStaskDetails();
+            unitsproduced2.setText(hashMap2.get(TimerSession.KEY_S_TASKAMT));
+           unitslefts.setText(hashMap2.get(TimerSession.KEY_S_TASKLEFT));
+
 
             unitsproduced.setText(hashMap.get(TimerSession.KEY_AMOUNT));
             recordedtym.setText(hashMap.get(TimerSession.KEY_DURATION));
@@ -966,7 +1041,7 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                                 estimated_time=jsond_obj.getString("estimated_time");
                                 duration=jsond_obj.getString("duration");
                                 amount=jsond_obj.getString("amount");
-
+d_task_id=id;
                         d_taskdescription=taskdescription;
                                 d_taskname=taskname;
                                 d_taskquantity=quantity;
@@ -994,13 +1069,13 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                 }
             }
             else {
-            new AlertDialog.Builder(TaskActivity.this).setTitle("No Records found.").setMessage("Please Sync your data when internet is available.").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+           /* new AlertDialog.Builder(TaskActivity.this).setTitle("No Records found.").setMessage("Please Sync your data when internet is available.").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.dismiss();
                     finish();
                 }
-            }).show();
+            }).show();*/
            // Toast.makeText(this, "No rec found", Toast.LENGTH_SHORT).show();
         }
 
@@ -1078,6 +1153,48 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
             }
         } );
     }
+    public void getTaskDetailsOffline()
+    {
+
+
+        Cursor cursor=dbHelper.getTaskDetails(taskid);
+        if (cursor.getCount()>0)
+        {
+            if (cursor.moveToFirst()){
+                do {
+                    String id,taskname,taskdescription,quantity,estimated_time,duration,amount,pdf_link,video_link,dtask_id;
+
+
+                    id=cursor.getString(cursor.getColumnIndex("task_id"));
+                    taskname=cursor.getString(cursor.getColumnIndex("task_name"));
+                    taskdescription=cursor.getString(cursor.getColumnIndex("task_details"));
+                    quantity=cursor.getString(cursor.getColumnIndex("total_qty"));
+                    estimated_time=cursor.getString(cursor.getColumnIndex("estimated_time"));
+                    amount=cursor.getString(cursor.getColumnIndex("done_qty"));
+                    pdf_link=cursor.getString(cursor.getColumnIndex("pdf_link"));
+                    video_link=cursor.getString(cursor.getColumnIndex("video_link"));
+                    dtask_id=cursor.getString(cursor.getColumnIndex("dependent_task_id"));
+
+                    tvtask.setText(taskname);
+
+                    taskdescrip.setText(taskdescription);
+                    requiredunits.setText(quantity);
+
+                    if (dtask_id != null && !dtask_id.isEmpty()) {
+                        Toast.makeText(this, "has dependent", Toast.LENGTH_SHORT).show();
+
+                    }
+
+
+
+
+                }while (cursor.moveToNext());
+            }
+        }
+
+    }
+
+
     private void getTaskDetails() {
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
         Call<TaskDetails> responseBodyCall=apiInterface.getTaskDetails(taskid);
@@ -1103,9 +1220,9 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
 
                     }else {
 
-
+/*
                         myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
-                        recyclerView.setAdapter(myAdapter);
+                        recyclerView.setAdapter(myAdapter);*/
 
                     }
                     if (dependent==null){
@@ -1121,6 +1238,7 @@ counts++;                    int leftunits = Integer.parseInt(requiredunits.getT
                         d_taskdescription = dep.getTaskdescription();
                         d_taskname = dep.getTaskname();
                         d_taskquantity = dep.getQuantity();
+                        d_task_id=dep.getId();
                         list.add(d_taskname);
                         openDialog.setVisibility(View.VISIBLE);
                     }
@@ -1168,12 +1286,12 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
                 }
                 else {
 
-                    RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
+                    /*RecyclerView qcrecylerdependent= (RecyclerView) findViewById(R.id.qcrecylerdependent);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-                    qcrecylerdependent.setLayoutManager(layoutManager);
-                    taskd.setVisibility(View.VISIBLE);
-                    qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
-                    qcrecylerdependent.setAdapter(qcAd);
+                    qcrecylerdependent.setLayoutManager(layoutManager);*/
+                    //taskd.setVisibility(View.VISIBLE);
+                  /*  qcAd = new QCAdapter_(qualitycheck_s, getApplicationContext());
+                    qcrecylerdependent.setAdapter(qcAd);*/
 
 
                 }
@@ -1311,7 +1429,7 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
                 unitsdata.setVisibility(View.VISIBLE);
                 unitsdatas.setVisibility(View.VISIBLE);
                 btnComplete.setVisibility(View.VISIBLE);
-               Toast.makeText(this, "running timer", Toast.LENGTH_SHORT).show();
+              // Toast.makeText(this, "running timer", Toast.LENGTH_SHORT).show();
                 startUpdateTimer();
                 btnReset.setVisibility(View.GONE);
             } else {
@@ -1320,7 +1438,7 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
                 updateTimeText();
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_STOPPED) {
-               Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
+              // Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
                 btnStart.setText("START");
                 unitsdata.setVisibility(View.GONE);
                 unitsdatas.setVisibility(View.GONE);
@@ -1331,12 +1449,12 @@ responseBodyCall.enqueue(new Callback<TaskDetails>() {
 
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
-               Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
+              // Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
 
                 btnStart.setText("CONTINUE");
 
                 btnComplete.setVisibility(View.GONE);
-                btnReset.setVisibility(View.VISIBLE);
+               // btnReset.setVisibility(View.VISIBLE);
             }
             checkServiceRunning();
         }
@@ -1467,14 +1585,14 @@ if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
         // btnStart.setText("PAUSE");
         btnComplete.setVisibility(View.VISIBLE);
         btnStart.setText("PAUSE");
-        Toast.makeText(this, "resume running timer", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "resume running timer", Toast.LENGTH_SHORT).show();
     }
     if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
         btnStart.setText("CONTINUE");
         unitsdata.setVisibility(View.VISIBLE);
         unitsdatas.setVisibility(View.VISIBLE);
         btnComplete.setVisibility(View.GONE);
-        btnReset.setVisibility(View.VISIBLE);
+       // btnReset.setVisibility(View.VISIBLE);
         updateTimeText();
 
     }
@@ -1491,7 +1609,7 @@ if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
     TimeService.TimeContainer.getInstance().addObserver(this);
 }
 else {
-    Toast.makeText(this, "Start Your work", Toast.LENGTH_SHORT).show();
+  //  Toast.makeText(this, "Start Your work", Toast.LENGTH_SHORT).show();
 }
 if (sharedPreferences.getString("task","").length()>0){
     Log.d("dfsf","fsdfsdf"+sharedPreferences.getString("task","")+""+taskid);
@@ -1500,6 +1618,21 @@ if (sharedPreferences.getString("task","").length()>0){
         intent.putExtra("taskid",taskid);
         intent.putExtra("taskname",sharedPreferences.getString("taskname",""));
         startActivity(intent);
+    }
+    else {
+
+        if (timerSession.isLoggedIn()){
+            coordinate.setVisibility(View.VISIBLE);
+            HashMap<String,String> hashMap2=timerSession.getStaskDetails();
+            unitsproduced2.setText(hashMap2.get(TimerSession.KEY_S_TASKAMT));
+            unitslefts.setText(hashMap2.get(TimerSession.KEY_S_TASKLEFT));
+            requiredunit.setText(hashMap2.get(TimerSession.KEY_S_TASKREQ));
+           // Toast.makeText(this, "called"+hashMap2.get(TimerSession.KEY_S_TASKREQ), Toast.LENGTH_SHORT).show();
+
+        }
+        else {
+            coordinate.setVisibility(View.GONE);
+        }
     }
 
 }
