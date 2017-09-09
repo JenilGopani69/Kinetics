@@ -137,7 +137,7 @@ progressdialog=new ProgressDialog(MainActivity.this);
                         if (dataresponse.equalsIgnoreCase("success")) {
                             deleteDatabase("offline.db");
 
-                            String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link = null, dependent_task_id = null, video_link = null;
+                            String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
 
 
                             user_id = jsonObject.getString("user_id");
@@ -170,7 +170,7 @@ progressdialog=new ProgressDialog(MainActivity.this);
                                     dbHelper.addProject(project_id, project_name, user_id);
 
                                 }
-                                if (dbHelper.istaskExisting(task_id)){
+                                if (dbHelper.istaskExisting(task_id)==true){
                                     dbHelper.updateTask(task_id, task_name,project_id,priority_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link, dependent_task_id, video_link, user_id);
 
                                     getTaskDetailsOffline(user_id, task_id);
@@ -195,6 +195,13 @@ progressdialog=new ProgressDialog(MainActivity.this);
                             }
 
 
+                        }
+                        else {
+                            if (progressdialog.isShowing()) {
+                                progressdialog.dismiss();
+                            }
+
+                            Toast.makeText(MainActivity.this, "Invalid Login Credentials", Toast.LENGTH_SHORT).show();
                         }
 
 

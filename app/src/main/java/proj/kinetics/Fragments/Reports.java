@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -44,7 +45,7 @@ import proj.kinetics.Utils.SessionManagement;
  */
 public class Reports extends Fragment implements ConnectivityReceiver.ConnectivityReceiverListener {
 
-    String url="http://66.201.99.67/~kinetics/users/reports.html";
+    String url="";
     Document doc=null;
 
     WebView webView;
@@ -79,6 +80,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         // name
         String name = user.get(SessionManagement.KEY_USERNAME);
 
+        url="http://66.201.99.67/~kinetics/reports.php?user_id="+user.get(SessionManagement.KEY_USERID)+"&viewreport=&key=9yESZ6XB4ey5afG9";
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
      //   Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
@@ -164,36 +166,18 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         super.onViewCreated(view, savedInstanceState);
         webView=view.findViewById(R.id.webreports);
         internetid=view.findViewById(R.id.internetid);
-
+        CookieSyncManager.createInstance(getActivity().getBaseContext());
+        CookieSyncManager.getInstance().startSync();
+        CookieSyncManager.getInstance().sync();
+        webView.loadUrl(url);
         checkConnection(container);
 
     }
 
     public void loadWebViewdata(){
-        new AsyncTask<Void, Void, Document>() {
-            @Override
-            protected Document doInBackground(Void... voids) {
-                Document document = null;
-                try {
-                    document= Jsoup.connect(url).get();
-                    document.getElementsByClass("footer").remove();
-                    document.getElementsByClass("navbar").remove();
-                    document.getElementsByClass("main_title").remove();
-                    Log.d("htmlcntent",""+document.getElementById("reportrange"));
 
 
 
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return document;
-            }
-
-            @Override
-            protected void onPostExecute(Document s) {
-                if (s!=null) {
-                    webView.loadDataWithBaseURL(url, s.toString(), "text/html", "utf-8", "");
                     webView.setWebViewClient(new MyBrowser());
                     webView.getSettings().setLoadWithOverviewMode(true);
                     webView.getSettings().setUseWideViewPort(true);
@@ -206,13 +190,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
                     webView.getSettings().setAppCacheEnabled(true);
                     webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
                     webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-                }
-                else {
-                    Toast.makeText(mActivity, "Internet Connection Lost", Toast.LENGTH_SHORT).show();
-                }
-                super.onPostExecute(s);
-            }
-        }.execute();
+
 
     }
 
@@ -226,41 +204,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
     private class MyBrowser extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, final String url) {
-            Log.d("mydata",url);
-            new AsyncTask<Void, Void, Document>() {
-                @Override
-                protected Document doInBackground(Void... voids) {
-                    Document document=null;
-                    try {
-                        document=Jsoup.connect(url).get();
-                        document.getElementsByClass("footer").remove();
-                        document.getElementsByClass("navbar").remove();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return document;
-                }
 
-                @Override
-                protected void onPostExecute(Document s) {
-                    doc=s;
-                    webView.loadDataWithBaseURL(url,s.toString(),"text/html","utf-8","");
-                    //webView.setWebViewClient(new CompletedProjects.MyBrowser());
-                    webView.getSettings().setLoadsImagesAutomatically(true);
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                    webView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
-                    webView.getSettings().setAppCachePath( getActivity().getApplicationContext().getCacheDir().getAbsolutePath() );
-                    webView.getSettings().setAllowFileAccess( true );
-                    webView.getSettings().setAppCacheEnabled( true );
-                    webView.getSettings().setJavaScriptEnabled( true );
-                    webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
-                    webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
-                    webView.getSettings().setLoadWithOverviewMode(true);
-                    webView.getSettings().setUseWideViewPort(true);
-                    super.onPostExecute(s);
-                }
-            }.execute();
             view.loadUrl(url);
             return true;
         }
@@ -269,9 +213,8 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             webView.loadUrl("javascript:document.body.style.padding=\"0%\"; void 0");
-
             webView.loadUrl("javascript:document.body.style.margin=\"0%\"; void 0");
-
+            CookieSyncManager.getInstance().sync();
         }
     }
 

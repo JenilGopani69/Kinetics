@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Model.ProjectItem;
 import proj.kinetics.Model.Task;
 import proj.kinetics.R;
@@ -53,6 +54,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
 
         holder.duedate.setText(getSet.getRequiredTime());
         //holder.nooftask.setText(getSet.getNooftask());
+
 
 
     }

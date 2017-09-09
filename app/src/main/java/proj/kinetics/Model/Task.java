@@ -41,6 +41,18 @@ public class Task {
     @SerializedName("priority")
     @Expose
     private String priority;
+    private String d_taskid;
+
+    public Task() {
+    }
+
+    public String getD_taskid() {
+        return d_taskid;
+    }
+
+    public void setD_taskid(String d_taskid) {
+        this.d_taskid = d_taskid;
+    }
 
     public String getTaskId() {
         return taskId;

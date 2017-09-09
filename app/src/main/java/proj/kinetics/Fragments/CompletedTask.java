@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -33,6 +36,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.CookieHandler;
 import java.util.HashMap;
 
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
@@ -48,9 +52,10 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
     ViewGroup container;
     Document doc=null;
     TextView internetid;
+    String url;
     SessionManagement session;
    // String url="http://66.201.99.67/~kinetics/users/completed.html";
-   String url="http://kinetics.local/completedprojects.php?user_id=2&viewreport=&key=9yESZ6XB4ey5afG9";
+  // String url="http://kinetics.local/completedprojects.php?user_id=2&viewreport=&key=9yESZ6XB4ey5afG9";
     private Activity mActivity;
 
     public CompletedTask() {
@@ -76,7 +81,8 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
         // name
         String name = user.get(SessionManagement.KEY_USERNAME);
-
+String userid=user.get(SessionManagement.KEY_USERID);
+        url="http://66.201.99.67/~kinetics/completedprojects.php?user_id="+userid+"&viewreport=&key=9yESZ6XB4ey5afG9";
         // password
         String password = user.get(SessionManagement.KEY_PASSWORD);
         //Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
@@ -140,9 +146,11 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
         webView = view.findViewById(R.id.webcompleted);
         internetid = view.findViewById(R.id.internetid2);
 
-
+        CookieSyncManager.createInstance(getActivity().getBaseContext());
+        CookieSyncManager.getInstance().startSync();
+        CookieSyncManager.getInstance().sync();
         webView.loadUrl(url);
-       // checkConnection(container);
+        checkConnection(container);
 
     }
 
@@ -150,25 +158,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
 
 
-        new AsyncTask<Void, Void, Document>() {
-            @Override
-            protected Document doInBackground(Void... voids) {
-                Document document=null;
-                try {
-                    document= Jsoup.connect(url).get();
-                    document.getElementsByClass("footer").remove();
-                    document.getElementsByClass("navbar").remove();
-                    document.getElementsByClass("main_title").remove();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return document;
-            }
 
-            @Override
-            protected void onPostExecute(Document s) {
-                doc=s;
-                webView.loadDataWithBaseURL(url,s.toString(),"text/html","utf-8","");
                 webView.setWebViewClient(new MyBrowser());
                 webView.getSettings().setLoadsImagesAutomatically(true);
                 webView.getSettings().setJavaScriptEnabled(true);
@@ -180,9 +170,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
                 webView.getSettings().setJavaScriptEnabled( true );
                 webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
                 webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
-                super.onPostExecute(s);
-            }
-        }.execute();
+
 
 
 
@@ -199,42 +187,7 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
         @Override
         public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
 
-            Log.d("mydata",url);
-            new AsyncTask<Void, Void, Document>() {
-                @Override
-                protected Document doInBackground(Void... voids) {
-                    Document document=null;
-                    try {
-                        document=Jsoup.connect(url).get();
-                        document.getElementsByClass("footer").remove();
-                        document.getElementsByClass("navbar").remove();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return document;
-                }
 
-                @Override
-                protected void onPostExecute(Document s) {
-                    doc=s;
-                    webView.loadDataWithBaseURL(url,s.toString(),"text/html","utf-8","");
-                    //webView.setWebViewClient(new CompletedProjects.MyBrowser());
-                    webView.getSettings().setLoadsImagesAutomatically(true);
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.getSettings().setUseWideViewPort(true);
-
-                    webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                    webView.getSettings().setAppCacheMaxSize( 5 * 1024 * 1024 ); // 5MB
-                    webView.getSettings().setAppCachePath( getActivity().getApplicationContext().getCacheDir().getAbsolutePath() );
-                    webView.getSettings().setAllowFileAccess( true );
-                    webView.getSettings().setAppCacheEnabled( true );
-                    webView.getSettings().setJavaScriptEnabled( true );
-                    webView.getSettings().setCacheMode( WebSettings.LOAD_DEFAULT );
-                    webView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
-
-                    super.onPostExecute(s);
-                }
-            }.execute();
             view.loadUrl(url);
 
             return true;
@@ -244,12 +197,30 @@ public class CompletedTask extends Fragment implements ConnectivityReceiver.Conn
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            webView.loadUrl("javascript:document.body.style.padding=\"0%\"; void 0");
+
+
+
+           webView.loadUrl("javascript:document.body.style.padding=\"0%\"; void 0");
             webView.loadUrl("javascript:document.body.style.margin=\"0%\"; void 0");
+            CookieSyncManager.getInstance().sync();
 
 
         }
+        public String getCookie(String siteName,String CookieName){
+            String CookieValue = null;
 
+            CookieManager cookieManager = CookieManager.getInstance();
+            String cookies = cookieManager.getCookie(siteName);
+            String[] temp=cookies.split(";");
+            for (String ar1 : temp ){
+                if(ar1.contains(CookieName)){
+                    String[] temp1=ar1.split("=");
+                    CookieValue = temp1[1];
+                    break;
+                }
+            }
+            return CookieValue;
+        }
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             if (view.getSettings().getCacheMode()==WebSettings.LOAD_NO_CACHE){

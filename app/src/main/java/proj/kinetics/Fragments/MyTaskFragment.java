@@ -37,9 +37,12 @@ import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Database.MyDbHelper;
 import proj.kinetics.MainActivity;
+import proj.kinetics.Model.DTask;
+import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.ProjectItem;
 import proj.kinetics.Model.Task;
+import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
 import proj.kinetics.UserProfileActivity;
@@ -61,6 +64,7 @@ public class MyTaskFragment extends Fragment {
     String username,password;
     MyDbHelper myDbHelper;
     DBHelper dbHelper;
+
 SessionManagement session;
     public MyTaskFragment() {
         // Required empty public constructor
@@ -71,6 +75,7 @@ SessionManagement session;
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+    ArrayList<DTask> arraylist=new ArrayList<>();
     Cursor cursor;
     RecyclerView tasklist;
     ProjectsAdapter projadapter;
@@ -134,11 +139,47 @@ SwipeRefreshLayout swipeRefresh;
             public void onItemClick(View view, int position) {
                 Task task=list.get(position);
 
+                String data =dbHelper.getTaskMap(task.getTaskId());
+
+if (data!=null){
+    new AlertDialog.Builder(getActivity()).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+
+        }
+    }).setCancelable(false).setMessage("Please Complete Task: "+dbHelper.getTaskMapName(task.getTaskId())).show();
+}
+else {
+    Intent intent=new Intent(getActivity(),TaskActivity.class);
+    intent.putExtra("taskid",task.getTaskId());
+    startActivity(intent);
+    //getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+}
+
+
+
+               /* DTask dtask=arraylist.get(position);
+                Toast.makeText(getActivity(), task.getTaskId()+""+dtask.getDtaskid(), Toast.LENGTH_SHORT).show();
+                //getTaskDetails(task.getTaskId());
+
+                if (task.getTaskId().equalsIgnoreCase(dtask.getDtaskid())){
+                    new AlertDialog.Builder(getActivity()).setMessage("Please Complete Task: " +dtask.getTaskname()).setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    }).show();
+
+
+                }
+                else {
                 Intent intent=new Intent(getActivity(),TaskActivity.class);
                 intent.putExtra("taskid",task.getTaskId());
                 startActivity(intent);
                 getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
-              //  Toast.makeText(getActivity(), ""+task.getTaskId(), Toast.LENGTH_SHORT).show();
+
+
+                }*/
                         }
             @Override
             public void onItemLongClick(View view, int position) {
@@ -205,7 +246,11 @@ SwipeRefreshLayout swipeRefresh;
                     task_details=cursor.getString(cursor.getColumnIndex("task_details"));
                     priority=cursor.getString(cursor.getColumnIndex("priority_id"));
 
-                    Task task=new Task(task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,task_details,priority);
+                     Task task=new Task(task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,task_details,priority);
+                    getTaskDetails(task_id);
+
+
+
                     list.add(task);
 
                 }
@@ -219,57 +264,103 @@ SwipeRefreshLayout swipeRefresh;
     }
 
 
-    private void getOfflineData() {
-
-        Cursor c=myDbHelper.getData(userId);
-
-        if (c.getCount()>0){
-            if (c.moveToFirst()){
-                do {
-                     data=c.getString(1);
-                }while (c.moveToNext());
-
-                try {
-                    JSONObject jsonobject=new JSONObject(data);
-                    String message=jsonobject.getString("message");
-                    Log.d("offline",message);
-                    swipeRefresh.setRefreshing(false);
-
-                    JSONArray jsonArray=jsonobject.getJSONArray("task");
-                        for (int i=0;i<jsonArray.length();i++){
-                            JSONObject childobj=jsonArray.getJSONObject(i);
-                            String task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,priority,task_details;
-                            task_id=childobj.getString("task_id");
-                            Log.d("checkoffline",""+jsonArray.length());
-
-                            task_details=childobj.getString("task_details");
-                            project_id=childobj.getString("project_id");
-                            project_name=childobj.getString("project_name");
-                            task_name=childobj.getString("task_name");
-                            estimated_time=childobj.getString("estimated_time");
-                            required_time=childobj.getString("required_time");
-                            status=childobj.getString("status");
-                            done_qtytask_details=childobj.getString("done_qty");
-                            total_qty=childobj.getString("total_qty");
-                            priority=childobj.getString("priority");
-                                Task task=new Task(task_id,project_id,project_name,task_name,estimated_time,required_time,status,total_qty,done_qtytask_details,task_details,priority);
-                            list.add(task);
-
-                        }projadapter=new ProjectsAdapter(list,getActivity());
-                        tasklist.setAdapter(projadapter);
+    private void gettaskName(final String id){
+        ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> taskDetailsCall=apiInterface.getTaskDetails(id);
+        taskDetailsCall.enqueue(new Callback<TaskDetails>() {
+            @Override
+            public void onResponse(Call<TaskDetails> call, retrofit2.Response<TaskDetails> response) {
 
 
 
+                List<Dependenttask> dependent= response.body().getDependenttask();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (dependent==null){
+
+                   /* Intent intent=new Intent(getActivity(),TaskActivity.class);
+                    intent.putExtra("taskid",id);
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);*/
+                    Log.d("rrrrr",id+ " ");
+
+                }
+                else {
+                    Dependenttask dep = dependent.get(0);
+
+                    Toast.makeText(getActivity(), ""+dep.getTaskname(), Toast.LENGTH_SHORT).show();
+                        /*Intent intent=new Intent(getActivity(),TaskActivity.class);
+                        intent.putExtra("taskid",id);
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);*/
+
                 }
 
 
             }
-        }
+
+            @Override
+            public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+            }
+        });
+
+    }
 
 
+
+
+
+    private void getTaskDetails(final String id){
+        ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
+        Call<TaskDetails> taskDetailsCall=apiInterface.getTaskDetails(id);
+        taskDetailsCall.enqueue(new Callback<TaskDetails>() {
+            @Override
+            public void onResponse(Call<TaskDetails> call, retrofit2.Response<TaskDetails> response) {
+
+
+
+                List<Dependenttask> dependent= response.body().getDependenttask();
+
+                if (dependent==null){
+
+                   /* Intent intent=new Intent(getActivity(),TaskActivity.class);
+                    intent.putExtra("taskid",id);
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);*/
+                    Log.d("rrrrr",id+ " ");
+
+                }
+                else {
+                    Dependenttask dep = dependent.get(0);
+
+
+                    Log.d("rrrrr",id+ " "+dep.getId());
+                    dbHelper.updateDTask(id,dep.getId());
+
+                    if ((dbHelper.isTaskMapId(id)==true)){
+
+                        dbHelper.updateTaskMapping(id,dep.getId(),dep.getTaskname());
+                    }
+                    else {
+                        dbHelper.insertTaskMapping(id,dep.getId(),dep.getTaskname());
+
+                    }
+
+                        /*Intent intent=new Intent(getActivity(),TaskActivity.class);
+                        intent.putExtra("taskid",id);
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);*/
+
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<TaskDetails> call, Throwable t) {
+
+            }
+        });
 
     }
 
@@ -285,7 +376,7 @@ SwipeRefreshLayout swipeRefresh;
                     JSONObject jsonObject=new JSONObject(data);
                     String dataresponse=jsonObject.getString("message");
                     if (dataresponse.equalsIgnoreCase("success")) {
-                        String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link = null, dependent_task_id = null, video_link = null;
+                        String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link = "", dependent_task_id = "", video_link = "";
 
                         user_id = jsonObject.getString("user_id");
                         JSONArray jsonArray = jsonObject.getJSONArray("task");
@@ -303,6 +394,7 @@ SwipeRefreshLayout swipeRefresh;
                             done_qty = jobj.getString("done_qty");
                             task_details = jobj.getString("task_details");
                             priority_id = jobj.getString("priority");
+
 
 
 
@@ -364,10 +456,19 @@ SwipeRefreshLayout swipeRefresh;
     @Override
     public void onResume() {
         super.onResume();
+        Toast.makeText(getActivity(), "refreshed", Toast.LENGTH_SHORT).show();
 
         boolean isConnected = ConnectivityReceiver.isConnected();
         if (isConnected) {
             getTaskDetail(username, password);
+            if (list!=null){
+                list.clear();
+                getOfflineTask();
+            }
+            else {
+                getOfflineTask();
+            }
+
 
         }
         else {

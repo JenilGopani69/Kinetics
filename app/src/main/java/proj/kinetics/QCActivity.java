@@ -23,6 +23,7 @@ import java.util.List;
 
 import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.QCAdapter_;
+import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Model.Dependenttask;
 import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.Model.Qualitycheck_;
@@ -46,7 +47,7 @@ public static     Button finishtask;
     String taskid="";
     TimerSession timerSession;
 SharedPreferences sharedPreferences;
-
+DBHelper dbHelper;
     SharedPreferences.Editor editor;
 Toolbar toolbar;
 
@@ -57,7 +58,7 @@ Toolbar toolbar;
         setContentView(R.layout.activity_qc);
         toolbar = (Toolbar) findViewById(R.id.qctoolbar);
         timerSession=new TimerSession(getApplicationContext());
-
+dbHelper=new DBHelper(getApplicationContext());
         taskid=getIntent().getStringExtra("taskid");
         recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
         d_qc_recycler = (RecyclerView) findViewById(R.id.qcrecylerdependent);
@@ -90,6 +91,8 @@ timerSession.clearTimer();
                         editor=sharedPreferences.edit();
                         editor.clear();
                         editor.apply();
+                        Toast.makeText(QCActivity.this, taskid, Toast.LENGTH_SHORT).show();
+                        dbHelper.updateTaskStatus(taskid,"7");
                         TimeService.TimeContainer.getInstance().stopAndReset();
                         Intent intent = new Intent(QCActivity.this, UserProfileActivity.class);
                         startActivity(intent);

@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -47,6 +49,8 @@ import org.json.JSONObject;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -102,8 +106,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     String d_taskdescription="",d_taskname="",d_taskquantity="",d_task_id;
     TextView requiredunit;
     SharedPreferences sharedPreferences;
-
-
+    String attachmenturl;
 
 
     SimpleDateFormat simpleDateFormat =
@@ -525,7 +528,7 @@ Log.d("ggg",d_taskquantity);
                 editor.putString("task",taskid);
 
                 editor.commit();
-
+                dbHelper.updateTaskStatus(taskid,"4");//working
 
                 //Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
 
@@ -544,7 +547,7 @@ Log.d("ggg",d_taskquantity);
                 } else {
                     btnReset.setVisibility(View.GONE);
                     btnComplete.setVisibility(View.VISIBLE);
-
+                    dbHelper.updateTaskStatus(taskid,"5");//pause
                     if (btnStart.getText()=="CONTINUE") {
                         String currentDateTimeString2 = DateFormat.getTimeInstance().format(new Date());
 
@@ -635,6 +638,9 @@ Log.d("ggg",d_taskquantity);
             public void onClick(View view) {
                 recordedtym.setText(tvTime.getText().toString());
                 totalunits.setText(unitsproduced.getText().toString());
+                dbHelper.updateTaskData(taskid,totalunits.getText().toString(),recordedtym.getText().toString());
+                dbHelper.updateTaskStatus(taskid,"6");//stopped
+
 editor.clear();
                 editor.commit();
 
@@ -835,34 +841,28 @@ editor.clear();
             public void onItemClick(View view, int position) {
 
 
-                boolean isConnect=ConnectivityReceiver.isConnected();
 
-            /*    if (isConnect) {
-                    if(unitsproduced.getText().toString().equalsIgnoreCase("")) {
+                if (Integer.parseInt(unitsproduced.getText().toString().trim()) ==Integer.parseInt(requiredunits.getText().toString().trim()))
 
-                    } else {
-
-
-                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString());
-
-                    }
-                    //Log.d("getdata",unitsproduced.getText().toString());
-
-
-                }else
                 {
-                    if (myDbHelper.isTaskTimerExists(taskid)){
-                        //Toast.makeText(TaskActivity.this, "updated", Toast.LENGTH_SHORT).show();
-                        myDbHelper.updateTaskTimer(userId, taskid, unitsproduced.getText().toString(), startedtime.getText().toString(),tvTime.getText().toString());
+                    new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
-                    }
-                    else {
-                        //Toast.makeText(TaskActivity.this, "inserted", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-                        myDbHelper.insertTaskTimer(userId, taskid, unitsproduced.getText().toString(), startedtime.getText().toString(), recordedtym.getText().toString());
-                    }
+                                btnSubmit.startAnimation(myAnim);
+
+
+                                   /* totalunits.setText(requiredunits.getText().toString());*/
+                            }
+                            dialogInterface.dismiss();
+                        }
+                    }).show();
+
+
                 }
-*/
                 if (Integer.parseInt(unitsproduced.getText().toString().trim()) >=Integer.parseInt(requiredunits.getText().toString().trim())) {
 
 
@@ -911,7 +911,7 @@ editor.clear();
 
                 }
                 else {
-                  //  Toast.makeText(TaskActivity.this, "this", Toast.LENGTH_SHORT).show();
+
                     recent = Integer.parseInt(arrayList.get(position).toString());
                     count = (Integer.parseInt(unitsproduced.getText().toString())) + (Integer.parseInt(arrayList.get(position).toString()));
 
@@ -960,17 +960,6 @@ editor.clear();
         if (isConnected) {
             getTaskDetails();
             getOfflineTaskData();
-            Log.d("dddddddd","asdasd");
-            //getTaskDetailsOffline();
-            HashMap<String,String> hashMap=timerSession.getTaskDetails();
-            HashMap<String,String> hashMap2=timerSession.getStaskDetails();
-            unitsproduced2.setText(hashMap2.get(TimerSession.KEY_S_TASKAMT));
-           unitslefts.setText(hashMap2.get(TimerSession.KEY_S_TASKLEFT));
-
-
-            unitsproduced.setText(hashMap.get(TimerSession.KEY_AMOUNT));
-            recordedtym.setText(hashMap.get(TimerSession.KEY_DURATION));
-            unitsleft.setText(hashMap.get(TimerSession.KEY_LEFT));
 
         }
         else {
@@ -1001,82 +990,53 @@ editor.clear();
     private void getOfflineTaskData() {
 
 
-        Cursor c=myDbHelper.getTaskDataBytaskid(taskid);
+       Cursor cursor=dbHelper.getTaskDetails(taskid);
 
-        if (c.getCount()>0){
-            if (c.moveToFirst()){
-
-                do {
-                    data=c.getString(1);
-                    Log.d("ooflinedata",data+" "+c.getCount());
-
-
-                }while (c.moveToNext());
-
-                JSONObject jsonobject= null;
-                try {
-                    jsonobject = new JSONObject(data);
-                    String message=jsonobject.getString("message");
-                    Log.d("offlinetask",message);
-                    if (message.equalsIgnoreCase("success")){
-                        tvtask.setText(jsonobject.getString("taskname"));
-                        editor.putString("taskname",tvtask.getText().toString());
-                        taskdescrip.setText(jsonobject.getString("taskdescription"));
-                        makeTextViewResizable(taskdescrip, 3, "View More", true);
-                        requiredunits.setText(jsonobject.getString("quantity"));
+        if (cursor.getCount()>0)
+        {
+            if (cursor.moveToFirst())
+            {
+                do
+                {
+                    Log.d("mydatadone",cursor.getString(cursor.getColumnIndex("done_qty")));
+                    Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("total_qty")));
+                    String doneunits=cursor.getString(cursor.getColumnIndex("done_qty"));
 
 
 
-                        JSONArray json_task=jsonobject.getJSONArray("dependenttask");
-                        if (json_task!=null){
+                        totalunits.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
+                        requiredunits.setText(cursor.getString(cursor.getColumnIndex("total_qty")));
 
-                            for (int i=0;i<json_task.length();i++){
-
-                                JSONObject jsond_obj=json_task.getJSONObject(i);
-                                String id,taskname,taskdescription,quantity,estimated_time,duration,amount,pdf_link,video_link;
-                                id=jsond_obj.getString("id");
-                                taskname=jsond_obj.getString("taskname");
-                                taskdescription=jsond_obj.getString("taskdescription");
-                                quantity=jsond_obj.getString("quantity");
-                                estimated_time=jsond_obj.getString("estimated_time");
-                                duration=jsond_obj.getString("duration");
-                                amount=jsond_obj.getString("amount");
-d_task_id=id;
-                        d_taskdescription=taskdescription;
-                                d_taskname=taskname;
-                                d_taskquantity=quantity;
-
-                                Log.d("this is called",taskname);
-                                list.add(taskname);
-                                openDialog.setVisibility(View.VISIBLE);
-                            }
-                        }
-                        else {
-                            Log.d("this is called","No");
-                            openDialog.setVisibility(View.GONE);
-                           // Toast.makeText(this, "No Similar Task", Toast.LENGTH_SHORT).show();
-                        }
-
+                        recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
+                    if (doneunits.equalsIgnoreCase(""))
+                    {
+                        Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("done_qty")));
+                        doneunits="0";
+                        unitsproduced.setText(doneunits);
 
                     }
-                } catch (JSONException e) {
-                    openDialog.setVisibility(View.GONE);
-                    //Toast.makeText(this, "No Similar Task", Toast.LENGTH_SHORT).show();
+                    else {
+                        int left_units = ((Integer.parseInt(requiredunits.getText().toString()))) - (Integer.parseInt(doneunits));
+                        unitsleft.setText(left_units + " left");
+                        unitsproduced.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
 
-                    e.printStackTrace();
-                }
+                    }
+
+
+
+                        tvtask.setText(cursor.getString(cursor.getColumnIndex("task_name")));
+                        taskdescrip.setText(cursor.getString(cursor.getColumnIndex("task_details")));
+
+
+                        editor.putString("taskname", tvtask.getText().toString());
+
+                        makeTextViewResizable(taskdescrip, 3, "View More", true);
+
+
 
                 }
+                while (cursor.moveToNext());
             }
-            else {
-           /* new AlertDialog.Builder(TaskActivity.this).setTitle("No Records found.").setMessage("Please Sync your data when internet is available.").setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                    finish();
-                }
-            }).show();*/
-           // Toast.makeText(this, "No rec found", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -1179,9 +1139,13 @@ d_task_id=id;
 
                     taskdescrip.setText(taskdescription);
                     requiredunits.setText(quantity);
+                    editor.putString("taskname",tvtask.getText().toString());
+                    attachmenturl=pdf_link;
+                    taskdescrip.setText(taskdescription);
+                    makeTextViewResizable(taskdescrip, 3, "View More", true);
 
                     if (dtask_id != null && !dtask_id.isEmpty()) {
-                        Toast.makeText(this, "has dependent", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "has dependent", Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -1204,50 +1168,10 @@ d_task_id=id;
 
                 String data=response.body().getMessage();
                 Log.d("taskdetail",data);
-                if (data.equalsIgnoreCase("success")){
-                    tvtask.setText(response.body().getTaskname());
-                    getTaskDetailsOffline(response.body().getId());
-                    requiredunits.setText(response.body().getQuantity());
-                    editor.putString("taskname",tvtask.getText().toString());
-
-                    taskdescrip.setText(response.body().getTaskdescription());
-                    makeTextViewResizable(taskdescrip, 3, "View More", true);
-                    List<Dependenttask> dependent= response.body().getDependenttask();
+                if (data.equalsIgnoreCase("success")) {
 
 
-                    List<Qualitycheck> qualitychecks=response.body().getQualitycheck();
-                    if (qualitychecks==null){
-
-                    }else {
-
-/*
-                        myAdapter = new QCAdapter(qualitychecks, getApplicationContext());
-                        recyclerView.setAdapter(myAdapter);*/
-
-                    }
-                    if (dependent==null){
-                      ///  Toast.makeText(TaskActivity.this, "no", Toast.LENGTH_SHORT).show();
-                        openDialog.setVisibility(View.GONE);
-                        //btnStart.setEnabled(true);
-
-                    }else {
-                        //btnStart.setEnabled(false);
-                      //  Toast.makeText(TaskActivity.this, "yes", Toast.LENGTH_SHORT).show();
-
-                        Dependenttask dep = dependent.get(0);
-                        d_taskdescription = dep.getTaskdescription();
-                        d_taskname = dep.getTaskname();
-                        d_taskquantity = dep.getQuantity();
-                        d_task_id=dep.getId();
-                        list.add(d_taskname);
-                        openDialog.setVisibility(View.VISIBLE);
-                    }
                 }
-                else {
-                    Toast.makeText(TaskActivity.this, ""+response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
-
 
 
 
@@ -1626,7 +1550,7 @@ if (sharedPreferences.getString("task","").length()>0){
             HashMap<String,String> hashMap2=timerSession.getStaskDetails();
             unitsproduced2.setText(hashMap2.get(TimerSession.KEY_S_TASKAMT));
             unitslefts.setText(hashMap2.get(TimerSession.KEY_S_TASKLEFT));
-            requiredunit.setText(hashMap2.get(TimerSession.KEY_S_TASKREQ));
+            //requiredunit.setText(hashMap2.get(TimerSession.KEY_S_TASKREQ));
            // Toast.makeText(this, "called"+hashMap2.get(TimerSession.KEY_S_TASKREQ), Toast.LENGTH_SHORT).show();
 
         }
@@ -1644,19 +1568,38 @@ if (sharedPreferences.getString("task","").isEmpty()){
 
     }
 
-
+    public static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, null);
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
+    }
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.action_attach) {
-            Toast.makeText(this, "No Attachment", Toast.LENGTH_SHORT).show();
-            if (PDFTools.isPDFSupported(TaskActivity.this)){
-                PDFTools.showPDFUrl(TaskActivity.this,"http://www.pdf995.com/samples/pdf.pdf");
+            if(attachmenturl!=null) {
+
+                if (attachmenturl.contains(".pdf")) {
+
+
+                    if (PDFTools.isPDFSupported(TaskActivity.this)) {
+                        PDFTools.showPDFUrl(TaskActivity.this, attachmenturl);
+                    } else {
+                        PDFTools.askToOpenPDFThroughGoogleDrive(TaskActivity.this, "http://www.pdf995.com/samples/pdf.pdf");
+                    }
+
+                }
             }
             else {
-                PDFTools.askToOpenPDFThroughGoogleDrive(TaskActivity.this,"http://www.pdf995.com/samples/pdf.pdf");
+                Toast.makeText(this, "No Attachment", Toast.LENGTH_SHORT).show();
+               /* Toast.makeText(this, "d", Toast.LENGTH_SHORT).show();
+                LoadImageFromWebOperations(attachmenturl);*/
             }
-
         }
+
         if (view.getId() == R.id.action_video) {
             showVideo();
         }
