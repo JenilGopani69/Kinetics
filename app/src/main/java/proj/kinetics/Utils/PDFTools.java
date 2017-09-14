@@ -17,8 +17,6 @@ import android.os.Environment;
 
 import java.io.File;
 
-import proj.kinetics.R;
-
 /**
  * Created by sai on 24/8/17.
  */

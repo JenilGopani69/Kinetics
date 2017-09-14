@@ -19,8 +19,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import proj.kinetics.TaskActivity;
 import proj.kinetics.R;
+import proj.kinetics.TaskActivity;
 
 /**
  * 
@@ -46,9 +46,9 @@ import proj.kinetics.R;
  */
 public class TimeService extends Service implements PropertyChangeListener {
 
-	private static final String ACTION_CHANGESTATE	= "com.kodarkooperativet.notificationstopwatch.action_changestate";
-	private static final String ACTION_RESET 		= "com.kodarkooperativet.notificationstopwatch.action_reset";
-	private static final String ACTION_EXIT 		= "com.kodarkooperativet.notificationstopwatch.action_exit";
+	private static final String ACTION_CHANGESTATE	= "proj.kinetics.TimerWidget.action_changestate";
+	private static final String ACTION_RESET 		= "proj.kinetics.TimerWidget.action_reset";
+	private static final String ACTION_EXIT 		= "proj.kinetics.TimerWidget.action_exit";
 
     private static final int NOTIFICATION_ID = 590123562;
 

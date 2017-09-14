@@ -2,24 +2,12 @@ package proj.kinetics.Fragments;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Display;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -27,20 +15,13 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.IOException;
-import java.net.CookieHandler;
 import java.util.HashMap;
 
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
-import proj.kinetics.MainActivity;
 import proj.kinetics.R;
 import proj.kinetics.Utils.SessionManagement;
 
@@ -88,7 +69,7 @@ String userid=user.get(SessionManagement.KEY_USERID);
         //Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
         return inflater.inflate(R.layout.fragment_completed_task, container, false);
     }
-    @Override
+   /* @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.one_menu, menu);
@@ -96,7 +77,7 @@ String userid=user.get(SessionManagement.KEY_USERID);
 
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
+    }*/
 
     private void checkConnection(ViewGroup container) {
         boolean isConnected = ConnectivityReceiver.isConnected();
@@ -231,7 +212,7 @@ String userid=user.get(SessionManagement.KEY_USERID);
 
         }
     }
-    @Override
+  /*  @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -242,7 +223,7 @@ String userid=user.get(SessionManagement.KEY_USERID);
         if (id == R.id.fragment_logout) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.app_name);
+            builder.setTitle("");
 
             builder.setIcon(R.mipmap.ic_alert);
             builder.setMessage("Do you want to exit?")
@@ -268,5 +249,5 @@ String userid=user.get(SessionManagement.KEY_USERID);
 
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }

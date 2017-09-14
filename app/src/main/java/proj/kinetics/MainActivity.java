@@ -2,6 +2,8 @@ package proj.kinetics;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -23,7 +25,7 @@ import java.io.IOException;
 import okhttp3.ResponseBody;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.Database.DBHelper;
-import proj.kinetics.Database.MyDbHelper;
+
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.Utils.SessionManagement;
@@ -32,28 +34,35 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-Button loginBtn;
-
+    Button loginBtn;
+    int i=0,j=0;
+    String task_name="", user_id, project_id, project_name, priority_id, task_id="", estimated_time,duration ,quantity="0", status, amount="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
+    String taskname="";
+    String taskdescription="";
+    String d_id="";
     SessionManagement session;
     EditText txtUsername, txtPassword;
-CheckBox show_hide_password;
-
-MyDbHelper myDbHelper;
+    CheckBox show_hide_password;
+    SQLiteDatabase sqLiteDatabase;
     DBHelper dbHelper;
-
-ProgressDialog progressdialog;
+SharedPreferences firstTime;
+SharedPreferences.Editor firstTimeeditor;
+    ProgressDialog progressdialog;
     CardView cd1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-myDbHelper=new MyDbHelper(getApplicationContext());
-dbHelper=new DBHelper(MainActivity.this);
         // Session Manager
-        session = new SessionManagement(getApplicationContext());
-progressdialog=new ProgressDialog(MainActivity.this);
+        dbHelper=new DBHelper(MainActivity.this);
 
-       if (session.isLoggedIn()==true){
+
+        session = new SessionManagement(getApplicationContext());
+
+        progressdialog=new ProgressDialog(MainActivity.this);
+
+        if (session.isLoggedIn()==true){
             Intent intent=new Intent(MainActivity.this,UserProfileActivity.class);
             startActivity(intent);
 
@@ -82,6 +91,7 @@ progressdialog=new ProgressDialog(MainActivity.this);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteDatabase("offline.db");
 
                 String username = txtUsername.getText().toString();
                 String password = txtPassword.getText().toString();
@@ -94,6 +104,8 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
                     boolean isconnected=ConnectivityReceiver.isConnected();
                     if (isconnected){
+
+
                         getUserLogin(username, password);
                     }
                     else {
@@ -106,7 +118,7 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
 
 
-                        }
+                }
 
 
 
@@ -123,201 +135,165 @@ progressdialog=new ProgressDialog(MainActivity.this);
 
 
     private void getUserLogin(final String username, final String password) {
+
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
         Call<ResponseBody> responseBodyCall=apiInterface.getTaskList(username,password);
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     try {
 
-                        String data=response.body().string();
-                        JSONObject jsonObject=new JSONObject(data);
-                        String dataresponse=jsonObject.getString("message");
+                        String data = response.body().string();
+                        Log.d("mydata",data);
+                        JSONObject jsonObject = new JSONObject(data);
+                        String dataresponse = jsonObject.getString("message");
                         if (dataresponse.equalsIgnoreCase("success")) {
-                            deleteDatabase("offline.db");
-
-                            String task_name, user_id, project_id, project_name, priority_id, task_id, estimated_time, required_time, status, total_qty, done_qty="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
-
-
-                            user_id = jsonObject.getString("user_id");
-                            JSONArray jsonArray = jsonObject.getJSONArray("task");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jobj = jsonArray.getJSONObject(i);
-
-                                task_id = jobj.getString("task_id");
-                                project_id = jobj.getString("project_id");
-                                project_name = jobj.getString("project_name");
-                                task_name = jobj.getString("task_name");
-                                estimated_time = jobj.getString("estimated_time");
-                                required_time = jobj.getString("required_time");
-                                status = jobj.getString("status");
-                                total_qty = jobj.getString("total_qty");
-                                done_qty = jobj.getString("done_qty");
-                                task_details = jobj.getString("task_details");
-                                priority_id = jobj.getString("priority");
-
-
-                                if (dbHelper.isProjectExisting(project_id)){
-                                    Log.e("errr",""+project_name+" "+user_id);
-                                    dbHelper.updateProject(project_id,project_name,user_id);
-
-
-                                }
-                                else {
-                                    Log.e("errr2",""+project_name+" "+user_id);
-
-                                    dbHelper.addProject(project_id, project_name, user_id);
-
-                                }
-                                if (dbHelper.istaskExisting(task_id)==true){
-                                    dbHelper.updateTask(task_id, task_name,project_id,priority_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link, dependent_task_id, video_link, user_id);
-
-                                    getTaskDetailsOffline(user_id, task_id);
-                                }
-                                else {
-                                    dbHelper.addTask(task_id, task_name,project_id,priority_id, estimated_time, required_time, status, total_qty, done_qty, task_details, pdf_link, dependent_task_id, video_link, user_id);
-
-                                    getTaskDetailsOffline(user_id,task_id);
-                                }
-
-                                if (progressdialog.isShowing()) {
+                            if (jsonObject.getString("task").equalsIgnoreCase("null"))
+                            {
+                                if (progressdialog.isShowing())
+                                {
                                     progressdialog.dismiss();
-                                    session.createLoginSession(username, password, user_id);
-
-                                } else {
-                                    if (progressdialog.isShowing()) {
-                                        progressdialog.dismiss();
-                                    }
+                                    Toast.makeText(MainActivity.this, "No Task Assigned", Toast.LENGTH_SHORT).show();
                                 }
-
 
                             }
+                            //  Toast.makeText(MainActivity.this, ""+response.body().string(), Toast.LENGTH_SHORT).show();
+
+                            //get task detail   add and update task
+                            user_id=jsonObject.getString("user_id");
+                            if (jsonObject.has("task")) {
+
+                                JSONArray taskjsnarray = jsonObject.getJSONArray("task");
+
+
+                                for (int i = 0; i < taskjsnarray.length(); i++) {
+                                    JSONObject jsonObject1 = taskjsnarray.getJSONObject(i);
+                                    task_id = jsonObject1.getString("id");
+                                    task_name = jsonObject1.getString("taskname");
+                                    task_details = jsonObject1.getString("taskdescription");
+                                    status = jsonObject1.getString("status");
+                                    project_name = jsonObject1.getString("project_name");
+
+                                    //totasl required
+                                    quantity = jsonObject1.getString("quantity");
+                                    estimated_time = jsonObject1.getString("estimated_time");
+                                    duration = jsonObject1.getString("duration");
+                                    amount = jsonObject1.getString("amount");
+                                    pdf_link = jsonObject1.getString("pdf_link");
+                                    video_link = jsonObject1.getString("video_link");
+
+                                    if (dbHelper.istaskExisting(task_id))
+                                    {
+                                        dbHelper.updateTask(task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                    }
+                                    else
+                                    {
+                                        dbHelper.addTask(task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                    }
+                                    //add task or update task
+                                    if (jsonObject1.has("qc")) {
+
+
+                                        JSONArray qcarray = jsonObject1.getJSONArray("qc");
+                                        for (int j = 0; j < qcarray.length(); j++) {
+                                            JSONObject qcObject = qcarray.getJSONObject(j);
+                                            String qcstatus, qcid, qcdescrip, qcimg, qcvideo;
+                                            qcstatus = qcObject.getString("status");
+                                            qcid = qcObject.getString("id");
+                                            qcdescrip = qcObject.getString("descripton");
+                                            qcimg = qcObject.getString("image_link");
+                                            qcvideo = qcObject.getString("video_link");
+
+                                            //add or update qc
+                                            if (dbHelper.isQCExisting(qcid))
+                                            {
+                                                dbHelper.updateQC(qcid,qcstatus,qcdescrip,qcvideo,qcimg,user_id,task_id);
+                                            }
+                                            else
+                                            {
+                                                dbHelper.addQC(qcid,qcstatus,qcdescrip,qcvideo,qcimg,user_id,task_id);
+                                            }
+
+                                        }
+                                    }
+                                    if (jsonObject1.has("dependenttask")) {
+
+
+
+
+                                            JSONObject maintask = jsonObject1.getJSONObject("dependenttask");
+                                            //Toast.makeText(MainActivity.this, ""+maintask.length(), Toast.LENGTH_SHORT).show();
+
+                                            String maintaskid = "", main_task_status, maintask_name;
+                                            maintaskid = maintask.getString("id");
+                                            // Toast.makeText(MainActivity.this, ""+maintaskid, Toast.LENGTH_SHORT).show();
+
+                                            main_task_status = maintask.getString("status");
+                                            maintask_name = maintask.getString("taskname");
+
+                                            //add or update taskmapping
+                                            if (main_task_status.equalsIgnoreCase("7")) {
+
+                                            } else {
+                                                if (dbHelper.isTaskMapId(task_id)) {
+                                                    dbHelper.updateTaskMapping(task_id, maintaskid, maintask_name, main_task_status);
+                                                } else {
+                                                    dbHelper.insertTaskMapping(task_id, maintaskid, maintask_name, main_task_status);
+                                                }
+
+
+                                            }
+
+                                    }
+
+                                }
+                            }
+                            if (progressdialog.isShowing()){
+                                progressdialog.dismiss();
+                                // Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_SHORT).show();
+                                Intent intent =new Intent(MainActivity.this,UserProfileActivity.class);
+                                session.createLoginSession(username,password,user_id);
+                                startActivity(intent);
+
+                            }
+
 
 
                         }
                         else {
-                            if (progressdialog.isShowing()) {
+                            if (progressdialog.isShowing())
+                            {
                                 progressdialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Please Enter Valid Credentials", Toast.LENGTH_SHORT).show();
                             }
-
-                            Toast.makeText(MainActivity.this, "Invalid Login Credentials", Toast.LENGTH_SHORT).show();
                         }
 
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }else {
-                    Log.d("response","no response");
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                progressdialog.dismiss();
                 Log.d("response",""+t.getMessage());
             }
         });
     }
 
-    public void getTaskDetailsOffline(final String user_id, final String id) {
-        ApiInterface api = ApiClient.getClient().create(ApiInterface.class);
-        Call<ResponseBody> response = api.getTaskDetailsOffline(id);
-        response.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    String data = response.body().string();
-                    JSONObject jsonObject = new JSONObject(data);
-                    String dataresponse = jsonObject.getString("message");
-                    if (dataresponse.equalsIgnoreCase("success"))
-                    {
-                        String taskid,taskname,taskdescription,quantity,estimated_time,duration,amount,pdf_link,video_link;
 
-                        JSONArray depjsonarray=jsonObject.getJSONArray("dependenttask");
-
-                        if (depjsonarray.length()>0) {
-
-                            for (int i = 0; i < depjsonarray.length(); i++) {
-
-                                JSONObject childobj=depjsonarray.getJSONObject(i);
-
-
-
-                                    if (dbHelper.istaskExisting(id)){
-                                     //   Toast.makeText(MainActivity.this,id+ "exits"+childobj.getString("id"), Toast.LENGTH_SHORT).show();
-                                        dbHelper.updateDTask(id,childobj.getString("id"));
-                                        Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                                        startActivity(intent);
-                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                                    }
-                                    else {
-                                        Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                                        startActivity(intent);
-                                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                                    }
-
-
-
-                            }
-                        }
-
-
-
-                        JSONArray qcjsonarray=jsonObject.getJSONArray("qualitycheck");
-                        if (qcjsonarray.length()>0) {
-
-                            for (int i = 0; i < qcjsonarray.length(); i++) {
-
-                                JSONObject childobj=qcjsonarray.getJSONObject(i);
-
-                                Log.d("qcdata",""+childobj.getString("descripton")+" "+id);
-
-                                if (dbHelper.isQCExisting(childobj.getString("id"))){
-
-                                    dbHelper.updateQC(childobj.getString("id"),childobj.getString("status"),childobj.getString("description"),childobj.getString("video_link"),childobj.getString("image_link"),user_id,id);
-                                    Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                                }
-                                else {
-                                    dbHelper.addQC(childobj.getString("id"),childobj.getString("status"),childobj.getString("description"),childobj.getString("video_link"),childobj.getString("image_link"),user_id,id);
-                                    Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
-                                    startActivity(intent);
-                                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                                }
-
-
-
-
-                            }
-                        }
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-                @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-
-
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (session.isLoggedIn()==true){
-           Intent intent=new Intent(MainActivity.this,UserProfileActivity.class);
+            Intent intent=new Intent(MainActivity.this,UserProfileActivity.class);
             startActivity(intent);
         }
     }

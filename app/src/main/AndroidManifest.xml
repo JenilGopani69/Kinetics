@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="proj.kinetics">
-
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -30,7 +30,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".TaskActivity"
-            android:noHistory="true"
+android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".NoTaskActivity"
@@ -67,9 +67,19 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@style/Theme.CompleteTransparent" />
-        <activity android:name=".QCActivity"
+        <activity
+            android:name=".QCActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VideoActivity"
+            android:label=""
             android:screenOrientation="portrait"
-            android:noHistory="true"></activity>
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".TaskSelection"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert" ></activity>
     </application>
 
 </manifest>

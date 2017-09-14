@@ -3,7 +3,6 @@ package proj.kinetics.Adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.QCActivity;
 import proj.kinetics.R;
-import proj.kinetics.TaskActivity;
 
 
 /**

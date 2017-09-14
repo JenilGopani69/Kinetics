@@ -2,42 +2,27 @@ package proj.kinetics.Fragments;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
-import proj.kinetics.MainActivity;
-import proj.kinetics.R;
 import proj.kinetics.MyApplication;
+import proj.kinetics.R;
 import proj.kinetics.Utils.SessionManagement;
 
 /**
@@ -87,15 +72,15 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         return inflater.inflate(R.layout.fragment_reports, container, false);
     }
-    @Override
+  /*  @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.one_menu, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -105,7 +90,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         //noinspection SimplifiableIfStatement
         if (id == R.id.fragment_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.app_name);
+            builder.setTitle("");
             builder.setIcon(R.mipmap.ic_alert);
             builder.setMessage("Do you want to logout?")
                     .setCancelable(false)
@@ -128,7 +113,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     private void checkConnection(ViewGroup container) {
         boolean isConnected = ConnectivityReceiver.isConnected();
         showSnack(isConnected,container);

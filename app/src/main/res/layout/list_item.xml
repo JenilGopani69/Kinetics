@@ -70,6 +70,7 @@ android:layout_marginRight="10dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:maxLines="2"
 android:layout_weight="1"
+                        android:id="@+id/duedatename"
                         android:text="DUE DATE" />
 
                     <TextView
@@ -132,7 +133,10 @@ android:text="25 hr"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 android:layout_gravity="start"
+                        android:visibility="invisible"
+
                         android:gravity="start"
+                        android:id="@+id/priorityname"
                         android:layout_weight="1"
                         android:layout_marginRight="10dp"                        android:text="PRIORITY" />
 

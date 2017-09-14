@@ -60,11 +60,15 @@ public class TimerSession {
     }
 
 
+    public  void addST(String id){
+        timereditor.putBoolean(IS_STASK, true);
+        timereditor.commit();
+
+    }
     public void addStask(String staskid,String staskreq){
         timereditor.putString(KEY_S_TASKID, staskid);
         timereditor.putString(KEY_S_TASKREQ, staskreq);
 
-        timereditor.putBoolean(IS_STASK, true);
 
     }
 

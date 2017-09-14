@@ -1,30 +1,23 @@
 package proj.kinetics;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -32,37 +25,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
-import proj.kinetics.Model.Dependenttask;
-import proj.kinetics.Model.Qualitycheck;
-import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.Model.TaskDetails;
-import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.Utils.MySpannable;
-import proj.kinetics.Utils.RecyclerTouchListener;
 import proj.kinetics.Utils.SessionManagement;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -248,7 +225,7 @@ public class NoTaskActivity extends AppCompatActivity {
                                       /*  if (stringBuilder.length() > 0) stringBuilder.append(",");
                                         stringBuilder.append(list.getItemAtPosition(i));*/
                                         coordinate.setVisibility(View.VISIBLE);
-                                        taskdescrips = (TextView) findViewById(R.id.taskdescrips);
+                                        taskdescrips = (TextView) findViewById(R.id.taskdescrip2);
 
                                         makeTextViewResizable(taskdescrips, 3, "View More", true);
 
@@ -289,7 +266,7 @@ public class NoTaskActivity extends AppCompatActivity {
         taskd = (LinearLayout) findViewById(R.id.taskd);
 
         unitsdata = (LinearLayout) findViewById(R.id.unitsdata);
-        unitsdatas = (LinearLayout) findViewById(R.id.unitsdatas);
+        unitsdatas = (LinearLayout) findViewById(R.id.unitsdata2);
         lintask = (LinearLayout) findViewById(R.id.lintask);
         unitsproduced = (EditText) findViewById(R.id.unitsproduced);
         unitsproduced2 = (EditText) findViewById(R.id.unitsproduced2);
@@ -297,7 +274,7 @@ public class NoTaskActivity extends AppCompatActivity {
         requiredunits = (TextView) findViewById(R.id.requiredunits);
         tvTime = (TextView) findViewById(R.id.tvTime);
         unitsleft = (TextView) findViewById(R.id.unitsleft);
-        unitslefts = (TextView) findViewById(R.id.unitslefts);
+        unitslefts = (TextView) findViewById(R.id.unitsleft2);
         totalunits = (TextView) findViewById(R.id.totalunits);
         btnStart = (Button) findViewById(R.id.btnStart);
         btnComplete = (Button) findViewById(R.id.btnComplete);

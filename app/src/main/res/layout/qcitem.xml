@@ -28,7 +28,7 @@
             android:src="@mipmap/ic_videoqc"
             android:layout_width="50dp"
             android:layout_height="50dp"
-
+android:id="@+id/video_view"
             android:layout_centerVertical="true" >
         </ImageView>
         <CheckBox

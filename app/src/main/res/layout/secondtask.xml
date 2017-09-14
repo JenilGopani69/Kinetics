@@ -45,7 +45,7 @@ android:visibility="gone"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                         android:textColor="@color/background" />
                     <ImageButton
-                        android:id="@+id/action_attachs"
+                        android:id="@+id/action_attach2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
@@ -53,7 +53,7 @@ android:visibility="gone"
                         android:background="@android:color/transparent"
                         android:src="@mipmap/ic_attach" />
                     <ImageButton
-                        android:id="@+id/action_videos"
+                        android:id="@+id/action_video2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
@@ -65,7 +65,7 @@ android:visibility="gone"
                     android:layout_height="2dp"
                     android:background="@color/background"/>
                 <TextView
-                    android:id="@+id/taskdescrips"
+                    android:id="@+id/taskdescrip2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
@@ -86,13 +86,14 @@ android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="*REQUIRED QUANTITY:"
+                        android:text="*R. Q
+                        TY:"
                         android:textColor="@color/pauseBtn"
                         android:textStyle="bold" />
 
 
                     <TextView
-                        android:id="@+id/requiredunit"
+                        android:id="@+id/requiredunit2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -112,7 +113,7 @@ android:visibility="gone"
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/unitsdatas"
+                    android:id="@+id/unitsdata2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -132,7 +133,7 @@ android:visibility="gone"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/unitslefts"
+                            android:id="@+id/unitsleft2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"

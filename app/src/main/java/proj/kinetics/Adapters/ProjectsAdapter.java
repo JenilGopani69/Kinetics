@@ -2,18 +2,15 @@ package proj.kinetics.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import proj.kinetics.Database.DBHelper;
-import proj.kinetics.Model.ProjectItem;
 import proj.kinetics.Model.Task;
 import proj.kinetics.R;
 
@@ -26,7 +23,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
     Context context;
 
 
-    public ProjectsAdapter( List<Task> list, Context context) {
+    public ProjectsAdapter(List<Task> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -46,15 +43,27 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
 
         Task getSet = (Task) list.get(position);
         holder.name.setText(getSet.getTaskName());
-        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
-        holder.itemView.startAnimation(animation);
-        holder.priorityid.setText(getSet.getPriority());
-        holder.pname.setText("~"+getSet.getProjectName());
+       /* Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+        holder.itemView.startAnimation(animation);*/
+
+           holder.priorityid.setText(getSet.getPriority());
+        Log.d("checkempty",""+getSet.getPriority());
+
+       if (getSet.getProjectName()!=null) {
+
+           holder.pname.setText("~" + getSet.getProjectName());
+       }
+       else {
+           holder.pname.setText("");
+       }
         holder.estimated_time.setText(getSet.getEstimatedTime());
-
-        holder.duedate.setText(getSet.getRequiredTime());
-        //holder.nooftask.setText(getSet.getNooftask());
-
+        if (getSet.getRequiredTime()!=null) {
+            holder.duedate.setText(getSet.getRequiredTime());
+            //holder.nooftask.setText(getSet.getNooftask());
+        }
+        else {
+            holder.duedatename.setText("");
+        }
 
 
     }
@@ -68,7 +77,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView name, duedate, pname, priorityid,estimated_time;
+        TextView name, duedate, pname, priorityid,estimated_time,duedatename,priorityname;
 
         Context ctx;
         List<Task> arrayList = new ArrayList();
@@ -79,6 +88,8 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
             name = (TextView) itemView.findViewById(R.id.name);
             duedate = (TextView) itemView.findViewById(R.id.duedate);
             priorityid = (TextView) itemView.findViewById(R.id.priorityid);
+            duedatename = (TextView) itemView.findViewById(R.id.duedatename);
+            priorityname = (TextView) itemView.findViewById(R.id.priorityname);
             pname = (TextView) itemView.findViewById(R.id.pname);
             estimated_time = (TextView) itemView.findViewById(R.id.estimated_time);
 

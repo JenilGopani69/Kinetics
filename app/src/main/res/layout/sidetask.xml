@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/pausehide"
+
+    android:layout_height="wrap_content">
+<android.support.design.widget.CoordinatorLayout
+
     android:orientation="vertical"
     android:elevation="5dp"
+
     android:background="@color/white_greyish"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -87,7 +95,7 @@ android:textColor="@android:color/black"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="*REQUIRED QUANTITY:"
+                        android:text="*R. QTY:"
                         android:textColor="@color/pauseBtn"
                         android:textStyle="bold" />
 
@@ -243,3 +251,5 @@ android:src="@android:drawable/ic_input_add"
         android:clickable="true"/>
 
 </android.support.design.widget.CoordinatorLayout>
+
+</FrameLayout>

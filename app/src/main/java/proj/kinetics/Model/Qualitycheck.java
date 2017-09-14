@@ -14,6 +14,14 @@ public class Qualitycheck {
         return isSelected;
     }
 
+    public Qualitycheck(String status, String id, String descripton, String imageLink, String videoLink) {
+        this.status = status;
+        this.id = id;
+        this.descripton = descripton;
+        this.imageLink = imageLink;
+        this.videoLink = videoLink;
+    }
+
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
