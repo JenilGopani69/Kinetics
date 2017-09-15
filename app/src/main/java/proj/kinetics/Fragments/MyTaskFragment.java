@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -50,6 +52,7 @@ import retrofit2.Callback;
 public class MyTaskFragment extends Fragment {
     String username, password;
     DBHelper dbHelper;
+    ImageButton syncc;
     String task_name = "", project_id, project_name = "", priority_id, task_id = "", estimated_time, duration, quantity = "0", status, amount = "0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
     SessionManagement session;
     ArrayList<DTask> arraylist = new ArrayList<>();
@@ -62,6 +65,7 @@ public class MyTaskFragment extends Fragment {
     SwipeRefreshLayout swipeRefresh;
     private View view;
     private LinearLayoutManager linearLayout;
+    private String due_date;
 
     public MyTaskFragment() {
         // Required empty public constructor
@@ -95,13 +99,19 @@ public class MyTaskFragment extends Fragment {
 
 
         tasklist = view.findViewById(R.id.tasklist);
+        syncc = view.findViewById(R.id.syncc);
 
 
         linearLayout = new LinearLayoutMangerWithSmoothScroll(getActivity());
         gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         tasklist.setLayoutManager(linearLayout);
 
-
+        syncc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTaskDetail(username,password);
+            }
+        });
         tasklist.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), tasklist, new RecyclerTouchListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -184,7 +194,7 @@ public class MyTaskFragment extends Fragment {
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
-                    String task_id, project_id, project_name = null, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, priority, task_details;
+                    String task_id, due, project_name = null, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, priority, task_details;
 
                     task_id = cursor.getString(cursor.getColumnIndex("task_id"));
                     project_name = cursor.getString(cursor.getColumnIndex("project_name"));
@@ -199,10 +209,11 @@ public class MyTaskFragment extends Fragment {
                     total_qty = cursor.getString(cursor.getColumnIndex("total_qty"));
                     done_qtytask_details = cursor.getString(cursor.getColumnIndex("done_qty"));
                     task_details = cursor.getString(cursor.getColumnIndex("task_details"));
+                    due = cursor.getString(cursor.getColumnIndex("due_date"));
                     priority = cursor.getString(cursor.getColumnIndex("priority_id"));
 
                     Task task = new Task(task_id, "", project_name, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, task_details, "");
-
+task.setDue_date(due);
 
                     list.add(task);
 
@@ -224,6 +235,7 @@ public class MyTaskFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
+
                     try {
 
                         String data = response.body().string();
@@ -238,7 +250,13 @@ public class MyTaskFragment extends Fragment {
                             swipeRefresh.setRefreshing(false);
                             //get task detail   add and update task
                             userId = jsonObject.getString("user_id");
+
+
                             if (jsonObject.has("task")) {
+
+
+
+
 
                                 JSONArray taskjsnarray = jsonObject.getJSONArray("task");
 
@@ -257,14 +275,15 @@ public class MyTaskFragment extends Fragment {
                                     amount = jsonObject1.getString("amount");
                                     pdf_link = jsonObject1.getString("pdf_link");
                                     video_link = jsonObject1.getString("video_link");
+                                    due_date = jsonObject1.getString("due_date");
 
-                                    Log.d("new data", task_id);
+                                    Log.d("new data", pdf_link);
                                     if (dbHelper.istaskExisting(task_id)) {
                                         Log.d("update data", task_id + " " + estimated_time);
-                                        dbHelper.updateTask(task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
+                                        dbHelper.updateTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     } else {
                                         Log.d("add data", task_id);
-                                        dbHelper.addTask(task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
+                                        dbHelper.addTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     }
                                     //add task or update task
                                     if (jsonObject1.has("qc")) {
@@ -321,6 +340,10 @@ public class MyTaskFragment extends Fragment {
                                 } else {
                                     getOfflineTask();
                                 }
+                                syncc.setVisibility(View.GONE);
+
+                            }else {
+                                syncc.setVisibility(View.VISIBLE);
                             }
 
 
@@ -347,6 +370,7 @@ public class MyTaskFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         //  Toast.makeText(getActivity(), "refreshed", Toast.LENGTH_SHORT).show();
 
         boolean isConnected = ConnectivityReceiver.isConnected();
@@ -357,6 +381,8 @@ public class MyTaskFragment extends Fragment {
                 list.clear();
                 getOfflineTask();
             } else {
+
+
                 getOfflineTask();
             }
 
@@ -369,6 +395,14 @@ public class MyTaskFragment extends Fragment {
                 getOfflineTask();
             }
 
+        }
+
+        if (list.isEmpty()){
+            syncc.setVisibility(View.VISIBLE);
+
+        }
+        else {
+            syncc.setVisibility(View.GONE);
         }
     }
 

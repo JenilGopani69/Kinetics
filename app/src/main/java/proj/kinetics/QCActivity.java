@@ -31,9 +31,11 @@ import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.Session.TimerSession;
+import proj.kinetics.Session.TimerSessionForAddTask;
 import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
+import proj.kinetics.Utils.RecyclerTouchListener;
 import proj.kinetics.Utils.SessionManagement;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +49,7 @@ public class QCActivity extends AppCompatActivity {
     TextView taskqcname;
     QCAdapter_ qcAd;
     QCAdapter myAdapter;
-    String taskid = "", userId;
+    String taskid = "", userId,taskselectedid;
     TimerSession timerSession;
     SharedPreferences sharedPreferences;
     DBHelper dbHelper;
@@ -56,6 +58,8 @@ public class QCActivity extends AppCompatActivity {
     List<Qualitycheck> list = new ArrayList<>();
     LinearLayout taskd;
     private SessionManagement session;
+
+TimerSessionForAddTask timerSessionForAddTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,7 @@ public class QCActivity extends AppCompatActivity {
         taskid = getIntent().getStringExtra("taskid");
         recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
         taskqcname = (TextView) findViewById(R.id.taskqcname);
+        timerSessionForAddTask=new TimerSessionForAddTask(QCActivity.this);
         d_qc_recycler = (RecyclerView) findViewById(R.id.qcrecylerdependent);
         taskd = (LinearLayout) findViewById(R.id.taskd);
         finishtask = (Button) findViewById(R.id.finishtask);
@@ -80,10 +85,28 @@ public class QCActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL
                 , false);
         recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(QCActivity.this, recyclerView, new RecyclerTouchListener.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(View view, int position) {
+                Toast.makeText(QCActivity.this, ""+QCAdapter.arrayListQc, Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        }));
         d_qc_recycler.setLayoutManager(layoutManager2);
         //  getTaskDetails();
 
         getTaskQC(taskid);
+
+
+
 
         finishtask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +148,16 @@ public class QCActivity extends AppCompatActivity {
         finishtask.setBackgroundColor(Color.GRAY);
         finishtask.setEnabled(false);
         finishtask.setClickable(false);
+HashMap<String,String> hm=timerSessionForAddTask.getTaskDetails(taskid);
 
+        taskselectedid=hm.get(taskid);
+        if (taskselectedid.equalsIgnoreCase("0")){
+            Toast.makeText(this, "has sub task", Toast.LENGTH_SHORT).show();
+
+        }
+        else {
+            Toast.makeText(this, "has sub task", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -146,6 +178,9 @@ public class QCActivity extends AppCompatActivity {
                     image_link = c.getString(c.getColumnIndex("image_link"));
                     video_link = c.getString(c.getColumnIndex("video_link"));
                     Qualitycheck qualitycheck = new Qualitycheck(status, id, descripton, image_link, video_link);
+                    qualitycheck.setUserid(userId);
+                    qualitycheck.setTaskid(taskid);
+
                     list.add(qualitycheck);
 
                 } while (c.moveToNext());
@@ -209,7 +244,7 @@ public class QCActivity extends AppCompatActivity {
                     if (dependent == null) {
 
 
-                    } else {
+                    } /*else {
                         if (timerSession.isLoggedIn()) {
                             HashMap<String, String> hashMap2 = timerSession.getStaskDetails();
 
@@ -226,7 +261,7 @@ public class QCActivity extends AppCompatActivity {
 
 
                     }
-                }
+*/                }
 
 
             }

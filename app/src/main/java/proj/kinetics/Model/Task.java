@@ -8,6 +8,16 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Task {
+    private String due_date;
+
+    public String getDue_date() {
+        return due_date;
+    }
+
+    public void setDue_date(String due_date) {
+        this.due_date = due_date;
+    }
+
     @SerializedName("task_id")
     @Expose
     private String taskId;

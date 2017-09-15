@@ -14,6 +14,25 @@ public class Qualitycheck {
         return isSelected;
     }
 
+
+    String userid,taskid;
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getTaskid() {
+        return taskid;
+    }
+
+    public void setTaskid(String taskid) {
+        this.taskid = taskid;
+    }
+
     public Qualitycheck(String status, String id, String descripton, String imageLink, String videoLink) {
         this.status = status;
         this.id = id;

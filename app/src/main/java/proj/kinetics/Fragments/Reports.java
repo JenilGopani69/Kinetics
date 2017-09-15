@@ -64,8 +64,9 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         // name
         String name = user.get(SessionManagement.KEY_USERNAME);
+        String userid=user.get(SessionManagement.KEY_USERID);
 
-        url="http://66.201.99.67/~kinetics/reports.php?user_id="+user.get(SessionManagement.KEY_USERID)+"&viewreport=&key=9yESZ6XB4ey5afG9";
+        url="http://66.201.99.67/~kinetics/reports.php?user_id="+userid+"&viewreport=&key=9yESZ6XB4ey5afG9";
         // email
         String email = user.get(SessionManagement.KEY_PASSWORD);
      //   Toast.makeText(getActivity(), "LoggedIN"+name, Toast.LENGTH_SHORT).show();
@@ -151,6 +152,8 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         super.onViewCreated(view, savedInstanceState);
         webView=view.findViewById(R.id.webreports);
         internetid=view.findViewById(R.id.internetid);
+
+
         CookieSyncManager.createInstance(getActivity().getBaseContext());
         CookieSyncManager.getInstance().startSync();
         CookieSyncManager.getInstance().sync();
@@ -164,7 +167,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
 
                     webView.setWebViewClient(new MyBrowser());
-                    webView.getSettings().setLoadWithOverviewMode(true);
+                   /* webView.getSettings().setLoadWithOverviewMode(true);
                     webView.getSettings().setUseWideViewPort(true);
                     webView.getSettings().setLoadsImagesAutomatically(true);
                     webView.getSettings().setJavaScriptEnabled(true);
@@ -174,7 +177,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
                     webView.getSettings().setAllowFileAccess(true);
                     webView.getSettings().setAppCacheEnabled(true);
                     webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
-                    webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+                    webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);*/
 
 
     }
@@ -196,20 +199,30 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            webView.loadUrl("javascript:document.body.style.padding=\"0%\"; void 0");
-            webView.loadUrl("javascript:document.body.style.margin=\"0%\"; void 0");
+
+
             CookieSyncManager.getInstance().sync();
         }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            if (view.getSettings().getCacheMode()==WebSettings.LOAD_NO_CACHE){
+                webView.setVisibility(View.GONE);
+                internetid.setVisibility(View.VISIBLE);
+            }
+            super.onReceivedError(view, errorCode, description, failingUrl);
+
+        }
+
     }
 
 
-    @Override
+    /*@Override
     public void onResume() {
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this,container);
 
 
-    }
+    }*/
 
 }

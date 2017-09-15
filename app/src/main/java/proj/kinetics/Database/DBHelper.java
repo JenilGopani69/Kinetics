@@ -29,12 +29,27 @@ public class DBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("create table taskmapping(task_id integer primary key ,taskname text , dtask_id text,dtaskstatus text)");
         sqLiteDatabase.execSQL("create table projects(project_id integer primary key, project_name varchar(100), user_id integer)");
-        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, project_name text, task_name text, estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text)");
+        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, project_name text, task_name text, due_date text ,estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text)");
         sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text)");
         sqLiteDatabase.execSQL("create table qc(id integer primary key, status text, description varchar(100),video_link varchar(100),image_link text, user_id integer,task_id integer ,FOREIGN KEY(task_id) references task(task_id))");
 
     }
 
+
+    public boolean isTaskCompleted(String taskid){
+
+        SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
+        Cursor cursor=sqLiteDatabase.rawQuery("select * from task where task_id = '"+taskid+"' and status = 7",null);
+        boolean b=false;
+        if (cursor.getCount()>0)
+        {
+            b=true;
+        }
+        else {
+            b=false;
+        }
+        return  b;
+    }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
@@ -48,7 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String num = "0";
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
-        Cursor c = sqLiteDatabase.rawQuery("SELECT COUNT(task_id) FROM task where status=7 or status=6 or status=5 or status=4", null);
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(task_id) FROM task where status in(7,5,6); ", null);
 
         if (c.getCount() > 0) {
             if (c.moveToFirst()) {
@@ -69,16 +84,13 @@ public class DBHelper extends SQLiteOpenHelper {
         String num = "0";
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
-        Cursor c = sqLiteDatabase.rawQuery("SELECT COUNT(id) FROM pause_reason", null);
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(id) FROM pause_reason", null);
 
         if (c.getCount() > 0) {
-            if (c.moveToFirst()) {
-                do {
 
-                    num = c.getString(0);
-                    Log.d("ddddpasue", num);
-                } while (c.moveToNext());
-            }
+
+            num=""+c.getCount();
+            Log.d("dsfs",num);
         }
 
         return num;
@@ -191,13 +203,14 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addTask(String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+    public void addTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("task_id", task_id);
         contentValues.put("priority_id", priority_id);
         contentValues.put("task_name", task_name);
+        contentValues.put("due_date", due_date);
 
         contentValues.put("project_name", project_name);
         contentValues.put("estimated_time", estimated_time);
@@ -234,8 +247,17 @@ public class DBHelper extends SQLiteOpenHelper {
         return status;
     }
 
+    public String getCounttask(){
+        String num="0";
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
+         num=""+c.getCount();
 
-    public void updateTask(String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+        return num;
+
+    }
+
+    public void updateTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -254,6 +276,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("dependent_task_id", dependent_task_id);
         contentValues.put("video_link", video_link);
         contentValues.put("user_id", user_id);
+        contentValues.put("due_date", due_date);
 
         sqLiteDatabase.update("task", contentValues, "task_id=" + task_id + "", null);
         //sqLiteDatabase.rawQuery("update task set priority_id='"+priority_id+"'  , video_link='"+video_link+"' , user_id='"+user_id+"' , dependent_task_id='"+dependent_task_id+"' , pdf_link='"+pdf_link+"' , task_details='"+task_details+"' , done_qty='"+done_qty+"' , total_qty='"+total_qty+"' , status='"+status+"' , required_time='"+required_time+"' , task_name='"+task_name+"' , estimated_time='"+estimated_time+"' , projects_id='"+projects_id+"' where task_id="+task_id+" ",null);

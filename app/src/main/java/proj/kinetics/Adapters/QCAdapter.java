@@ -21,10 +21,16 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import proj.kinetics.Model.Qualitycheck;
 import proj.kinetics.QCActivity;
 import proj.kinetics.R;
+import proj.kinetics.Utils.ApiClient;
+import proj.kinetics.Utils.ApiInterface;
 import proj.kinetics.VideoActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -61,11 +67,26 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
     public void onBindViewHolder(final MyViewHolder holder, int position) {
 
         final Qualitycheck qualitycheck=arrayList.get(position);
+
+
+        //if (qualitycheck.getId().equalsIgnoreCase("49")){
+        //}
         holder.textView.setText(qualitycheck.getDescripton());
 
         holder.checkBox1.setChecked(arrayList.get(position).getSelected());
 holder.sub_textview.setText(qualitycheck.getDescripton());
         holder.checkBox1.setTag(position);
+
+/*
+if (qualitycheck.getId().equalsIgnoreCase("50")){
+    holder.checkBox1.setChecked(true);
+}
+else {
+    holder.checkBox1.setChecked(false);
+}
+*/
+
+
         holder.profile_imageview.setTag("http://www.tivix.com/uploads/blog_pics/Android-logo.png");
         holder.checkBox1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +107,7 @@ holder.sub_textview.setText(qualitycheck.getDescripton());
 //                    Toast.makeText(context, "selected"+qualitycheck.getId(), Toast.LENGTH_SHORT).show();
                     arrayList.get(pos).setSelected(true);
                     arrayListQc.add(qualitycheck.getId());
+                    UpdateQC(qualitycheck.getUserid(),qualitycheck.getTaskid(),arrayListQc);
                     Log.d("myselection","a"+arrayListQc);
                 }
 
@@ -106,6 +128,22 @@ holder.sub_textview.setText(qualitycheck.getDescripton());
         });
 
 
+
+    }
+    private void UpdateQC(String userId, String taskid, List<String> list) {
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+
+        Call<ResponseBody> responseBody = apiInterface.updateQC(userId, taskid, list);
+        responseBody.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            }
+        });
 
     }
     public static ArrayList<String> getCount(){

@@ -36,7 +36,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
     Button loginBtn;
     int i=0,j=0;
-    String task_name="", user_id, project_id, project_name, priority_id, task_id="", estimated_time,duration ,quantity="0", status, amount="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
+    String task_name="", user_id, project_id, project_name, priority_id, task_id="", estimated_time,duration,due_date ,quantity="0", status, amount="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
     String taskname="";
     String taskdescription="";
     String d_id="";
@@ -149,15 +149,7 @@ SharedPreferences.Editor firstTimeeditor;
                         JSONObject jsonObject = new JSONObject(data);
                         String dataresponse = jsonObject.getString("message");
                         if (dataresponse.equalsIgnoreCase("success")) {
-                            if (jsonObject.getString("task").equalsIgnoreCase("null"))
-                            {
-                                if (progressdialog.isShowing())
-                                {
-                                    progressdialog.dismiss();
-                                    Toast.makeText(MainActivity.this, "No Task Assigned", Toast.LENGTH_SHORT).show();
-                                }
 
-                            }
                             //  Toast.makeText(MainActivity.this, ""+response.body().string(), Toast.LENGTH_SHORT).show();
 
                             //get task detail   add and update task
@@ -179,17 +171,18 @@ SharedPreferences.Editor firstTimeeditor;
                                     quantity = jsonObject1.getString("quantity");
                                     estimated_time = jsonObject1.getString("estimated_time");
                                     duration = jsonObject1.getString("duration");
+                                    due_date = jsonObject1.getString("due_date");
                                     amount = jsonObject1.getString("amount");
                                     pdf_link = jsonObject1.getString("pdf_link");
                                     video_link = jsonObject1.getString("video_link");
 
                                     if (dbHelper.istaskExisting(task_id))
                                     {
-                                        dbHelper.updateTask(task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.updateTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
                                     }
                                     else
                                     {
-                                        dbHelper.addTask(task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.addTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
                                     }
                                     //add task or update task
                                     if (jsonObject1.has("qc")) {
@@ -251,7 +244,6 @@ SharedPreferences.Editor firstTimeeditor;
                             }
                             if (progressdialog.isShowing()){
                                 progressdialog.dismiss();
-                                // Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_SHORT).show();
                                 Intent intent =new Intent(MainActivity.this,UserProfileActivity.class);
                                 session.createLoginSession(username,password,user_id);
                                 startActivity(intent);

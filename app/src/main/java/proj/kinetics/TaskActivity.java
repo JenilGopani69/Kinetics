@@ -69,6 +69,7 @@ import proj.kinetics.Model.Mapping;
 import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.Session.TimerSession;
+import proj.kinetics.Session.TimerSessionForAddTask;
 import proj.kinetics.TimerWidget.TimeService;
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
@@ -100,7 +101,7 @@ int selection=1;
     SharedPreferences sharedPreferences;
     String attachmenturl,videolink;
 
-
+TimerSessionForAddTask timerSessionForAddTask;
     SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat("hh:mm:ss aa");
     View openDialog;
@@ -139,6 +140,8 @@ SharedPreferences.Editor editor;
     private String data;
     private String pdf_link2;
     private String video_link2;
+    private LinearLayout addlin;
+    private TextView totalunits2,firstunits;
 
     public static void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean viewMore) {
 
@@ -223,11 +226,13 @@ SharedPreferences.Editor editor;
 dbHelper=new DBHelper(TaskActivity.this);
         editor=sharedPreferences.edit();
         pausehide= (FrameLayout) findViewById(R.id.pausehide);
-
+        timerSessionForAddTask=new TimerSessionForAddTask(getApplicationContext());
         session = new SessionManagement(getApplicationContext());
         timerSession=new TimerSession(getApplicationContext());
         session.checkLogin();
-
+        totalunits2=(TextView)findViewById(R.id.totalunits2);
+        firstunits=(TextView)findViewById(R.id.firstunits);
+        addlin=(LinearLayout)findViewById(R.id.addlin);
         // get user data from session
         final HashMap<String, String> user = session.getUserDetails();
 
@@ -288,6 +293,8 @@ taskselectedid=getIntent().getStringExtra("taskselectedid");
 
         openDialog = (View) findViewById(R.id.openDialog);
         if (taskselectedid != null && !taskselectedid.isEmpty()) {
+            timerSessionForAddTask.addId(taskselectedid,taskid);
+
             openDialog.setVisibility(View.GONE);
         }
         else {
@@ -411,6 +418,10 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     if (requiredunit2.getText().toString().trim().equalsIgnoreCase(unitsproduced2.getText().toString().trim())) {
                         totalunit2=unitsproduced2.getText().toString();
+                        recordedtym.setText(tvTime.getText().toString());
+                        totalunits2.setText(unitsproduced2.getText().toString());
+                        updateTaskDetails(userId,taskselectedid,tvTime.getText().toString(),totalunit2);
+                        dbHelper.updateTaskData(taskselectedid,unitsproduced2.getText().toString(),tvTime.getText().toString());
 
                         //  totalunits.setText(unitsproduced.getText().toString());
                     }
@@ -423,11 +434,13 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
 
                                 totalunit2=unitsproduced2.getText().toString();
                                // totalunits.setText(requiredunit2.getText().toString());
+                                recordedtym.setText(tvTime.getText().toString());
 
-                                Toast.makeText(TaskActivity.this, ""+userId+" "+taskselectedid+" "+tvTime.getText().toString()+" "+totalunit2, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TaskActivity.this, "s"+userId+" "+taskselectedid+" "+tvTime.getText().toString()+" "+totalunit2, Toast.LENGTH_SHORT).show();
                                 updateTaskDetails(userId,taskselectedid,tvTime.getText().toString(),totalunit2);
+                                dbHelper.updateTaskData(taskselectedid,unitsproduced2.getText().toString(),tvTime.getText().toString());
 
-                                timerSession.addStaskDetails(totalunit2,tvTime.getText().toString(),unitsleft2.getText().toString());
+                                timerSessionForAddTask.createTimerData(totalunit2,tvTime.getText().toString(),unitsleft2.getText().toString(),taskselectedid,requiredunit2.getText().toString(),taskid);
 
                                 dialogInterface.dismiss();
                             }
@@ -438,10 +451,15 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                     } else {
 
                         totalunit2=unitsproduced2.getText().toString();
-                        timerSession.addStaskDetails(totalunit2,tvTime.getText().toString(),unitsleft2.getText().toString());
+                        recordedtym.setText(tvTime.getText().toString());
+                        totalunits2.setText(unitsproduced2.getText().toString());
+
+                        timerSessionForAddTask.createTimerData(totalunit2,tvTime.getText().toString(),unitsleft2.getText().toString(),taskselectedid,requiredunit2.getText().toString(),taskid);
 
                         Toast.makeText(TaskActivity.this, ""+userId+" "+taskselectedid+" "+tvTime.getText().toString()+" "+totalunit2, Toast.LENGTH_SHORT).show();
                         updateTaskDetails(userId,taskselectedid,tvTime.getText().toString(),totalunit2);
+                        dbHelper.updateTaskData(taskselectedid,unitsproduced2.getText().toString(),tvTime.getText().toString());
+
                         Toast.makeText(TaskActivity.this, "Please complete the production", Toast.LENGTH_SHORT).show();
                     }
 
@@ -464,7 +482,10 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (requiredunits.getText().toString().trim().equalsIgnoreCase(unitsproduced.getText().toString().trim())) {
                                 totalunits.setText(unitsproduced.getText().toString());
+                                recordedtym.setText(tvTime.getText().toString());
                                 updateTaskDetails(userId,taskid,tvTime.getText().toString(),unitsproduced.getText().toString());
+                                dbHelper.updateTaskData(taskid,unitsproduced.getText().toString(),tvTime.getText().toString());
+
                             }
                             if (Integer.parseInt(unitsproduced.getText().toString().trim()) >= Integer.parseInt(requiredunits.getText().toString().trim())) {
 
@@ -476,9 +497,10 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
 
                                             totalunits.setText(requiredunits.getText().toString());
 
+                                        dbHelper.updateTaskData(taskid,unitsproduced.getText().toString(),tvTime.getText().toString());
 
-                                       // updateTaskDetails(userId,taskid,recordedtym.getText().toString(),totalunits.getText().toString(),getpauseselection,breaktym.getText().toString());
-
+                                        updateTaskDetails(userId,taskid,tvTime.getText().toString(),unitsproduced.getText().toString());
+timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),requiredunits.getText().toString(),requiredunits.getText().toString());
 
                                         dialogInterface.dismiss();
                                     }
@@ -488,6 +510,11 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                                 totalunits.setText(requiredunits.getText().toString());
                             } else {
                                 totalunits.setText(unitsproduced.getText().toString());
+                                recordedtym.setText(tvTime.getText().toString());
+
+                                timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString(),requiredunits.getText().toString());
+                                updateTaskDetails(userId,taskid,tvTime.getText().toString(),unitsproduced.getText().toString());
+                                dbHelper.updateTaskData(taskid,unitsproduced.getText().toString(),tvTime.getText().toString());
 
                                 Toast.makeText(TaskActivity.this, "Please complete the production", Toast.LENGTH_SHORT).show();
                             }
@@ -775,8 +802,12 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                 dbHelper.updateTaskStatus(taskid,"6",totalunits.getText().toString().trim(),recordedtym.getText().toString());//stopped
                 if (taskselectedid != null && !taskselectedid.isEmpty()) {
                     dbHelper.updateTaskStatus(taskselectedid,"6",totalunit2,recordedtym.getText().toString());//stopped
+                    dbHelper.updateTaskData(taskselectedid,totalunits2.getText().toString(),recordedtym.getText().toString());
 
+coordinate.setVisibility(View.GONE);
+                    addlin.setVisibility(View.GONE);
                 }
+
                 boolean isconnect= ConnectivityReceiver.isConnected();
                 if (isconnect){
                     updateTaskStatus(userId,taskid,"6");
@@ -784,6 +815,7 @@ btnSubmit2.setOnClickListener(new View.OnClickListener() {
                         updateTaskStatus(userId, taskselectedid, "6");
 
                     }
+
 
                 }
 
@@ -817,6 +849,7 @@ editor.clear();
                 editor.commit();
 
                 timerSession.clearTimer();
+                timerSessionForAddTask.clearTimer();
               //  Toast.makeText(TaskActivity.this, "stopped", Toast.LENGTH_SHORT).show();
                 TimeService.TimeContainer.getInstance().stopAndReset();
                 tvTime.setText(recordedtym.getText().toString());
@@ -868,7 +901,7 @@ editor.clear();
                         int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
 
                         unitsleft.setText(leftunits+" "+"left");
-                        timerSession.createTimerData(String.valueOf(minus),tvTime.getText().toString(),unitsleft.getText().toString());
+                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString(),requiredunits.getText().toString());
 
                         undobtn.setEnabled(false);
                         undobtn.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
@@ -905,7 +938,7 @@ editor.clear();
 
                         unitsleft2.setText(leftunits+" "+"left");
                         Log.d("mylog",""+unitsproduced2.getText().toString()+" "+tvTime.getText().toString()+" "+unitsleft2.getText().toString());
-                        timerSession.addStaskDetails(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitsleft2.getText().toString());
+                        timerSessionForAddTask.createTimerData(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitsleft2.getText().toString(),taskselectedid,requiredunit2.getText().toString(),taskid);
 
                         undobtn2.setEnabled(false);
                         undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
@@ -948,7 +981,8 @@ editor.clear();
                         TimeService.TimeContainer.getInstance().pause();
                         btnStart.setText("CONTINUE");
                         btnComplete.setVisibility(View.GONE);
-                       // btnReset.setVisibility(View.VISIBLE);
+
+                        // btnReset.setVisibility(View.VISIBLE);
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -956,7 +990,7 @@ editor.clear();
 
                                     Toast.makeText(TaskActivity.this, "Production Completed", Toast.LENGTH_SHORT).show();
 
-                                    totalunits.setText(requiredunit2.getText().toString());
+                                    totalunits2.setText(requiredunit2.getText().toString());
                                     /*undobtn2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_undodisable));
                                     undobtn2.setEnabled(false);*/
                                 }
@@ -975,9 +1009,11 @@ editor.clear();
                     if (count< (Integer.parseInt(requiredunit2.getText().toString().trim()))){
                         unitsproduced2.setText(String.valueOf(count));
 
+
                     }
                     else{
                         unitsproduced2.setText(requiredunit2.getText().toString());
+
 
                     }
 
@@ -985,13 +1021,15 @@ editor.clear();
                     counts++;
                     int leftunits = Integer.parseInt(requiredunit2.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
                     unitsleft2.setText(String.valueOf(leftunits + " " + "left"));
+
                     if(unitsproduced2.getText().toString().equalsIgnoreCase("")) {
 
                     } else {
                         Log.d("mylog2",""+unitsproduced2.getText().toString()+" "+tvTime.getText().toString()+" "+unitsleft2.getText().toString());
 
+                        timerSessionForAddTask.createTimerData(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitsleft2.getText().toString(),taskselectedid,requiredunit2.getText().toString(),taskid);
 
-                        timerSession.addStaskDetails(unitsproduced2.getText().toString(),tvTime.getText().toString(),unitsleft2.getText().toString());
+
 
                     }
 
@@ -1092,9 +1130,13 @@ editor.clear();
                         Log.d("mmmmm",""+count);
 
                         unitsproduced.setText(String.valueOf(count));
+                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString(), requiredunits.getText().toString());
+
                     }
                     else {
                         unitsproduced.setText(requiredunits.getText().toString());
+                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString(), requiredunits.getText().toString());
+
                     }
 
                    /* if ((Integer.parseInt(unitsproduced.getText().toString().trim())< (Integer.parseInt(requiredunits.getText().toString().trim())))){
@@ -1112,7 +1154,7 @@ editor.clear();
 
                     }
                     else {
-                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString());
+                        timerSession.createTimerData(unitsproduced.getText().toString(),tvTime.getText().toString(),unitsleft.getText().toString(), requiredunits.getText().toString());
                     }
 
                 }
@@ -1174,16 +1216,16 @@ editor.clear();
             {
                 do
                 {
-                    Log.d("mydatadone",cursor.getString(cursor.getColumnIndex("done_qty")));
-                    Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("total_qty")));
                     String doneunits=cursor.getString(cursor.getColumnIndex("done_qty"));
 
 
 
                         totalunits.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
                         requiredunits.setText(cursor.getString(cursor.getColumnIndex("total_qty")));
+                        attachmenturl=cursor.getString(cursor.getColumnIndex("pdf_link"));
+                    videolink=cursor.getString(cursor.getColumnIndex("video_link"));
 
-                        recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
+                    recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
                     if (doneunits.equalsIgnoreCase(""))
                     {
                         Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("done_qty")));
@@ -1222,7 +1264,6 @@ editor.clear();
 
     private void getOfflineSimilar(CharSequence charSequence) {
 
-        Toast.makeText(this, ""+charSequence, Toast.LENGTH_SHORT).show();
         Cursor cursor=dbHelper.getTaskDetails(""+charSequence);
 
         if (cursor.getCount()>0)
@@ -1231,19 +1272,21 @@ editor.clear();
             {
                 do
                 {
-                    Log.d("mydatadone",cursor.getString(cursor.getColumnIndex("done_qty")));
-                    Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("total_qty")));
+/*                    Log.d("mydatadone",cursor.getString(cursor.getColumnIndex("done_qty")));
+                    Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("total_qty")))*/;
                     String doneunits=cursor.getString(cursor.getColumnIndex("done_qty"));
-unitsproduced2.setVisibility(View.VISIBLE);
+                    unitsproduced2.setVisibility(View.VISIBLE);
 
                     pdf_link2=cursor.getString(cursor.getColumnIndex("pdf_link"));
                     video_link2=cursor.getString(cursor.getColumnIndex("video_link"));
 
                     attachmenturl2=pdf_link2;
-                 videolink   =video_link2;
-                    totalunits.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
+                    videolink   =video_link2;
+                    totalunits2.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
                     requiredunit2.setText(cursor.getString(cursor.getColumnIndex("total_qty")));
-                    timerSession.addStask(taskselectedid,requiredunit2.getText().toString());
+
+
+
 
 
                     task2.setText(cursor.getString(cursor.getColumnIndex("task_name")));
@@ -1252,13 +1295,13 @@ unitsproduced2.setVisibility(View.VISIBLE);
                     {
                         Log.d("mydatatotal",cursor.getString(cursor.getColumnIndex("done_qty")));
                         doneunits="0";
-                        unitsproduced2.setText(doneunits);
+                        totalunits2.setText(doneunits);
 
                     }
                     else {
-                        int left_units = ((Integer.parseInt(requiredunit2.getText().toString()))) - (Integer.parseInt(doneunits));
+                       /* int left_units = ((Integer.parseInt(requiredunit2.getText().toString()))) - (Integer.parseInt(doneunits));
                         unitsleft2.setText(left_units + " left");
-                        unitsproduced2.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
+                        totalunits2.setText(cursor.getString(cursor.getColumnIndex("done_qty")));*/
 
                     }
 
@@ -1383,6 +1426,10 @@ unitsproduced2.setVisibility(View.VISIBLE);
                     requiredunits.setText(quantity);
                     editor.putString("taskname",tvtask.getText().toString());
                     attachmenturl=pdf_link;
+
+                    Log.d("new data", pdf_link);
+                    Log.d("new data", attachmenturl);
+
                     videolink=video_link;
                     taskdescrip.setText(taskdescription);
                     makeTextViewResizable(taskdescrip, 3, "View More", true);
@@ -1592,7 +1639,7 @@ unitsdata.setVisibility(View.GONE);
                     public void onClick(DialogInterface dialog, int which) {
                         // item selected logic
                         getpauseselection=which+1;
-                        Toast.makeText(TaskActivity.this, ""+items[which]+" "+getpauseselection, Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(TaskActivity.this, ""+items[which]+" "+getpauseselection, Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -1629,7 +1676,7 @@ unitsdata.setVisibility(View.GONE);
                         unitsdata.setVisibility(View.GONE);
 
                         // updatePause(userId,taskid,String.valueOf(pid));
-                        Toast.makeText(TaskActivity.this, tvTime.getText().toString()+" "+pid, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(TaskActivity.this, tvTime.getText().toString()+" "+pid, Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -1682,7 +1729,7 @@ unitsdata.setVisibility(View.GONE);
             intent.putExtra("taskname",taskname);
             startActivity(intent);
         }*/
-        Toast.makeText(this, "resart", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(this, "resart", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -1737,23 +1784,63 @@ unitsdata.setVisibility(View.GONE);
     @Override
     public void onResume() {
         super.onResume();
-        if (taskselectedid != null && !taskselectedid.isEmpty()) {
+        HashMap<String,String> hashMap2=timerSessionForAddTask.getTaskDetails(taskid);
+
+        if (timerSession.isLoggedIn())
+        {
+            HashMap<String,String> hashMap=timerSession.getTaskDetails();
+
+            unitsproduced.setText(hashMap.get(TimerSession.KEY_AMOUNT));
+            unitsleft.setText(hashMap.get(TimerSession.KEY_LEFT));
+            requiredunits.setText(hashMap.get(TimerSession.KEY_REQ));
+
+        }
+
+        if (!(hashMap2.get(taskid).equalsIgnoreCase("0"))){
+
             openDialog.setVisibility(View.GONE);
             coordinate.setVisibility(View.VISIBLE);
             unitsproduced2.setVisibility(View.VISIBLE);
-timerSession.addST(taskselectedid);
-            if (timerSession.isLoggedIn()){
-                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
-                HashMap<String,String> hashMap2=timerSession.getStaskDetails();
-                unitsproduced2.setText(hashMap2.get(TimerSession.KEY_S_TASKAMT));
-                unitsleft2.setText(hashMap2.get(TimerSession.KEY_S_TASKLEFT));
-            }
-else {
-                Toast.makeText(this, "false", Toast.LENGTH_SHORT).show();
+            addlin.setVisibility(View.VISIBLE);
 
-                coordinate.setVisibility(View.GONE);
+
+            unitsproduced2.setText(hashMap2.get(TimerSessionForAddTask.KEY_AMOUNT));
+            unitsleft2.setText(hashMap2.get(TimerSessionForAddTask.KEY_LEFT));
+            requiredunit2.setText(hashMap2.get(TimerSessionForAddTask.KEY_REQ));
+            taskselectedid=hashMap2.get(taskid);
+          //  Toast.makeText(this, "ggg"+taskselectedid, Toast.LENGTH_SHORT).show();
+
+           // getOfflineSimilar(hashMap2.get(TimerSessionForAddTask.KEY_ID));
+            getOfflineSimilar(hashMap2.get(taskid));
+
+
+        }
+        else {
+
+            if (dbHelper.getCounttask().equalsIgnoreCase("1")){
+                openDialog.setVisibility(View.GONE);
+                firstunits.setText("Total Units");
+
+
             }
-            getOfflineSimilar(taskselectedid);
+            else {
+                openDialog.setVisibility(View.VISIBLE);
+                firstunits.setText("Total Units");
+                coordinate.setVisibility(View.GONE);
+                unitsproduced2.setVisibility(View.GONE);
+                addlin.setVisibility(View.GONE);
+
+            }
+
+           // Toast.makeText(this, "No", Toast.LENGTH_SHORT).show();
+
+        }
+       /* if (taskselectedid != null && !taskselectedid.isEmpty()) {
+            openDialog.setVisibility(View.GONE);
+            coordinate.setVisibility(View.VISIBLE);
+            unitsproduced2.setVisibility(View.VISIBLE);
+
+
 
 
 
@@ -1764,7 +1851,7 @@ else {
 
             openDialog.setVisibility(View.VISIBLE);
         }
-
+*/
 
 if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
     checkServiceRunning();
@@ -1782,7 +1869,7 @@ if (taskid.equalsIgnoreCase(sharedPreferences.getString("task",""))) {
     }
     if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
         btnStart.setText("CONTINUE");
-        unitsdata.setVisibility(View.VISIBLE);
+        unitsdata.setVisibility(View.GONE);
         unitsdata2.setVisibility(View.VISIBLE);
         btnComplete.setVisibility(View.GONE);
        // btnReset.setVisibility(View.VISIBLE);
@@ -1852,7 +1939,7 @@ if (sharedPreferences.getString("task","").isEmpty()){
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.action_attach) {
-            if(attachmenturl!=null) {
+            if(attachmenturl != null && !attachmenturl.isEmpty()){
 
                 if (attachmenturl.contains(".pdf")) {
                     if (attachmenturl.contains("http")) {
@@ -1912,10 +1999,42 @@ if (sharedPreferences.getString("task","").isEmpty()){
         }
 
         if (view.getId() == R.id.action_video2) {
-            showVideo(videolink2);
+         //   showVideo(videolink2);
+
+            if(videolink2!=null &&  !videolink2.isEmpty()) {
+                if (videolink2.contains("http")) {
+
+                    Intent intent = new Intent(TaskActivity.this, VideoActivity.class);
+                    intent.putExtra("url", videolink2);
+                    startActivity(intent);
+                } else {
+
+                    Intent intent = new Intent(TaskActivity.this, VideoActivity.class);
+                    intent.putExtra("url", "http://66.201.99.67/~kinetics/" + videolink2);
+                    startActivity(intent);
+                }
+            }
+            else {
+                Toast.makeText(this, "No Video ", Toast.LENGTH_SHORT).show();
+            }
         }
         if (view.getId() == R.id.action_video) {
-            showVideo(videolink);
+            /*showVideo(videolink);*/
+            if (videolink!=null &&  !videolink.isEmpty()) {
+                if (videolink.contains("http")) {
+
+                    Intent intent = new Intent(TaskActivity.this, VideoActivity.class);
+                    intent.putExtra("url", videolink);
+                    startActivity(intent);
+                } else {
+
+                    Intent intent = new Intent(TaskActivity.this, VideoActivity.class);
+                    intent.putExtra("url", "http://66.201.99.67/~kinetics/" + videolink);
+                    startActivity(intent);
+                }
+            }else {
+                Toast.makeText(this, "No Video ", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

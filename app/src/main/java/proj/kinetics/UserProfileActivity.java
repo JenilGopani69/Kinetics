@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -25,8 +26,10 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
@@ -60,7 +63,7 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private NonSwipeableViewPager viewPager;
-
+TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,11 +72,9 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
         setSupportActionBar(toolbar);
         dbHelper = new DBHelper(UserProfileActivity.this);
         getSupportActionBar().setTitle("");
-        count1 = Integer.parseInt(dbHelper.getSyncCount());
-        count2 = Integer.parseInt(dbHelper.getSyncCountPause());
-        count = count1 + count2;
+
         containermain= (CoordinatorLayout) findViewById(R.id.containermain);
-        TextView tv = toolbar.findViewById(R.id.timing);
+         tv = toolbar.findViewById(R.id.timing);
         textcount = toolbar.findViewById(R.id.textcount);
         btn = toolbar.findViewById(R.id.button);
         if (RUN_ONCE == true) {
@@ -85,7 +86,7 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
             textcount.setText(String.valueOf(count));
 
         }
-       /* boolean isconnect = ConnectivityReceiver.isConnected();
+        boolean isconnect = ConnectivityReceiver.isConnected();
 
         if (isconnect) {
             btn.setEnabled(true);
@@ -93,7 +94,7 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
             Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
             btn.setEnabled(false);
 
-        }*/
+        }
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -230,24 +231,56 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        boolean isconnect = ConnectivityReceiver.isConnected();
+
+        if (hasFocus) {
+
+            if (isconnect) {
+
+                btn.setEnabled(true);
+            } else {
+                btn.setEnabled(false);
+                count1 = Integer.parseInt(dbHelper.getSyncCount());
+                count2 = Integer.parseInt(dbHelper.getSyncCountPause());
+                count = count1 + count2;
+                textcount.setText(""+count);
+                Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+            }
+
+        } /*else {
+            if (isconnect) {
+                btn.setEnabled(true);
+            } else {
+                btn.setEnabled(false);
+                Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+            }*/
+
+    }
+    @Override
     protected void onResume() {
         super.onResume();
 
-       /* boolean isconnect = ConnectivityReceiver.isConnected();
+        final Handler someHandler = new Handler(getMainLooper());
+        someHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tv.setText(new SimpleDateFormat("hh:mm:ss dd/MM/yyyy", Locale.US).format(new Date()));
+                someHandler.postDelayed(this, 1000);
+            }
+        }, 10);
+
+       boolean isconnect = ConnectivityReceiver.isConnected();
 
         if (isconnect) {
             btn.setEnabled(true);
         } else {
             btn.setEnabled(false);
             Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
-        }*/
+        }
         checkConnection(containermain);
-        count1 = Integer.parseInt(dbHelper.getSyncCount());
-        count2 = Integer.parseInt(dbHelper.getSyncCountPause());
-        count = count1 + count2;
-        Log.d("dddddddddd", "called");
 
-        textcount.setText(String.valueOf(count));
 
 
     }
@@ -331,4 +364,5 @@ public class UserProfileActivity extends AppCompatActivity implements Connectivi
             return mFragmentTitleList.get(position);
         }
     }
+
 }

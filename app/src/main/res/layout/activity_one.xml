@@ -277,9 +277,37 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
+                                    android:id="@+id/firstunits"
+                                    android:gravity="end"
+                                    android:text="1st Units" />
+
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/addlin"
+                                android:visibility="gone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/totalunits2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
 
                                     android:gravity="end"
-                                    android:text="Total Units" />
+                                    android:text="0"
+                                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+
+                                    android:gravity="end"
+                                    android:text="2nd Units" />
 
 
                             </LinearLayout>

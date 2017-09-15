@@ -1,5 +1,7 @@
 package proj.kinetics.Utils;
 
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import proj.kinetics.Model.Example;
 import proj.kinetics.Model.TaskDetails;
@@ -58,5 +60,11 @@ public interface ApiInterface {
             @Field("userId") String userId,
             @Field("taskId") String taskId,
             @Field("pauseId") String pauseId);
+    @FormUrlEncoded
+    @PUT("updateqcstatus.php")
+    Call<ResponseBody> updateQC(
+            @Field("userId") String userId,
+            @Field("taskId") String taskId,
+            @Field("qcIds[]") List<String> qcIds);
 
 }
