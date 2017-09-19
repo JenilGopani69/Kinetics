@@ -80,6 +80,9 @@ android:noHistory="true"
             android:screenOrientation="portrait"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" ></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b84f6f9c299bc371a5655b9c198c2481298cf512" />
     </application>
 
 </manifest>

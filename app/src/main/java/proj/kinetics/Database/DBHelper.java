@@ -5,9 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import proj.kinetics.Model.Mapping;
@@ -29,9 +32,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("create table taskmapping(task_id integer primary key ,taskname text , dtask_id text,dtaskstatus text)");
         sqLiteDatabase.execSQL("create table projects(project_id integer primary key, project_name varchar(100), user_id integer)");
-        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, project_name text, task_name text, due_date text ,estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text)");
-        sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text)");
-        sqLiteDatabase.execSQL("create table qc(id integer primary key, status text, description varchar(100),video_link varchar(100),image_link text, user_id integer,task_id integer ,FOREIGN KEY(task_id) references task(task_id))");
+        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, project_name text, task_name text, due_date text ,estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text, updated_at DATE, created_at DATE DEFAULT (datetime('now','localtime')))");
+        sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text, updated_at DATE)");
+        sqLiteDatabase.execSQL("create table qc(id integer primary key, status text, description varchar(100),video_link varchar(100),image_link text, user_id integer,task_id integer, updated_at DATE ,FOREIGN KEY(task_id) references task(task_id))");
 
     }
 
@@ -59,23 +62,26 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public String getSyncCount() {
+    public String getSyncCountTask() {
         String num = "0";
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
-        Cursor c = sqLiteDatabase.rawQuery("SELECT count(task_id) FROM task where status in(7,5,6); ", null);
-
-        if (c.getCount() > 0) {
-            if (c.moveToFirst()) {
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(updated_at) AS Count_column FROM task", null);
+        if (c.getCount()>0){
+            if (c.moveToFirst())
+            {
                 do {
+                    num=c.getString(c.getColumnIndex("Count_column"));
+                    Log.d("rrtetg",""+c.getString(c.getColumnIndex("Count_column")));
 
-                    num = c.getString(0);
-                    Log.d("dddd", num);
-                } while (c.moveToNext());
+
+                }while (c.moveToNext());
             }
         }
 
-        return num;
+
+
+        return ""+num;
     }
 //        sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text)");
 
@@ -84,17 +90,26 @@ public class DBHelper extends SQLiteOpenHelper {
         String num = "0";
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
-        Cursor c = sqLiteDatabase.rawQuery("SELECT count(id) FROM pause_reason", null);
-
-        if (c.getCount() > 0) {
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(updated_at) AS Count_column FROM pause_reason", null);
 
 
-            num=""+c.getCount();
-            Log.d("dsfs",num);
-        }
+       if (c.getCount()>0){
+           if (c.moveToFirst())
+           {
+               do {
+                   num=c.getString(c.getColumnIndex("Count_column"));
+                   Log.d("rrtetg",""+c.getString(c.getColumnIndex("Count_column")));
 
-        return num;
+
+               }while (c.moveToNext());
+           }
+       }
+
+
+
+        return ""+num;
     }
+
 
     public void addProject(String project_id, String project_name, String user_id) {
 
@@ -284,6 +299,14 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
     }
 
 
+
+
+
+
+
+
+
+
     public void updateTaskStatus(String task_id, String status, String done_qty, String recordedtime) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
 
@@ -297,6 +320,27 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
         sqLiteDatabase.update("task", contentValues, "task_id=" + task_id + "", null);
 
     }
+
+
+    public void updateTaskStatusOffline(String task_id, String status, String done_qty, String recordedtime) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("status", status);
+        contentValues.put("done_qty", done_qty);
+        contentValues.put("recordedtime", recordedtime);
+        contentValues.put("updated_at", dateFormat.format(date));
+
+
+        sqLiteDatabase.update("task", contentValues, "task_id=" + task_id + "", null);
+
+    }
+
+
+
 
     public void updateTaskStatusQC(String task_id, String status) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -514,6 +558,26 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
 
     }
 
+    public void updateTaskDataOffline(String task_id, String done_qty, String recordedtime) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("done_qty", done_qty);
+        contentValues.put("recordedtime", recordedtime);
+        contentValues.put("updated_at", dateFormat.format(date));
+
+
+        sqLiteDatabase.update("task", contentValues, "task_id=" + task_id + "", null);
+
+
+    }
+
+
+
+
     public void updateTask(String task_id, String taskname, String taskdescription, String pdf_link, String d_id, String video_link) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -573,6 +637,20 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
         contentValues.put("user_id", user_id);
         contentValues.put("task_id", task_id);
         sqLiteDatabase.insert("pause_reason", null, contentValues);
+    }
+ public void addPauseReasonOffline(String pause_reason_id, String duration, String user_id, String task_id) {
+        //create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text)");
+     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     Date date = new Date();
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("pause_reason_id", pause_reason_id);
+        contentValues.put("duration", duration);
+        contentValues.put("user_id", user_id);
+        contentValues.put("task_id", task_id);
+     contentValues.put("updated_at", dateFormat.format(date));
+
+     sqLiteDatabase.insert("pause_reason", null, contentValues);
     }
 
     public Cursor getAllpause() {

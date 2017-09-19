@@ -16,11 +16,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
 
 import okhttp3.ResponseBody;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
@@ -231,6 +234,7 @@ SharedPreferences.Editor firstTimeeditor;
                                             } else {
                                                 if (dbHelper.isTaskMapId(task_id)) {
                                                     dbHelper.updateTaskMapping(task_id, maintaskid, maintask_name, main_task_status);
+
                                                 } else {
                                                     dbHelper.insertTaskMapping(task_id, maintaskid, maintask_name, main_task_status);
                                                 }
@@ -246,6 +250,12 @@ SharedPreferences.Editor firstTimeeditor;
                                 progressdialog.dismiss();
                                 Intent intent =new Intent(MainActivity.this,UserProfileActivity.class);
                                 session.createLoginSession(username,password,user_id);
+
+                                    // TODO: Use the current user's information
+                                    // You can call any combination of these three methods
+
+
+
                                 startActivity(intent);
 
                             }

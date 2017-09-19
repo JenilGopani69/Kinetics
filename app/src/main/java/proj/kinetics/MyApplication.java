@@ -3,6 +3,9 @@ package proj.kinetics;
 import android.app.Application;
 import android.view.ViewGroup;
 
+
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 
 /**
@@ -16,6 +19,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         mInstance = this;
     }

@@ -240,12 +240,16 @@ TextView tv;
             if (isconnect) {
 
                 btn.setEnabled(true);
+
             } else {
+
                 btn.setEnabled(false);
-                count1 = Integer.parseInt(dbHelper.getSyncCount());
+               count1 = Integer.parseInt(dbHelper.getSyncCountTask());
                 count2 = Integer.parseInt(dbHelper.getSyncCountPause());
                 count = count1 + count2;
                 textcount.setText(""+count);
+                Log.d("nnnnnnnnnnn",""+dbHelper.getSyncCountTask());
+                Log.d("nnnnnnnnnnn",""+dbHelper.getSyncCountPause());
                 Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
             }
 

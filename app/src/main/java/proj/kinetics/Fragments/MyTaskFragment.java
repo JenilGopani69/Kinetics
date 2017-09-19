@@ -280,6 +280,7 @@ task.setDue_date(due);
                                     Log.d("new data", pdf_link);
                                     if (dbHelper.istaskExisting(task_id)) {
                                         Log.d("update data", task_id + " " + estimated_time);
+
                                         dbHelper.updateTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     } else {
                                         Log.d("add data", task_id);
