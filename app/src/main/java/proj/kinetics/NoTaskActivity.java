@@ -77,7 +77,8 @@ public class NoTaskActivity extends AppCompatActivity {
     UnitsAdapter2 unitsAdapter2;
     int recent = 0;
     List<CharSequence> list = new ArrayList<CharSequence>();
-    private Button btnStart, btnReset, btnSubmit, btnComplete, btnSubmit2;
+    private Button btnSubmit,btnSubmit2;
+            ImageButton btnStart, btnReset, btnComplete;
     private Handler h;
     private TextView tvtask,tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrips, unitslefts, recordedtym, breaktym;
 
@@ -276,8 +277,8 @@ public class NoTaskActivity extends AppCompatActivity {
         unitsleft = (TextView) findViewById(R.id.unitsleft);
         unitslefts = (TextView) findViewById(R.id.unitsleft2);
         totalunits = (TextView) findViewById(R.id.totalunits);
-        btnStart = (Button) findViewById(R.id.btnStart);
-        btnComplete = (Button) findViewById(R.id.btnComplete);
+        btnStart = (ImageButton) findViewById(R.id.btnStart);
+        btnComplete = (ImageButton) findViewById(R.id.btnComplete);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
         undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
@@ -285,7 +286,7 @@ public class NoTaskActivity extends AppCompatActivity {
         attachment = (ImageButton) findViewById(R.id.action_attach);
         nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
         recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
-        btnReset = (Button) findViewById(R.id.btnReset);
+        btnReset = (ImageButton) findViewById(R.id.btnReset);
 
         unitsdata.setVisibility(View.GONE);
 openDialog.setVisibility(View.GONE);

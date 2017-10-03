@@ -86,8 +86,7 @@ android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="*R. Q
-                        TY:"
+                        android:text="*R. QTY:"
                         android:textColor="@color/pauseBtn"
                         android:textStyle="bold" />
 

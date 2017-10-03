@@ -46,6 +46,8 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
        /* Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
         holder.itemView.startAnimation(animation);*/
 
+       int pos=position+1;
+       holder.proritys.setText(""+pos);
            holder.priorityid.setText(getSet.getPriority());
         Log.d("checkempty",""+getSet.getPriority());
 
@@ -77,7 +79,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView name, duedate, pname, priorityid,estimated_time,duedatename,priorityname;
+        TextView name, duedate, pname, priorityid,estimated_time,duedatename,priorityname,proritys;
 
         Context ctx;
         List<Task> arrayList = new ArrayList();
@@ -90,6 +92,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
             priorityid = (TextView) itemView.findViewById(R.id.priorityid);
             duedatename = (TextView) itemView.findViewById(R.id.duedatename);
             priorityname = (TextView) itemView.findViewById(R.id.priorityname);
+            proritys = (TextView) itemView.findViewById(R.id.proritys);
             pname = (TextView) itemView.findViewById(R.id.pname);
             estimated_time = (TextView) itemView.findViewById(R.id.estimated_time);
 

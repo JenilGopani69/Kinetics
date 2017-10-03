@@ -18,6 +18,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +80,55 @@ public class QCAdapter extends RecyclerView.Adapter<QCAdapter.MyViewHolder> {
         holder.checkBox1.setChecked(arrayList.get(position).getSelected());
 holder.sub_textview.setText(qualitycheck.getDescripton());
         holder.checkBox1.setTag(position);
+
+        ApiInterface api = ApiClient.getClient().create(ApiInterface.class);
+        Call<ResponseBody> response = api.getQCStatus(qualitycheck.getId());
+        response.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+String data="";
+                try {
+                    data = response.body().string();
+                    JSONObject jsonObject = new JSONObject(data);
+                    String dataresponse = jsonObject.getString("message");
+                   if (dataresponse!=null && !dataresponse.isEmpty()){
+                       String status = jsonObject.getString("status");
+
+                       Log.d("ggggggggggg",""+status);
+
+                       if (status.equalsIgnoreCase("1"))
+                       {
+                           holder.checkBox1.setChecked(true);
+
+
+
+                       }
+                   }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+        if (arrayList.size()==al.size()){
+            QCActivity.finishtask.setBackgroundColor(context.getResources().getColor(R.color.background));
+            QCActivity.finishtask.setEnabled(true);
+            QCActivity.finishtask.setClickable(true);
+            Toast.makeText(context, "done", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            QCActivity.finishtask.setBackgroundColor(Color.GRAY);
+            QCActivity.finishtask.setEnabled(false);
+            QCActivity.finishtask.setClickable(false);
+            //  Toast.makeText(context, "pending", Toast.LENGTH_SHORT).show();
+        }
+
 
 /*
 if (qualitycheck.getId().equalsIgnoreCase("50")){

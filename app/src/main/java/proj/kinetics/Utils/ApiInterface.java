@@ -67,4 +67,9 @@ public interface ApiInterface {
             @Field("taskId") String taskId,
             @Field("qcIds[]") List<String> qcIds);
 
+
+    @GET("getqcstatus.php")
+    Call<ResponseBody>getQCStatus(@Query("id") String id);
+
+
 }

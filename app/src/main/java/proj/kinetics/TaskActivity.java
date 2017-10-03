@@ -131,9 +131,10 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     List<CharSequence> list = new ArrayList<CharSequence>();
     TimerSession timerSession;
     SharedPreferences.Editor editor;
-    private Button btnStart, btnReset, btnSubmit, btnComplete, btnSubmit2;
+    private Button btnSubmit, btnSubmit2;
+    private  ImageButton  btnStart, btnReset,btnComplete;
     private Handler h;
-    private TextView tvtask, tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrip2, unitsleft2, recordedtym, breaktym;
+    private TextView tvtask, tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrip2, unitsleft2, recordedtym, breaktym,taskdue,taskest;
     private Timer t;
     private SessionManagement session;
     private String data;
@@ -240,6 +241,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         timerSession = new TimerSession(getApplicationContext());
         session.checkLogin();
         totalunits2 = (TextView) findViewById(R.id.totalunits2);
+        taskdue = (TextView) findViewById(R.id.taskdue);
+        taskest = (TextView) findViewById(R.id.taskest);
         firstunits = (TextView) findViewById(R.id.firstunits);
         addlin = (LinearLayout) findViewById(R.id.addlin);
         // get user data from session
@@ -280,8 +283,8 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         unitsleft = (TextView) findViewById(R.id.unitsleft);
         unitsleft2 = (TextView) findViewById(R.id.unitsleft2);
         totalunits = (TextView) findViewById(R.id.totalunits);
-        btnStart = (Button) findViewById(R.id.btnStart);
-        btnComplete = (Button) findViewById(R.id.btnComplete);
+        btnStart = (ImageButton) findViewById(R.id.btnStart);
+        btnComplete = (ImageButton) findViewById(R.id.btnComplete);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         btnSubmit2 = (Button) findViewById(R.id.btnSubmit2);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
@@ -292,7 +295,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         attachment2 = (ImageButton) findViewById(R.id.action_attach2);
         nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
         //  recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
-        btnReset = (Button) findViewById(R.id.btnReset);
+        btnReset = (ImageButton) findViewById(R.id.btnReset);
         videoattach.setOnClickListener(this);
         attachment.setOnClickListener(this);
         attachment2.setOnClickListener(this);
@@ -713,6 +716,18 @@ Log.d("ggg",d_taskquantity);
             @Override
             public void onClick(View view) {
 
+
+                Toast.makeText(TaskActivity.this, " "+requiredunit2.getText().toString().trim()+" --"+totalunits2.getText().toString().trim(), Toast.LENGTH_SHORT).show();
+
+                if (requiredunit2.getText().toString().trim().equalsIgnoreCase(totalunits2.getText().toString().trim())){
+
+                    unitsdata2.setVisibility(View.INVISIBLE);
+
+
+
+                }
+
+
                 if (requiredunits.getText().toString().trim().equalsIgnoreCase(totalunits.getText().toString().trim())) {
 
                     Toast.makeText(TaskActivity.this, "Production Completed Proceed to QC", Toast.LENGTH_SHORT).show();
@@ -720,7 +735,6 @@ Log.d("ggg",d_taskquantity);
 
 
                     unitsdata.setVisibility(View.VISIBLE);
-                    unitsdata2.setVisibility(View.VISIBLE);
                     editor.putString("task", taskid);
 
 
@@ -732,11 +746,34 @@ Log.d("ggg",d_taskquantity);
 
                         if (taskselectedid != null && !taskselectedid.isEmpty()) {
                             updateTaskStatus(userId, taskselectedid, "4");
+                            if (unitsproduced2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
+
+                                unitsdata2.setVisibility(View.GONE);
+
+
+                            }
+                            else {
+                                unitsdata2.setVisibility(View.VISIBLE);
+
+                            }
 
                         }
 
                     }
+                    if (taskselectedid != null && !taskselectedid.isEmpty()) {
+                        updateTaskStatus(userId, taskselectedid, "4");
+                        if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
 
+                            unitsdata2.setVisibility(View.GONE);
+
+
+                        }
+                        else {
+                            unitsdata2.setVisibility(View.VISIBLE);
+
+                        }
+
+                    }
 
                     //Toast.makeText(TaskActivity.this, "sh"+sharedPreferences.getString("task",""), Toast.LENGTH_SHORT).show();
 
@@ -755,6 +792,16 @@ Log.d("ggg",d_taskquantity);
 
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
                                 updateTaskStatus(userId, taskselectedid, "4");
+                                if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
+
+                                    unitsdata2.setVisibility(View.GONE);
+
+
+                                }
+                                else {
+                                    unitsdata2.setVisibility(View.VISIBLE);
+
+                                }
 
                             }
 
@@ -764,26 +811,57 @@ Log.d("ggg",d_taskquantity);
                             }
                         } else {
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
+                                if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
+
+                                    unitsdata2.setVisibility(View.GONE);
+
+
+                                }
+                                else {
+                                    unitsdata2.setVisibility(View.VISIBLE);
+
+                                }
                                 dbHelper.updateTaskStatusOffline(taskselectedid, "4", unitsproduced2.getText().toString().trim(), tvTime.getText().toString());//working
 
                             }
                             dbHelper.updateTaskStatusOffline(taskid, "4", unitsproduced.getText().toString().trim(), tvTime.getText().toString());//working
                         }
 
-                        btnStart.setText("CONTINUE");
+                       // btnStart.setText("CONTINUE");
+                       btnStart.setTag("CONTINUE");
+                        btnStart.setImageResource(R.mipmap.ic_start);
                         btnComplete.setVisibility(View.GONE);
                         // btnReset.setVisibility(View.VISIBLE);
                         showDialog();
+
                         Log.d("check", "start");
                     } else {
                         btnReset.setVisibility(View.GONE);
                         btnComplete.setVisibility(View.VISIBLE);
+                        if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
 
+                            unitsdata2.setVisibility(View.GONE);
+
+
+                        }
+                        else {
+                            unitsdata2.setVisibility(View.VISIBLE);
+
+                        }
                         boolean isconnected = ConnectivityReceiver.isConnected();
                         if (isconnected) {
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
                                 dbHelper.updateTaskStatus(taskselectedid, "5", "" + unitsproduced2.getText().toString().trim(), tvTime.getText().toString());//pause
+                                if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
 
+                                    unitsdata2.setVisibility(View.GONE);
+
+
+                                }
+                                else {
+                                    unitsdata2.setVisibility(View.VISIBLE);
+
+                                }
 
                             }
                             dbHelper.updateTaskStatus(taskid, "5", "" + unitsproduced.getText().toString().trim(), tvTime.getText().toString());//pause
@@ -791,19 +869,38 @@ Log.d("ggg",d_taskquantity);
                             updateTaskStatus(userId, taskid, "5");
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
                                 updateTaskStatus(userId, taskselectedid, "5");
+                                if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
+
+                                    unitsdata2.setVisibility(View.GONE);
+
+
+                                }
+                                else {
+                                    unitsdata2.setVisibility(View.VISIBLE);
+
+                                }
 
                             }
 
                         } else {
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
                                 dbHelper.updateTaskStatusOffline(taskselectedid, "5", "" + unitsproduced2.getText().toString().trim(), tvTime.getText().toString());//pause
+                                if (totalunits2.getText().toString().trim().equalsIgnoreCase(requiredunit2.getText().toString().trim())){
 
+                                    unitsdata2.setVisibility(View.GONE);
+
+
+                                }
+                                else {
+                                    unitsdata2.setVisibility(View.VISIBLE);
+
+                                }
 
                             }
                             dbHelper.updateTaskStatusOffline(taskid, "5", "" + unitsproduced.getText().toString().trim(), tvTime.getText().toString());//pause
 
                         }
-                        if (btnStart.getText() == "CONTINUE") {
+                        if (btnStart.getTag() == "CONTINUE") {
                             String currentDateTimeString2 = DateFormat.getTimeInstance().format(new Date());
 
                             // Toast.makeText(TaskActivity.this, "jjj" + currentDateTimeString2, Toast.LENGTH_SHORT).show();
@@ -830,7 +927,8 @@ Log.d("ggg",d_taskquantity);
 
                         startUpdateTimer();
                         Log.d("check", "stop");
-                        btnStart.setText("PAUSE");
+                       // btnStart.setText("PAUSE");
+                        btnStart.setImageResource(R.mipmap.ic_pause);
                         btnComplete.setVisibility(View.VISIBLE);
                     }
                 }
@@ -875,7 +973,7 @@ Log.d("ggg",d_taskquantity);
                 if (isConnect) {
 
                     dbHelper.addPauseReason("" + getpauseselection, breaktym.getText().toString(), userId, taskid);
-                    Toast.makeText(TaskActivity.this, "Internet Available", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TaskActivity.this, "Internet Available"+items[getpauseselection-1], Toast.LENGTH_SHORT).show();
 
                     updatePause(userId, taskid, "" + getpauseselection);
                     //server api
@@ -972,7 +1070,9 @@ Log.d("ggg",d_taskquantity);
                 TimeService.TimeContainer.getInstance().stopAndReset();
                 tvTime.setText(recordedtym.getText().toString());
 
-                btnStart.setText("Start");
+               // btnStart.setText("Start");
+                btnStart.setImageResource(R.mipmap.ic_start);
+
                 //btnReset.setVisibility(View.VISIBLE);
                 btnComplete.setVisibility(View.GONE);
 
@@ -985,7 +1085,9 @@ Log.d("ggg",d_taskquantity);
                 TimeService.TimeContainer.getInstance().reset();
                 updateTimeText2();
                 btnReset.setVisibility(View.GONE);
-                btnStart.setText("START");
+                //btnStart.setText("START");
+                btnStart.setImageResource(R.mipmap.ic_start);
+
                 timerSession.clearTimer();
                 editor.clear();
                 editor.commit();
@@ -1011,6 +1113,14 @@ Log.d("ggg",d_taskquantity);
                         int minus = Integer.parseInt((unitsproduced.getText().toString())) - recent;
 
                         unitsproduced.setText(String.valueOf(minus));
+                        totalunits.setText(String.valueOf(minus));
+                        boolean isConnect = ConnectivityReceiver.isConnected();
+                        if (isConnect) {
+                            updateTaskDetails(userId, taskid, tvTime.getText().toString(), unitsproduced.getText().toString());
+                            dbHelper.updateTaskData(taskid, unitsproduced.getText().toString(), tvTime.getText().toString());
+                        } else {
+                            dbHelper.updateTaskDataOffline(taskid, unitsproduced.getText().toString(), tvTime.getText().toString());
+                        }
 
                         int leftunits = Integer.parseInt(requiredunits.getText().toString().trim()) - Integer.parseInt(unitsproduced.getText().toString().trim());
 
@@ -1042,6 +1152,14 @@ Log.d("ggg",d_taskquantity);
                         int minus = Integer.parseInt((unitsproduced2.getText().toString())) - recent;
 
                         unitsproduced2.setText(String.valueOf(minus));
+                        totalunits2.setText(String.valueOf(minus));
+                        boolean isConnect = ConnectivityReceiver.isConnected();
+                        if (isConnect) {
+                            updateTaskDetails(userId, taskselectedid, tvTime.getText().toString(), unitsproduced2.getText().toString());
+                            dbHelper.updateTaskData(taskselectedid, unitsproduced2.getText().toString(), tvTime.getText().toString());
+                        } else {
+                            dbHelper.updateTaskDataOffline(taskselectedid, unitsproduced2.getText().toString(), tvTime.getText().toString());
+                        }
 
                         int leftunits = Integer.parseInt(requiredunit2.getText().toString().trim()) - Integer.parseInt(unitsproduced2.getText().toString().trim());
 
@@ -1086,7 +1204,10 @@ Log.d("ggg",d_taskquantity);
                         // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
                         TimeService.TimeContainer.getInstance().pause();
-                        btnStart.setText("CONTINUE");
+                       // btnStart.setText("CONTINUE");
+                        btnStart.setTag("CONTINUE");
+                        btnStart.setImageResource(R.mipmap.ic_start);
+
                         btnComplete.setVisibility(View.GONE);
 
                         // btnReset.setVisibility(View.VISIBLE);
@@ -1113,6 +1234,14 @@ Log.d("ggg",d_taskquantity);
 
                     if (count < (Integer.parseInt(requiredunit2.getText().toString().trim()))) {
                         unitsproduced2.setText(String.valueOf(count));
+                        totalunits2.setText(String.valueOf(count));
+                        boolean isConnect = ConnectivityReceiver.isConnected();
+                        if (isConnect) {
+                            updateTaskDetails(userId, taskselectedid, tvTime.getText().toString(), unitsproduced2.getText().toString());
+                            dbHelper.updateTaskData(taskselectedid, unitsproduced2.getText().toString(), tvTime.getText().toString());
+                        } else {
+                            dbHelper.updateTaskDataOffline(taskselectedid, unitsproduced2.getText().toString(), tvTime.getText().toString());
+                        }
 
 
                     } else {
@@ -1200,7 +1329,10 @@ Log.d("ggg",d_taskquantity);
                         // Toast.makeText(TaskActivity.this, "Production is Completed Please click to Submit", Toast.LENGTH_SHORT).show();
 
                         TimeService.TimeContainer.getInstance().stopAndReset();
-                        btnStart.setText("CONTINUE");
+                       // btnStart.setText("CONTINUE");
+                        btnStart.setTag("CONTINUE");
+                        btnStart.setImageResource(R.mipmap.ic_start);
+
                         btnComplete.setVisibility(View.GONE);
                         // btnReset.setVisibility(View.VISIBLE);
                         new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Producton is complete, you can now proceed to QC").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -1228,6 +1360,15 @@ Log.d("ggg",d_taskquantity);
                         Log.d("mmmmm", "" + count);
 
                         unitsproduced.setText(String.valueOf(count));
+                       //////////////////////////////////////////
+                        totalunits.setText(String.valueOf(count));
+                        boolean isConnect = ConnectivityReceiver.isConnected();
+                        if (isConnect) {
+                            updateTaskDetails(userId, taskid, tvTime.getText().toString(), unitsproduced.getText().toString());
+                            dbHelper.updateTaskData(taskid, unitsproduced.getText().toString(), tvTime.getText().toString());
+                        } else {
+                            dbHelper.updateTaskDataOffline(taskid, unitsproduced.getText().toString(), tvTime.getText().toString());
+                        }
                         timerSession.createTimerData(unitsproduced.getText().toString(), tvTime.getText().toString(), unitsleft.getText().toString(), requiredunits.getText().toString());
 
                     } else {
@@ -1315,10 +1456,16 @@ Log.d("ggg",d_taskquantity);
                     requiredunits.setText(cursor.getString(cursor.getColumnIndex("total_qty")));
                     attachmenturl = cursor.getString(cursor.getColumnIndex("pdf_link"));
                     videolink = cursor.getString(cursor.getColumnIndex("video_link"));
+                  String  taskduetxt=cursor.getString(cursor.getColumnIndex("due_date"));
+                    String  taskestxt=cursor.getString(cursor.getColumnIndex("estimated_time"));
+
+                    taskdue.setText("Due Date:"+taskduetxt);
+                    taskest.setText("Est Time :"+taskestxt);
+                    Log.d("mydatatotal",""+ cursor.getString(cursor.getColumnIndex("total_qty")));
 
                     recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
                     if (doneunits.equalsIgnoreCase("")) {
-                        Log.d("mydatatotal", cursor.getString(cursor.getColumnIndex("done_qty")));
+                        Log.d("mydatatotal", cursor.getString(cursor.getColumnIndex("total_qty")));
                         doneunits = "0";
                         unitsproduced.setText(doneunits);
 
@@ -1374,6 +1521,9 @@ Log.d("ggg",d_taskquantity);
                     recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
 
                     if (doneunits != null && !doneunits.isEmpty()) {
+                        int left_units = ((Integer.parseInt(requiredunit2.getText().toString()))) - (Integer.parseInt(doneunits));
+                        unitsleft2.setText(left_units + " left");
+                        unitsproduced2.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
 
                     } else {
                         doneunits = "0";
@@ -1384,6 +1534,8 @@ Log.d("ggg",d_taskquantity);
                         totalunits2.setText(cursor.getString(cursor.getColumnIndex("done_qty")));*/
 
                     }
+
+
 
 
                     // .setText(cursor.getString(cursor.getColumnIndex("task_name")));
@@ -1652,10 +1804,15 @@ Log.d("ggg",d_taskquantity);
         if (propertyChangeEvent.getPropertyName() == TimeService.TimeContainer.STATE_CHANGED) {
             TimeService.TimeContainer t = TimeService.TimeContainer.getInstance();
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_RUNNING) {
-                btnStart.setText("PAUSE");
+               // btnStart.setText("PAUSE");
+                btnStart.setImageResource(R.mipmap.ic_pause);
 
                 unitsdata.setVisibility(View.VISIBLE);
                 unitsdata2.setVisibility(View.VISIBLE);
+                if (requiredunit2.getText().toString().trim().equalsIgnoreCase(totalunits.getText().toString().trim())){
+                    unitsdata2.setVisibility(View.GONE);
+
+                }
                 btnComplete.setVisibility(View.VISIBLE);
                 // Toast.makeText(this, "running timer", Toast.LENGTH_SHORT).show();
                 startUpdateTimer();
@@ -1667,7 +1824,8 @@ Log.d("ggg",d_taskquantity);
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_STOPPED) {
                 // Toast.makeText(this, "stopped", Toast.LENGTH_SHORT).show();
-                btnStart.setText("START");
+               // btnStart.setText("START");
+                btnStart.setImageResource(R.mipmap.ic_start);
                 unitsdata.setVisibility(View.GONE);
                 unitsdata2.setVisibility(View.GONE);
 
@@ -1679,7 +1837,10 @@ Log.d("ggg",d_taskquantity);
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
                 // Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
 
-                btnStart.setText("CONTINUE");
+               // btnStart.setText("CONTINUE");
+                btnStart.setTag("CONTINUE");
+                btnStart.setImageResource(R.mipmap.ic_start);
+
                 unitsdata.setVisibility(View.GONE);
                 btnComplete.setVisibility(View.GONE);
                 // btnReset.setVisibility(View.VISIBLE);
@@ -1703,7 +1864,7 @@ Log.d("ggg",d_taskquantity);
                     public void onClick(DialogInterface dialog, int which) {
                         // item selected logic
                         getpauseselection = which + 1;
-                        // Toast.makeText(TaskActivity.this, ""+items[which]+" "+getpauseselection, Toast.LENGTH_SHORT).show();
+                       //  Toast.makeText(TaskActivity.this, ""+items[which]+" "+getpauseselection, Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -1714,6 +1875,28 @@ Log.d("ggg",d_taskquantity);
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
+
+
+           String selection=items[getpauseselection-1];
+
+                        if (selection!=null && !selection.isEmpty()){
+
+                            if (selection.equalsIgnoreCase("Out of Material")){
+
+                                totalunits.setText(unitsproduced.getText().toString());
+                                editor.clear();
+                                editor.commit();
+
+                                timerSession.clearTimer();
+                                timerSessionForAddTask.clearTimer();
+
+
+                            }
+
+                        }
+
+
                         // positive button logic
                         TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
                         String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
@@ -1731,6 +1914,8 @@ Log.d("ggg",d_taskquantity);
                             if (taskselectedid != null && !taskselectedid.isEmpty()) {
                                 updateTaskStatus(userId, taskselectedid, "5");
                                 dbHelper.updateTaskStatus(taskselectedid, "5", totalunit2, tvTime.getText().toString());//pause status
+                                unitsdata2.setVisibility(View.GONE);
+
                             }
 
                         } else {
@@ -1757,7 +1942,8 @@ Log.d("ggg",d_taskquantity);
                         TimeService.TimeContainer.getInstance().start();
                         startUpdateTimer();
                         Log.d("check", "stop");
-                        btnStart.setText("PAUSE");
+                        //btnStart.setText("PAUSE");
+                        btnStart.setImageResource(R.mipmap.ic_pause);
                         btnComplete.setVisibility(View.VISIBLE);
                     }
                 });
@@ -1846,6 +2032,8 @@ Log.d("ggg",d_taskquantity);
     @Override
     public void onResume() {
         super.onResume();
+
+
         HashMap<String, String> hashMap2 = timerSessionForAddTask.getTaskDetails(taskid);
 
         if (timerSession.isLoggedIn()) {
@@ -1853,7 +2041,7 @@ Log.d("ggg",d_taskquantity);
 
             unitsproduced.setText(hashMap.get(TimerSession.KEY_AMOUNT));
             unitsleft.setText(hashMap.get(TimerSession.KEY_LEFT));
-            requiredunits.setText(hashMap.get(TimerSession.KEY_REQ));
+            getOfflineTaskData();
 
         }
 
@@ -1923,20 +2111,27 @@ Log.d("ggg",d_taskquantity);
                 unitsdata2.setVisibility(View.VISIBLE);
                 // btnStart.setText("PAUSE");
                 btnComplete.setVisibility(View.VISIBLE);
-                btnStart.setText("PAUSE");
+
+                //btnStart.setText("PAUSE");
+                btnStart.setImageResource(R.mipmap.ic_pause);
+
                 // Toast.makeText(this, "resume running timer", Toast.LENGTH_SHORT).show();
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_PAUSED) {
-                btnStart.setText("CONTINUE");
+               // btnStart.setText("CONTINUE");
+                btnStart.setTag("CONTINUE");
+                btnStart.setImageResource(R.mipmap.ic_start);
+
                 unitsdata.setVisibility(View.GONE);
-                unitsdata2.setVisibility(View.VISIBLE);
+                unitsdata2.setVisibility(View.GONE);
                 btnComplete.setVisibility(View.GONE);
                 // btnReset.setVisibility(View.VISIBLE);
                 updateTimeText();
 
             }
             if (t.getCurrentState() == TimeService.TimeContainer.STATE_STOPPED) {
-                btnStart.setText("START");
+               // btnStart.setText("START");
+                btnStart.setImageResource(R.mipmap.ic_start);
 
                 unitsdata.setVisibility(View.GONE);
                 unitsdata2.setVisibility(View.GONE);

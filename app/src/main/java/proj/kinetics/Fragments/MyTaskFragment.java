@@ -210,7 +210,6 @@ public class MyTaskFragment extends Fragment {
                     done_qtytask_details = cursor.getString(cursor.getColumnIndex("done_qty"));
                     task_details = cursor.getString(cursor.getColumnIndex("task_details"));
                     due = cursor.getString(cursor.getColumnIndex("due_date"));
-                    priority = cursor.getString(cursor.getColumnIndex("priority_id"));
 
                     Task task = new Task(task_id, "", project_name, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, task_details, "");
 task.setDue_date(due);
@@ -268,6 +267,8 @@ task.setDue_date(due);
                                     task_details = jsonObject1.getString("taskdescription");
                                     status = jsonObject1.getString("status");
                                     project_name = jsonObject1.getString("project_name");
+                                    priority_id= jsonObject1.getString("priority_id");
+
                                     //totasl required
                                     quantity = jsonObject1.getString("quantity");
                                     estimated_time = jsonObject1.getString("estimated_time");
@@ -279,11 +280,11 @@ task.setDue_date(due);
 
                                     Log.d("new data", pdf_link);
                                     if (dbHelper.istaskExisting(task_id)) {
-                                        Log.d("update data", task_id + " " + estimated_time);
+                                        Log.d("updatedata", task_id + " " + quantity);
 
                                         dbHelper.updateTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     } else {
-                                        Log.d("add data", task_id);
+                                        Log.d("adddata", task_id);
                                         dbHelper.addTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     }
                                     //add task or update task
@@ -371,6 +372,26 @@ task.setDue_date(due);
     @Override
     public void onResume() {
         super.onResume();
+        boolean isConnect = ConnectivityReceiver.isConnected();
+        if (isConnect) {
+            getTaskDetail(username, password);
+            if (list == null) {
+                getOfflineTask();
+            } else {
+                list.clear();
+                getOfflineTask();
+            }
+
+        } else {
+            if (list == null) {
+                getOfflineTask();
+            } else {
+                list.clear();
+                getOfflineTask();
+            }
+
+        }
+
 
         //  Toast.makeText(getActivity(), "refreshed", Toast.LENGTH_SHORT).show();
 

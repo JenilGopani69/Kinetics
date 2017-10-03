@@ -29,6 +29,7 @@
 
                 android:padding="5dp">
 
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -54,6 +55,9 @@ android:id="@+id/pname"
                 <View android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:background="@color/background"></View>
+
+
+
 
                 <TableRow android:layout_width="match_parent"
                     android:layout_marginTop="6dp"
@@ -119,7 +123,24 @@ android:text="25 hr"
 
 
                 </TableRow>
+                <TableRow>
+                    <TextView
+                        android:maxLines="2"
+                        android:minLines="1"
+                        android:scrollbars = "vertical"
+                        android:layout_weight="1"
+                        android:layout_gravity="end"
+android:gravity="end"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
 
+                        android:id="@+id/proritys"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/colorPrimaryDark" />
+                    />
+                </TableRow>
                 <TableRow android:layout_width="match_parent"
                     android:layout_marginTop="6dp"
 
@@ -155,6 +176,7 @@ android:layout_gravity="start"
 
 
                 </TableRow>
+
             </TableLayout>
 
         </RelativeLayout>

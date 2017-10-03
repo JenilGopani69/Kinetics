@@ -36,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text, updated_at DATE)");
         sqLiteDatabase.execSQL("create table qc(id integer primary key, status text, description varchar(100),video_link varchar(100),image_link text, user_id integer,task_id integer, updated_at DATE ,FOREIGN KEY(task_id) references task(task_id))");
 
+        sqLiteDatabase.execSQL("create table priority(id integer primary key)");
     }
 
 
@@ -218,7 +219,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+    public void addTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -229,7 +230,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         contentValues.put("project_name", project_name);
         contentValues.put("estimated_time", estimated_time);
-        contentValues.put("required_time", required_time);
+        contentValues.put("recordedtime", recordedtime);
         contentValues.put("status", status);
         contentValues.put("total_qty", total_qty);
         contentValues.put("done_qty", done_qty);
@@ -241,6 +242,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
         sqLiteDatabase.insert("task", null, contentValues);
+        sqLiteDatabase.close();
+    }
+
+    public void dataPriority(String priority_id) {
+
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("id", priority_id);
+
+
+        sqLiteDatabase.insert("priority", null, contentValues);
         sqLiteDatabase.close();
     }
 
@@ -272,7 +285,7 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
 
     }
 
-    public void updateTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String required_time, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+    public void updateTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -283,7 +296,7 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
         contentValues.put("task_name", task_name);
         contentValues.put("project_name", project_name);
         contentValues.put("estimated_time", estimated_time);
-        contentValues.put("required_time", required_time);
+        contentValues.put("recordedtime", recordedtime);
         contentValues.put("total_qty", total_qty);
         contentValues.put("done_qty", done_qty);
         contentValues.put("task_details", task_details);

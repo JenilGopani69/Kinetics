@@ -169,7 +169,7 @@ SharedPreferences.Editor firstTimeeditor;
                                     task_details = jsonObject1.getString("taskdescription");
                                     status = jsonObject1.getString("status");
                                     project_name = jsonObject1.getString("project_name");
-
+                                   priority_id= jsonObject1.getString("priority");
                                     //totasl required
                                     quantity = jsonObject1.getString("quantity");
                                     estimated_time = jsonObject1.getString("estimated_time");
@@ -179,13 +179,20 @@ SharedPreferences.Editor firstTimeeditor;
                                     pdf_link = jsonObject1.getString("pdf_link");
                                     video_link = jsonObject1.getString("video_link");
 
+
                                     if (dbHelper.istaskExisting(task_id))
                                     {
+
+
                                         dbHelper.updateTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
                                     }
                                     else
                                     {
+
+
                                         dbHelper.addTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        Log.d("dataaaaelse",task_id);
+                                        dbHelper.dataPriority(task_id);
                                     }
                                     //add task or update task
                                     if (jsonObject1.has("qc")) {

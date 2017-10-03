@@ -131,47 +131,49 @@
 
                         <LinearLayout
 
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <LinearLayout
+                                android:gravity="center"
+                                android:layout_gravity="center"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
 
                                 android:orientation="horizontal">
 
-                                <Button
+                                <ImageButton
 
                                     android:id="@+id/btnStart"
-                                    android:layout_width="0dip"
-                                    android:layout_height="54dp"
+                                    android:layout_width="70dp"
+
+                                    android:layout_height="70dp"
                                     android:layout_margin="5dp"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/buttonglow"
-                                    android:text="start"
+                                    android:background="@drawable/btn_round"
+                                    android:src="@mipmap/ic_start"
                                     android:textColor="@color/white" />
 
 
-                                <Button
+                                <ImageButton
                                     android:id="@+id/btnComplete"
-                                    android:layout_width="0dip"
-                                    android:layout_height="54dp"
+                                    android:layout_width="70dp"
+                                    android:layout_height="70dp"
                                     android:layout_margin="5dp"
+                                    android:src="@mipmap/ic_stop"
 
-                                    android:layout_weight="1"
-                                    android:background="@drawable/buttonglow"
+                                    android:background="@drawable/btn_round"
                                     android:text="STOP"
                                     android:textColor="@color/white"
                                     android:visibility="gone" />
 
-                                <Button
+                                <ImageButton
                                     android:id="@+id/btnReset"
-                                    android:layout_width="0dip"
-                                    android:layout_height="54dp"
-                                    android:layout_margin="5dp"
+                                    android:layout_width="70dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:background="@drawable/stopbtn"
+                                    android:background="@drawable/btn_round"
                                     android:onClick="reset"
                                     android:text="RESET"
                                     android:textColor="@color/white"

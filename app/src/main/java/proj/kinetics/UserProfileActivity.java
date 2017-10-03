@@ -290,8 +290,8 @@ TextView tv;
     }
 
     private void setupViewPager(NonSwipeableViewPager viewPager) {
-        adapter.addFragment(new MyTaskFragment(), "My Task");
-        adapter.addFragment(new CompletedTask(), "Completed Task");
+        adapter.addFragment(new MyTaskFragment(), "Task (s)");
+        adapter.addFragment(new CompletedTask(), "Completed Task (s)");
         adapter.addFragment(new Reports(), "Reports");
         viewPager.setAdapter(adapter);
 
