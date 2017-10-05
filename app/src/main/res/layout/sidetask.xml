@@ -242,7 +242,7 @@ android:textColor="@android:color/black"
                                 android:layout_height="match_parent"
                                 android:layout_margin="10dp"
                                 android:background="@drawable/buttonglow"
-                                android:text="SUMBIT"
+                                android:text="SUBMIT"
                                 android:hapticFeedbackEnabled="true"
                                 android:textColor="@color/white" />
 

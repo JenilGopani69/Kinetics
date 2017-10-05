@@ -176,7 +176,7 @@ public class MyTaskFragment extends Fragment {
         });
         boolean isConnected = ConnectivityReceiver.isConnected();
         if (isConnected) {
-            //getTaskDetail(username, password);
+            getTaskDetail(username, password);
             getOfflineTask();
 
 
@@ -210,8 +210,8 @@ public class MyTaskFragment extends Fragment {
                     done_qtytask_details = cursor.getString(cursor.getColumnIndex("done_qty"));
                     task_details = cursor.getString(cursor.getColumnIndex("task_details"));
                     due = cursor.getString(cursor.getColumnIndex("due_date"));
-
-                    Task task = new Task(task_id, "", project_name, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, task_details, "");
+                    priority=cursor.getString(cursor.getColumnIndex("priority_id"));
+                    Task task = new Task(task_id, "", project_name, task_name, estimated_time, required_time, status, total_qty, done_qtytask_details, task_details, priority);
 task.setDue_date(due);
 
                     list.add(task);

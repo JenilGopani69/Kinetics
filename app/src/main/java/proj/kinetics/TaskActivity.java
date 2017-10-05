@@ -730,7 +730,12 @@ Log.d("ggg",d_taskquantity);
 
                 if (requiredunits.getText().toString().trim().equalsIgnoreCase(totalunits.getText().toString().trim())) {
 
-                    Toast.makeText(TaskActivity.this, "Production Completed Proceed to QC", Toast.LENGTH_SHORT).show();
+                   new AlertDialog.Builder(TaskActivity.this).setCancelable(false).setMessage("Production Completed Proceed to QC").setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialogInterface, int i) {
+                           dialogInterface.dismiss();
+                       }
+                   }).show();
                 } else {
 
 

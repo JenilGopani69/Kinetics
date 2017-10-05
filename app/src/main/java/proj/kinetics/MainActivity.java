@@ -23,6 +23,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 import okhttp3.ResponseBody;
@@ -38,6 +42,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     Button loginBtn;
+    String date;
     int i=0,j=0;
     String task_name="", user_id, project_id, project_name, priority_id, task_id="", estimated_time,duration,due_date ,quantity="0", status, amount="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
     String taskname="";
@@ -175,6 +180,8 @@ SharedPreferences.Editor firstTimeeditor;
                                     estimated_time = jsonObject1.getString("estimated_time");
                                     duration = jsonObject1.getString("duration");
                                     due_date = jsonObject1.getString("due_date");
+
+                                    date=formateDateFromstring("yyyy-MM-dd","dd-MM-yyyy",due_date);
                                     amount = jsonObject1.getString("amount");
                                     pdf_link = jsonObject1.getString("pdf_link");
                                     video_link = jsonObject1.getString("video_link");
@@ -184,13 +191,13 @@ SharedPreferences.Editor firstTimeeditor;
                                     {
 
 
-                                        dbHelper.updateTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.updateTask(String.valueOf(date),task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
                                     }
                                     else
                                     {
 
 
-                                        dbHelper.addTask(due_date,task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.addTask(String.valueOf(date),task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
                                         Log.d("dataaaaelse",task_id);
                                         dbHelper.dataPriority(task_id);
                                     }
@@ -296,7 +303,24 @@ SharedPreferences.Editor firstTimeeditor;
         });
     }
 
+    public static String formateDateFromstring(String inputFormat, String outputFormat, String inputDate){
 
+        Date parsed = null;
+        String outputDate = "";
+
+        SimpleDateFormat df_input = new SimpleDateFormat(inputFormat, java.util.Locale.getDefault());
+        SimpleDateFormat df_output = new SimpleDateFormat(outputFormat, java.util.Locale.getDefault());
+
+        try {
+            parsed = df_input.parse(inputDate);
+            outputDate = df_output.format(parsed);
+
+        } catch (ParseException e) {
+        }
+
+        return outputDate;
+
+    }
 
     @Override
     protected void onResume() {
