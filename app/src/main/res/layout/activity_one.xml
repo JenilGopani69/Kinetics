@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white_greyish"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    android:background="@color/white_greyish"
     tools:context=".TaskActivity">
 
 
@@ -34,16 +34,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 <LinearLayout android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
 
 
+    <include layout="@layout/sidetask" />
 
-                <include layout="@layout/sidetask" />
     <include layout="@layout/secondtask"/>
 
 
@@ -137,10 +137,10 @@
                             android:orientation="horizontal">
 
                             <LinearLayout
-                                android:gravity="center"
-                                android:layout_gravity="center"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
 
                                 android:orientation="horizontal">
 
@@ -161,9 +161,9 @@
                                     android:layout_width="70dp"
                                     android:layout_height="70dp"
                                     android:layout_margin="5dp"
-                                    android:src="@mipmap/ic_stop"
-
                                     android:background="@drawable/btn_round"
+
+                                    android:src="@mipmap/ic_stop"
                                     android:text="STOP"
                                     android:textColor="@color/white"
                                     android:visibility="gone" />
@@ -241,10 +241,10 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/recordedtym"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
-                                    android:id="@+id/recordedtym"
                                     android:gravity="start"
                                     android:text="00:00:00"
                                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
@@ -276,10 +276,10 @@
                                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                                 <TextView
+                                    android:id="@+id/firstunits"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
-                                    android:id="@+id/firstunits"
                                     android:gravity="end"
                                     android:text="1st Units" />
 
@@ -287,11 +287,11 @@
                             </LinearLayout>
                             <LinearLayout
                                 android:id="@+id/addlin"
-                                android:visibility="gone"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:visibility="gone">
 
                                 <TextView
                                     android:id="@+id/totalunits2"
@@ -321,11 +321,11 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/breaktym"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
                                     android:gravity="end"
-                                    android:id="@+id/breaktym"
 
                                     android:text="00:00:00"
                                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />

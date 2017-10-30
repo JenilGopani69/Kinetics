@@ -57,9 +57,9 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
        else {
            holder.pname.setText("");
        }
-        holder.estimated_time.setText(getSet.getEstimatedTime());
+        holder.estimated_time.setText(getSet.getEstimatedTime().trim());
         if (getSet.getDue_date()!=null) {
-            holder.duedate.setText(getSet.getDue_date());
+            holder.duedate.setText(getSet.getDue_date().trim());
             //holder.nooftask.setText(getSet.getNooftask());
         }
         else {
@@ -78,7 +78,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView name, duedate, pname, priorityid,estimated_time,duedatename;
+        proj.kinetics.Customlib.MyTextView name, duedate, pname, priorityid, estimated_time, duedatename;
 
         Context ctx;
         List<Task> arrayList = new ArrayList();
@@ -86,13 +86,13 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.MyView
         public MyViewHolder(View itemView, Context context, List<Task> al) {
             super(itemView);
             itemView.setOnClickListener(this);
-            name = (TextView) itemView.findViewById(R.id.name);
-            duedate = (TextView) itemView.findViewById(R.id.duedate);
-            priorityid = (TextView) itemView.findViewById(R.id.priorityid);
-            duedatename = (TextView) itemView.findViewById(R.id.duedatename);
+            name = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.name);
+            duedate = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.duedate);
+            priorityid = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.priorityid);
+            duedatename = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.duedatename);
 
-            pname = (TextView) itemView.findViewById(R.id.pname);
-            estimated_time = (TextView) itemView.findViewById(R.id.estimated_time);
+            pname = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.pname);
+            estimated_time = (proj.kinetics.Customlib.MyTextView) itemView.findViewById(R.id.estimated_time);
 
 
             arrayList = al;

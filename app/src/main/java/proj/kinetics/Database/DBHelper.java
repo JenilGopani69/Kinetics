@@ -32,7 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("create table taskmapping(task_id integer primary key ,taskname text , dtask_id text,dtaskstatus text)");
         sqLiteDatabase.execSQL("create table projects(project_id integer primary key, project_name varchar(100), user_id integer)");
-        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, project_name text, task_name text, due_date text ,estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text, updated_at DATE, created_at DATE DEFAULT (datetime('now','localtime')))");
+        sqLiteDatabase.execSQL("create table task(task_id integer primary key, priority_id integer, reference varchar(100), warehouse_code varchar(100), shop_order_quantity varchar(100), project_due_date varchar(100), sales_order varchar(100), project_name text, task_name text, due_date text ,estimated_time varchar(100),required_time varchar(100),status varchar(10),total_qty text,done_qty text,task_details text,pdf_link varchar(100),dependent_task_id varchar(10),video_link varchar(100),user_id integer,recordedtime varchar(100),s_taskid text, updated_at DATE, created_at DATE DEFAULT (datetime('now','localtime')))");
         sqLiteDatabase.execSQL("create table pause_reason(id integer primary key autoincrement, pause_reason_id integer,duration varchar(100), user_id text,task_id text, updated_at DATE)");
         sqLiteDatabase.execSQL("create table qc(id integer primary key, status text, description varchar(100),video_link varchar(100),image_link text, user_id integer,task_id integer, updated_at DATE ,FOREIGN KEY(task_id) references task(task_id))");
 
@@ -219,7 +219,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void addTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+    public void addTask(String due_date, String task_id, String task_name, String reference, String warehouse_code, String shop_order_quantity, String project_due_date, String sales_order, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -227,6 +227,11 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("priority_id", priority_id);
         contentValues.put("task_name", task_name);
         contentValues.put("due_date", due_date);
+        contentValues.put("reference", reference);
+        contentValues.put("warehouse_code", warehouse_code);
+        contentValues.put("shop_order_quantity", shop_order_quantity);
+        contentValues.put("project_due_date", project_due_date);
+        contentValues.put("sales_order", sales_order);
 
         contentValues.put("project_name", project_name);
         contentValues.put("estimated_time", estimated_time);
@@ -285,7 +290,7 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
 
     }
 
-    public void updateTask(String due_date,String task_id, String task_name, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
+    public void updateTask(String due_date, String task_id, String task_name, String reference, String warehouse_code, String shop_order_quantity, String project_due_date, String sales_order, String project_name, String priority_id, String estimated_time, String recordedtime, String status, String total_qty, String done_qty, String task_details, String pdf_link, String dependent_task_id, String video_link, String user_id) {
 
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
@@ -294,6 +299,12 @@ Cursor c=sqLiteDatabase.rawQuery("select * from task",null);
         contentValues.put("status", status);
         contentValues.put("priority_id", priority_id);
         contentValues.put("task_name", task_name);
+        contentValues.put("reference", reference);
+        contentValues.put("warehouse_code", warehouse_code);
+        contentValues.put("shop_order_quantity", shop_order_quantity);
+        contentValues.put("project_due_date", project_due_date);
+        contentValues.put("sales_order", sales_order);
+
         contentValues.put("project_name", project_name);
         contentValues.put("estimated_time", estimated_time);
         contentValues.put("recordedtime", recordedtime);

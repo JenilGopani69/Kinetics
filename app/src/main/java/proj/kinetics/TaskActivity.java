@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -33,7 +32,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,9 +63,6 @@ import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
 import proj.kinetics.BroadcastReceivers.ConnectivityReceiver;
 import proj.kinetics.Database.DBHelper;
-import proj.kinetics.Model.Dependenttask;
-import proj.kinetics.Model.Mapping;
-import proj.kinetics.Model.Qualitycheck_;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.Session.TimerSession;
 import proj.kinetics.Session.TimerSessionForAddTask;
@@ -81,8 +76,6 @@ import proj.kinetics.Utils.SessionManagement;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.enabled;
 
 public class TaskActivity extends AppCompatActivity implements PropertyChangeListener, View.OnClickListener {
     public static Button finishtask;
@@ -1981,7 +1974,7 @@ Log.d("ggg",d_taskquantity);
     protected void onRestart() {
         super.onRestart();
         /*if (!(taskname.equalsIgnoreCase(sharedPreferences.getString("task","")))){
-            Intent intent=new Intent(this,NoTaskActivity.class);
+            Intent intent=new Intent(this,DisabledTaskActivity.class);
             intent.putExtra("taskname",taskname);
             startActivity(intent);
         }*/
@@ -2084,7 +2077,6 @@ Log.d("ggg",d_taskquantity);
 
             }
 
-            // Toast.makeText(this, "No", Toast.LENGTH_SHORT).show();
 
         }
        /* if (taskselectedid != null && !taskselectedid.isEmpty()) {
@@ -2152,7 +2144,7 @@ Log.d("ggg",d_taskquantity);
         if (sharedPreferences.getString("task", "").length() > 0) {
             Log.d("dfsf", "fsdfsdf" + sharedPreferences.getString("task", "") + "" + taskid);
             if (!(taskid.matches(sharedPreferences.getString("task", "")))) {
-                Intent intent = new Intent(this, NoTaskActivity.class);
+                Intent intent = new Intent(this, DisabledTaskActivity.class);
                 intent.putExtra("taskid", taskid);
                 intent.putExtra("taskname", sharedPreferences.getString("taskname", ""));
                 startActivity(intent);

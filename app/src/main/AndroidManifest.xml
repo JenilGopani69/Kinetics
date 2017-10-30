@@ -33,7 +33,7 @@
 android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".NoTaskActivity"
+            android:name=".DisabledTaskActivity"
             android:screenOrientation="portrait" />
 
         <receiver
@@ -77,8 +77,8 @@ android:noHistory="true"
             android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".TaskSelection"
             android:label=""
-            android:screenOrientation="portrait"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" ></activity>
         <meta-data
             android:name="io.fabric.ApiKey"

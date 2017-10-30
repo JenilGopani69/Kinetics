@@ -66,6 +66,7 @@ public class MyTaskFragment extends Fragment {
     private View view;
     private LinearLayoutManager linearLayout;
     private String due_date;
+    private String reference, warehouse_code, shop_order_quantity, project_due_date, sales_order;
 
     public MyTaskFragment() {
         // Required empty public constructor
@@ -268,7 +269,11 @@ task.setDue_date(due);
                                     status = jsonObject1.getString("status");
                                     project_name = jsonObject1.getString("project_name");
                                     priority_id= jsonObject1.getString("priority_id");
-
+                                    reference = jsonObject1.getString("reference");
+                                    warehouse_code = jsonObject1.getString("warehouse_code");
+                                    project_due_date = jsonObject1.getString("project_due_date");
+                                    shop_order_quantity = jsonObject1.getString("shop_order_quantity");
+                                    sales_order = jsonObject1.getString("sales_order");
                                     //totasl required
                                     quantity = jsonObject1.getString("quantity");
                                     estimated_time = jsonObject1.getString("estimated_time");
@@ -282,10 +287,10 @@ task.setDue_date(due);
                                     if (dbHelper.istaskExisting(task_id)) {
                                         Log.d("updatedata", task_id + " " + quantity);
 
-                                        dbHelper.updateTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
+                                        dbHelper.updateTask(due_date, task_id, task_name, reference, warehouse_code, shop_order_quantity, project_due_date, sales_order, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     } else {
                                         Log.d("adddata", task_id);
-                                        dbHelper.addTask(due_date,task_id, task_name, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
+                                        dbHelper.addTask(due_date, task_id, task_name, reference, warehouse_code, shop_order_quantity, project_due_date, sales_order, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, userId);
                                     }
                                     //add task or update task
                                     if (jsonObject1.has("qc")) {

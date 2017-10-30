@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:elevation="5dp"
     android:id="@+id/coordinate"
-    android:background="@color/white_greyish"
-android:visibility="gone"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white_greyish"
+    android:elevation="5dp"
+    android:orientation="vertical"
+    android:visibility="gone">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@ android:visibility="gone"
                     android:gravity="end"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <proj.kinetics.Customlib.MyTextView
                         android:id="@+id/task2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -72,8 +72,8 @@ android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:gravity="start"
                     android:text=""
-                    android:textColor="@android:color/black"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                    android:textColor="@android:color/black" />
 
 
 
@@ -154,8 +154,8 @@ android:visibility="gone"
 
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
-                        android:scrollbarSize="2dp"
                         android:layout_marginBottom="10dp"
+                        android:scrollbarSize="2dp"
                         android:scrollbars="horizontal">
 
 

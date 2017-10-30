@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import proj.kinetics.Adapters.QCAdapter;
 import proj.kinetics.Adapters.QCAdapter_;
 import proj.kinetics.Adapters.UnitsAdapter;
 import proj.kinetics.Adapters.UnitsAdapter2;
+import proj.kinetics.Database.DBHelper;
 import proj.kinetics.Model.TaskDetails;
 import proj.kinetics.Utils.ApiClient;
 import proj.kinetics.Utils.ApiInterface;
@@ -45,11 +47,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NoTaskActivity extends AppCompatActivity {
+public class DisabledTaskActivity extends AppCompatActivity {
     public static Button finishtask;
     String taskname;
     String taskid;
 
+    DBHelper dbHelper;
     QCAdapter_ qcAd;
 
     ArrayList<String> al = new ArrayList<>();
@@ -77,13 +80,12 @@ public class NoTaskActivity extends AppCompatActivity {
     UnitsAdapter2 unitsAdapter2;
     int recent = 0;
     List<CharSequence> list = new ArrayList<CharSequence>();
-    private Button btnSubmit,btnSubmit2;
             ImageButton btnStart, btnReset, btnComplete;
+    SharedPreferences.Editor editor;
+    private Button btnSubmit, btnSubmit2;
     private Handler h;
     private TextView tvtask,tvTime, totalunits, requiredunits, taskdescrip, unitsleft, startedtime, taskdescrips, unitslefts, recordedtym, breaktym;
-
     private SessionManagement session;
-    SharedPreferences.Editor editor;
 
     public static void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean viewMore) {
 
@@ -163,6 +165,7 @@ public class NoTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one);
+        dbHelper = new DBHelper(DisabledTaskActivity.this);
         taskid = getIntent().getStringExtra("taskid");
         taskname = getIntent().getStringExtra("taskname");
         sharedPreferences = getSharedPreferences("tasktimer", MODE_PRIVATE);
@@ -196,7 +199,7 @@ public class NoTaskActivity extends AppCompatActivity {
 
                 // Intialize  readable sequence of char values
                 final CharSequence[] dialogList = list.toArray(new CharSequence[list.size()]);
-                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(NoTaskActivity.this);
+                final AlertDialog.Builder builderDialog = new AlertDialog.Builder(DisabledTaskActivity.this);
                 builderDialog.setTitle("SELECT TASK");
                 int count = dialogList.length;
                 boolean[] is_checked = new boolean[count];
@@ -236,18 +239,6 @@ public class NoTaskActivity extends AppCompatActivity {
                                     }
                                 }
 
-                        /*Check string builder is empty or not. If string builder is not empty.
-                          It will display on the screen.
-                         */
-                                /*if (stringBuilder.toString().trim().equals("")) {
-
-                                    ((TextView) findViewById(R.id.text)).setText("SELECT SIMILAR TASK");
-                                    stringBuilder.setLength(0);
-
-                                } else {
-
-                                    ((TextView) findViewById(R.id.text)).setText(stringBuilder);
-                                }*/
                             }
                         });
 
@@ -296,8 +287,8 @@ openDialog.setVisibility(View.GONE);
             public void onClick(View view) {
                 unitsdata.setVisibility(View.GONE);
 
-                //Toast.makeText(NoTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
-                new AlertDialog.Builder(NoTaskActivity.this).setMessage("Cannot Proceed " + taskname + " is already running").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                //Toast.makeText(DisabledTaskActivity.this, "cannot proceed", Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(DisabledTaskActivity.this).setMessage("Cannot Proceed " + taskname + " is already running").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -308,14 +299,62 @@ openDialog.setVisibility(View.GONE);
                 }).setCancelable(true).show();
             }
         });
+        Toast.makeText(this, "" + taskid, Toast.LENGTH_SHORT).show();
 getTaskDetails();
+        //  getOfflineTaskData();
     }
 
+    /*private void getOfflineTaskData() {
+        Cursor cursor = dbHelper.getTaskDetails(taskid);
+
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String doneunits = cursor.getString(cursor.getColumnIndex("done_qty"));
 
 
+                    totalunits.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
+                    requiredunits.setText(cursor.getString(cursor.getColumnIndex("total_qty")));
+                   *//**//* attachmenturl = cursor.getString(cursor.getColumnIndex("pdf_link"));
+                    videolink = cursor.getString(cursor.getColumnIndex("video_link"));
+                    String  taskduetxt=cursor.getString(cursor.getColumnIndex("due_date"));
+                    String  taskestxt=cursor.getString(cursor.getColumnIndex("estimated_time"));
+
+                    taskdue.setText("Due Date:"+taskduetxt);
+                    taskest.setText("Est Time :"+taskestxt);*//**//*
+                    Log.d("mydatatotal",""+ cursor.getString(cursor.getColumnIndex("total_qty")));
+
+                    recordedtym.setText(cursor.getString(cursor.getColumnIndex("recordedtime")));
+                    if (doneunits.equalsIgnoreCase("")) {
+                        Log.d("mydatatotal", cursor.getString(cursor.getColumnIndex("total_qty")));
+                        doneunits = "0";
+                        unitsproduced.setText(doneunits);
+
+                    } else {
+                        int left_units = ((Integer.parseInt(requiredunits.getText().toString()))) - (Integer.parseInt(doneunits));
+                        unitsleft.setText(left_units + " left");
+                        unitsproduced.setText(cursor.getString(cursor.getColumnIndex("done_qty")));
+
+                    }
 
 
+                    tvtask.setText(cursor.getString(cursor.getColumnIndex("task_name")));
+                    taskdescrip.setText(cursor.getString(cursor.getColumnIndex("task_details")));
 
+
+                    editor.putString("taskname", tvtask.getText().toString());
+
+                    makeTextViewResizable(taskdescrip, 3, "View More", true);
+
+
+                }
+                while (cursor.moveToNext());
+            }
+        }*//*
+
+
+    }
+*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -340,7 +379,7 @@ getTaskDetails();
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-          Intent intent=new Intent(NoTaskActivity.this,UserProfileActivity.class);
+            Intent intent = new Intent(DisabledTaskActivity.this, UserProfileActivity.class);
             startActivity(intent);
             return true;
         }

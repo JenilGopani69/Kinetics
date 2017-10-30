@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     Button loginBtn;
     String date;
     int i=0,j=0;
-    String task_name="", user_id, project_id, project_name, priority_id, task_id="", estimated_time,duration,due_date ,quantity="0", status, amount="0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
+    String task_name = "", user_id, reference, warehouse_code, shop_order_quantity, project_due_date, sales_order, project_name, priority_id, task_id = "", estimated_time, duration, due_date, quantity = "0", status, amount = "0", task_details, pdf_link = null, dependent_task_id = null, video_link = null;
     String taskname="";
     String taskdescription="";
     String d_id="";
@@ -57,6 +57,25 @@ SharedPreferences firstTime;
 SharedPreferences.Editor firstTimeeditor;
     ProgressDialog progressdialog;
     CardView cd1;
+
+    public static String formateDateFromstring(String inputFormat, String outputFormat, String inputDate) {
+
+        Date parsed = null;
+        String outputDate = "";
+
+        SimpleDateFormat df_input = new SimpleDateFormat(inputFormat, java.util.Locale.getDefault());
+        SimpleDateFormat df_output = new SimpleDateFormat(outputFormat, java.util.Locale.getDefault());
+
+        try {
+            parsed = df_input.parse(inputDate);
+            outputDate = df_output.format(parsed);
+
+        } catch (ParseException e) {
+        }
+
+        return outputDate;
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,8 +159,6 @@ SharedPreferences.Editor firstTimeeditor;
 
     }
 
-
-
     private void getUserLogin(final String username, final String password) {
 
         ApiInterface apiInterface= ApiClient.getClient().create(ApiInterface.class);
@@ -175,6 +192,12 @@ SharedPreferences.Editor firstTimeeditor;
                                     status = jsonObject1.getString("status");
                                     project_name = jsonObject1.getString("project_name");
                                    priority_id= jsonObject1.getString("priority");
+
+                                    reference = jsonObject1.getString("reference");
+                                    warehouse_code = jsonObject1.getString("warehouse_code");
+                                    project_due_date = jsonObject1.getString("project_due_date");
+                                    shop_order_quantity = jsonObject1.getString("shop_order_quantity");
+                                    sales_order = jsonObject1.getString("sales_order");
                                     //totasl required
                                     quantity = jsonObject1.getString("quantity");
                                     estimated_time = jsonObject1.getString("estimated_time");
@@ -191,13 +214,13 @@ SharedPreferences.Editor firstTimeeditor;
                                     {
 
 
-                                        dbHelper.updateTask(String.valueOf(date),task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.updateTask(String.valueOf(date), task_id, task_name, reference, warehouse_code, shop_order_quantity, project_due_date, sales_order, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, user_id);
                                     }
                                     else
                                     {
 
 
-                                        dbHelper.addTask(String.valueOf(date),task_id,task_name,project_name,priority_id,estimated_time,duration,status,quantity,amount,task_details,pdf_link,"",video_link,user_id);
+                                        dbHelper.addTask(String.valueOf(date), task_id, task_name, reference, warehouse_code, shop_order_quantity, project_due_date, sales_order, project_name, priority_id, estimated_time, duration, status, quantity, amount, task_details, pdf_link, "", video_link, user_id);
                                         Log.d("dataaaaelse",task_id);
                                         dbHelper.dataPriority(task_id);
                                     }
@@ -301,25 +324,6 @@ SharedPreferences.Editor firstTimeeditor;
                 Log.d("response",""+t.getMessage());
             }
         });
-    }
-
-    public static String formateDateFromstring(String inputFormat, String outputFormat, String inputDate){
-
-        Date parsed = null;
-        String outputDate = "";
-
-        SimpleDateFormat df_input = new SimpleDateFormat(inputFormat, java.util.Locale.getDefault());
-        SimpleDateFormat df_output = new SimpleDateFormat(outputFormat, java.util.Locale.getDefault());
-
-        try {
-            parsed = df_input.parse(inputDate);
-            outputDate = df_output.format(parsed);
-
-        } catch (ParseException e) {
-        }
-
-        return outputDate;
-
     }
 
     @Override
