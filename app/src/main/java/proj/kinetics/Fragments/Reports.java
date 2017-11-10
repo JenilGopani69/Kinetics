@@ -36,11 +36,11 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
     WebView webView;
     ViewGroup container;
     TextView internetid;
+    SessionManagement session;
     private Activity mActivity;
     public Reports() {
         // Required empty public constructor
     }
-    SessionManagement session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +119,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
         boolean isConnected = ConnectivityReceiver.isConnected();
         showSnack(isConnected,container);
     }
+
     private void showSnack(boolean isConnected,ViewGroup container) {
         String message;
         int color;
@@ -167,7 +168,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
 
                     webView.setWebViewClient(new MyBrowser());
-                   /* webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
                     webView.getSettings().setUseWideViewPort(true);
                     webView.getSettings().setLoadsImagesAutomatically(true);
                     webView.getSettings().setJavaScriptEnabled(true);
@@ -177,7 +178,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
                     webView.getSettings().setAllowFileAccess(true);
                     webView.getSettings().setAppCacheEnabled(true);
                     webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
-                    webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);*/
+        webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
 
     }
