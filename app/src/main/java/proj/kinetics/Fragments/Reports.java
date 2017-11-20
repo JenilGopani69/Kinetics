@@ -217,7 +217,7 @@ public class Reports extends Fragment implements ConnectivityReceiver.Connectivi
 
     }
 
-
+                            
     /*@Override
     public void onResume() {
         super.onResume();

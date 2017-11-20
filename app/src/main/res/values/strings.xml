@@ -11,6 +11,7 @@
         <item>Lunch</item>
         <item>Home</item>
         <item>Toilet</item>
+        <item>Other Task</item>
         <item>Out of Material</item>
     </array>
 </resources>
