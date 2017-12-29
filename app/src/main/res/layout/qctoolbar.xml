@@ -10,5 +10,11 @@
     local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     local:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
+    <TextView
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QC"/>
 
 </android.support.v7.widget.Toolbar>

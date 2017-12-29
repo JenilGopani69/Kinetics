@@ -35,7 +35,6 @@ public class TaskSelection extends Activity {
     ArrayList<TaskName> al = new ArrayList<>();
     String taskid = "", selection = "";
     ListView listView;
-    Button canceldialog, adddialog;
     ArrayList<CharSequence> list = new ArrayList<>();
     private String user_id, datas, status;
 
@@ -57,39 +56,8 @@ public class TaskSelection extends Activity {
 
         // Getting object reference to listview of main.xml
         listView = (ListView) findViewById(R.id.listview);
-        canceldialog = (Button) findViewById(R.id.canceldialog);
-        adddialog = (Button) findViewById(R.id.adddialog);
 
 
-        canceldialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TaskSelection.this, TaskActivity.class);
-                intent.putExtra("taskid", taskid);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-
-
-            }
-        });
-        adddialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (pass == true) {
-                    Toast.makeText(TaskSelection.this, "OK", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(TaskSelection.this, TaskActivity.class);
-                    intent.putExtra("taskselectedid", selection);
-                    intent.putExtra("taskid", taskid);
-                    startActivity(intent);
-                    overridePendingTransition(0, 0);
-
-                } else {
-                    Toast.makeText(TaskSelection.this, "NO", Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-        });
         getOfflineTask();
         // Instantiating array adapter to populate the listView
         // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
@@ -159,7 +127,7 @@ public class TaskSelection extends Activity {
                 }
 
                 while (cursor.moveToNext());
-                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, list);
+                ArrayAdapter adapter = new ArrayAdapter(this, R.layout.simple_list_item_single_choice, list);
 
                 listView.setAdapter(adapter);
 

@@ -19,6 +19,7 @@
             android:layout_gravity="center"
             app:tabGravity="fill"
             android:id="@+id/tabs"
+            app:tabTextAppearance="@style/MineCustomTabText"
             app:tabMode="scrollable" />
     </android.support.design.widget.AppBarLayout>
 

@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -92,7 +93,12 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     int selection = 1;
     String taskid, attachmenturl2, videolink2, userId;
     ArrayList<String> al = new ArrayList<>();
-    ImageButton videoattach, videoattach2, attachment, attachment2, undobtn, undobtn2;
+    ImageView videoattach;
+    ImageButton videoattach2;
+    ImageView attachment;
+    ImageButton attachment2;
+    ImageButton undobtn;
+    ImageButton undobtn2;
     Toolbar toolbar;
     String string1 = "", string2 = "";
     Animation myAnim;
@@ -110,7 +116,10 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
     int getpauseselection = 1;
     TextView task2;
     CoordinatorLayout coordinate;
-    LinearLayout unitsdata2, unitsdata, nextqcbtn, qcrecylerdependent;
+    LinearLayout unitsdata2;
+    LinearLayout unitsdata;
+    RelativeLayout nextqcbtn;
+    LinearLayout qcrecylerdependent;
     QCAdapter myAdapter;
     RecyclerView units, units2, recyclerView;
     EditText unitsproduced, unitsproduced2;
@@ -282,11 +291,11 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         btnSubmit2 = (Button) findViewById(R.id.btnSubmit2);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
         undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
-        videoattach = (ImageButton) findViewById(R.id.action_video);
+        videoattach = (ImageView) findViewById(R.id.action_video);
         videoattach2 = (ImageButton) findViewById(R.id.action_video2);
-        attachment = (ImageButton) findViewById(R.id.action_attach);
+        attachment = (ImageView) findViewById(R.id.action_attach);
         attachment2 = (ImageButton) findViewById(R.id.action_attach2);
-        nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
+        nextqcbtn = (RelativeLayout) findViewById(R.id.nextqcbtn);
         //  recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
         btnReset = (ImageButton) findViewById(R.id.btnReset);
         videoattach.setOnClickListener(this);
@@ -710,7 +719,7 @@ Log.d("ggg",d_taskquantity);
             public void onClick(View view) {
 
 
-                Toast.makeText(TaskActivity.this, " "+requiredunit2.getText().toString().trim()+" --"+totalunits2.getText().toString().trim(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(TaskActivity.this, " "+requiredunit2.getText().toString().trim()+" --"+totalunits2.getText().toString().trim(), Toast.LENGTH_SHORT).show();
 
                 if (requiredunit2.getText().toString().trim().equalsIgnoreCase(totalunits2.getText().toString().trim())){
 
@@ -1428,12 +1437,12 @@ Log.d("ggg",d_taskquantity);
         responseBody.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Toast.makeText(TaskActivity.this, "success", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(TaskActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(TaskActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -1587,26 +1596,7 @@ Log.d("ggg",d_taskquantity);
                     JSONObject jsonObject = new JSONObject(data);
                     String dataresponse = jsonObject.getString("message");
                     String id = jsonObject.getString("id");
-                    if (dataresponse.equalsIgnoreCase("success")) {
 
-                        Log.d("iftask", data);
-
-                        if (dataresponse.equalsIgnoreCase("success")) {
-
-                              /*  if (!(myDbHelper.isTaskDataExists(id))) {
-
-                                    myDbHelper.insertTaskData(data, id);
-                                   // Toast.makeText(TaskActivity.this, "No task", Toast.LENGTH_SHORT).show();
-                                }
-                                else {
-                                    myDbHelper.updateTaskData(data,id);
-                                   // Toast.makeText(TaskActivity.this, "Task updated", Toast.LENGTH_SHORT).show();
-
-                                }
-*/
-
-                        }
-                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -1678,10 +1668,7 @@ Log.d("ggg",d_taskquantity);
 
                 String data = response.body().getMessage();
                 Log.d("taskdetail", data);
-                if (data.equalsIgnoreCase("success")) {
 
-
-                }
 
 
             }
@@ -1881,6 +1868,18 @@ Log.d("ggg",d_taskquantity);
                         if (selection!=null && !selection.isEmpty()){
 
                             if (selection.equalsIgnoreCase("Out of Material")){
+
+                                totalunits.setText(unitsproduced.getText().toString());
+                                editor.clear();
+                                editor.commit();
+
+                                timerSession.clearTimer();
+                                timerSessionForAddTask.clearTimer();
+
+
+                            }
+
+                            if (selection.equalsIgnoreCase("Other Task")){
 
                                 totalunits.setText(unitsproduced.getText().toString());
                                 editor.clear();

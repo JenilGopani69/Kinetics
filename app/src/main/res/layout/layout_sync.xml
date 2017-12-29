@@ -25,10 +25,12 @@
             android:orientation="horizontal">
 
             <TextView
+                android:text="01:50:60 22/12/2017"
+                android:layout_marginRight="50dp"
                 android:id="@+id/timing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="50dp"
+                android:layout_gravity="start"
                 android:gravity="start" />
 
             <RelativeLayout

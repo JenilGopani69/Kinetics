@@ -23,8 +23,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +58,8 @@ public class DisabledTaskActivity extends AppCompatActivity {
     QCAdapter_ qcAd;
 
     ArrayList<String> al = new ArrayList<>();
-    ImageButton videoattach, attachment, undobtn, undobtn2;
+    ImageButton undobtn, undobtn2;
+    ImageView videoattach,attachment;
     Toolbar toolbar;
     String string1 = "", string2 = "";
     Animation myAnim;
@@ -68,7 +71,8 @@ public class DisabledTaskActivity extends AppCompatActivity {
     String d_taskdescription="",d_taskname="",d_taskquantity="";
     int counts = 1;
     CoordinatorLayout coordinate;
-    LinearLayout unitsdatas, unitsdata, nextqcbtn;
+    LinearLayout unitsdatas, unitsdata;
+    RelativeLayout nextqcbtn;
     QCAdapter myAdapter;
     RecyclerView units, units2, recyclerView;
     EditText unitsproduced, unitsproduced2;
@@ -273,9 +277,9 @@ public class DisabledTaskActivity extends AppCompatActivity {
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         undobtn = (ImageButton) findViewById(R.id.undobtn);
         undobtn2 = (ImageButton) findViewById(R.id.undobtn2);
-        videoattach = (ImageButton) findViewById(R.id.action_video);
-        attachment = (ImageButton) findViewById(R.id.action_attach);
-        nextqcbtn = (LinearLayout) findViewById(R.id.nextqcbtn);
+        videoattach = (ImageView) findViewById(R.id.action_video);
+        attachment = (ImageView) findViewById(R.id.action_attach);
+        nextqcbtn = (RelativeLayout) findViewById(R.id.nextqcbtn);
         recyclerView = (RecyclerView) findViewById(R.id.qcrecyler);
         btnReset = (ImageButton) findViewById(R.id.btnReset);
 

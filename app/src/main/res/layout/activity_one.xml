@@ -157,8 +157,8 @@
 
                                 <ImageButton
                                     android:id="@+id/btnComplete"
-                                    android:layout_width="70dp"
-                                    android:layout_height="70dp"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
                                     android:layout_margin="5dp"
                                     android:background="@drawable/btn_round"
 
@@ -169,11 +169,10 @@
 
                                 <ImageButton
                                     android:id="@+id/btnReset"
-                                    android:layout_width="70dp"
+                                    android:layout_width="90dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:background="@drawable/btn_round"
-                                    android:onClick="reset"
                                     android:text="RESET"
                                     android:textColor="@color/white"
                                     android:visibility="gone" />

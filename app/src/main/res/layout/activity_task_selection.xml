@@ -9,7 +9,7 @@
     tools:context="proj.kinetics.TaskSelection">
 
     <TextView
-
+android:textSize="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -21,23 +21,4 @@
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/canceldialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cancel" />
-
-        <Button
-            android:id="@+id/adddialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Add" />
-    </LinearLayout>
 </LinearLayout>

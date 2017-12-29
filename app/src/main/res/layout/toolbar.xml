@@ -3,32 +3,44 @@
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?attr/actionBarSize"
+    android:layout_height="?attr/actionBarSize"
     android:background="?attr/colorPrimary"
-
     local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     local:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:gravity="end"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-      android:id="@+id/nextqcbtn"
+        <RelativeLayout
+            android:id="@+id/nextqcbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
-      android:orientation="horizontal">
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent"
-          android:text="Proceed To QC"
-          android:textColor="@color/white"
-          android:gravity="center"/>
-      <ImageButton
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:src="@mipmap/ic_next"
-          android:layout_gravity="end"
-          android:background="@android:color/transparent"/>
-  </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/imageButton"
+                android:layout_toStartOf="@+id/imageButton"
+                android:gravity="center"
+                android:text="Proceed To QC"
+                android:textColor="@color/white"
+                android:textSize="24dp" />
+
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="end"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/ic_next" />
+        </RelativeLayout>
+    </LinearLayout>
+
 </android.support.v7.widget.Toolbar>
