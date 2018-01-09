@@ -1,5 +1,6 @@
 package proj.kinetics;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +20,12 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -33,6 +36,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,6 +92,7 @@ public class TaskActivity extends AppCompatActivity implements PropertyChangeLis
         }
     };
     QCAdapter_ qcAd;
+    PopupWindow mpopup;
     String taskname, taskselectedid;
     DBHelper dbHelper;
     String totalunit2;
@@ -980,7 +986,6 @@ Log.d("ggg",d_taskquantity);
                 if (isConnect) {
 
                     dbHelper.addPauseReason("" + getpauseselection, breaktym.getText().toString(), userId, taskid);
-                    Toast.makeText(TaskActivity.this, "Internet Available"+items[getpauseselection-1], Toast.LENGTH_SHORT).show();
 
                     updatePause(userId, taskid, "" + getpauseselection);
                     //server api
@@ -1835,119 +1840,166 @@ Log.d("ggg",d_taskquantity);
     }
 
     public void showDialog() {
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
-        builder.setTitle("Select Reason");
-        builder.setCancelable(false);
-
-        //list of items
-        items = getResources().getStringArray(R.array.pausereason);
-        builder.setSingleChoiceItems(items, 0,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // item selected logic
-                        getpauseselection = which + 1;
-                       //  Toast.makeText(TaskActivity.this, ""+items[which]+" "+getpauseselection, Toast.LENGTH_SHORT).show();
-
-
-                    }
-                });
-
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-
-
-           String selection=items[getpauseselection-1];
-
-                        if (selection!=null && !selection.isEmpty()){
-
-                            if (selection.equalsIgnoreCase("Out of Material")){
-
-                                totalunits.setText(unitsproduced.getText().toString());
-                                editor.clear();
-                                editor.commit();
-
-                                timerSession.clearTimer();
-                                timerSessionForAddTask.clearTimer();
-
-
-                            }
-
-                            if (selection.equalsIgnoreCase("Other Task")){
-
-                                totalunits.setText(unitsproduced.getText().toString());
-                                editor.clear();
-                                editor.commit();
-
-                                timerSession.clearTimer();
-                                timerSessionForAddTask.clearTimer();
-
-
-                            }
-
-                        }
-
-
-                        // positive button logic
-                        TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
-                        String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-
-                        string1 = currentDateTimeString;
-                        int pid = getpauseselection + 1;
-                        totalunits.setText(unitsproduced.getText().toString());
-
-
-                        boolean isconnect = ConnectivityReceiver.isConnected();
-                        if (isconnect) {
-                            dbHelper.updateTaskStatus(taskid, "5", totalunits.getText().toString().trim(), tvTime.getText().toString());//pause status
-
-                            updateTaskStatus(userId, taskid, "5");
-                            if (taskselectedid != null && !taskselectedid.isEmpty()) {
-                                updateTaskStatus(userId, taskselectedid, "5");
-                                dbHelper.updateTaskStatus(taskselectedid, "5", totalunit2, tvTime.getText().toString());//pause status
-                                unitsdata2.setVisibility(View.GONE);
-
-                            }
-
-                        } else {
-                            dbHelper.updateTaskStatusOffline(taskselectedid, "5", totalunit2, tvTime.getText().toString());//pause status
-                            dbHelper.updateTaskStatusOffline(taskid, "5", totalunits.getText().toString().trim(), tvTime.getText().toString());//pause status
-
-                        }
-                        unitsdata.setVisibility(View.GONE);
-
-                        // updatePause(userId,taskid,String.valueOf(pid));
-                        //Toast.makeText(TaskActivity.this, tvTime.getText().toString()+" "+pid, Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-        String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // negative button logic
-                        btnReset.setVisibility(View.GONE);
-
-                        TimeService.TimeContainer.getInstance().start();
-                        startUpdateTimer();
-                        Log.d("check", "stop");
-                        //btnStart.setText("PAUSE");
-                        btnStart.setImageResource(R.mipmap.ic_pause);
-                        btnComplete.setVisibility(View.VISIBLE);
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        // display dialog
+        final Dialog dialog = new Dialog(TaskActivity.this, R.style.MyDialogTheme);
+        dialog.setContentView(R.layout.radio_layout);
+        dialog.setTitle("Client Details");
         dialog.show();
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.btncancel);
+        Button dialogok= (Button) dialog.findViewById(R.id.btnok);
+        final RadioButton radiotea = (RadioButton) dialog.findViewById(R.id.radiotea);
+        final RadioButton radiolunch = (RadioButton) dialog.findViewById(R.id.radiolunch);
+        final RadioButton radiohome = (RadioButton) dialog.findViewById(R.id.radiohome);
+        final RadioButton radiotoilet = (RadioButton) dialog.findViewById(R.id.radiotoilet);
+        final RadioButton radioother = (RadioButton) dialog.findViewById(R.id.radioother);
+        final RadioButton radioout = (RadioButton) dialog.findViewById(R.id.radioout);
+
+        LinearLayout lintea = (LinearLayout) dialog.findViewById(R.id.lintea);
+        LinearLayout linlunch = (LinearLayout) dialog.findViewById(R.id.linlunch);
+        LinearLayout linhome = (LinearLayout) dialog.findViewById(R.id.linhome);
+        LinearLayout lintoilet = (LinearLayout) dialog.findViewById(R.id.lintoilet);
+        LinearLayout linother = (LinearLayout) dialog.findViewById(R.id.linother);
+        LinearLayout linout = (LinearLayout) dialog.findViewById(R.id.linout);
+
+        lintea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(true);
+                radiolunch.setChecked(false);
+                radiohome.setChecked(false);
+                radiotoilet.setChecked(false);
+                radioother.setChecked(false);
+                radioout.setChecked(false);
+            }
+        });
+
+        linlunch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(false);
+                radiolunch.setChecked(true);
+                radiohome.setChecked(false);
+                radiotoilet.setChecked(false);
+                radioother.setChecked(false);
+                radioout.setChecked(false);
+            }
+        });
+
+        linhome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(false);
+                radiolunch.setChecked(false);
+                radiohome.setChecked(true);
+                radiotoilet.setChecked(false);
+                radioother.setChecked(false);
+                radioout.setChecked(false);
+            }
+        });
+
+        lintoilet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(false);
+                radiolunch.setChecked(false);
+                radiohome.setChecked(false);
+                radiotoilet.setChecked(true);
+                radioother.setChecked(false);
+                radioout.setChecked(false);
+            }
+        });
+
+        linother.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(false);
+                radiolunch.setChecked(false);
+                radiohome.setChecked(false);
+                radiotoilet.setChecked(false);
+                radioother.setChecked(true);
+                radioout.setChecked(false);
+            }
+        });
+
+        linout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radiotea.setChecked(false);
+                radiolunch.setChecked(false);
+                radiohome.setChecked(false);
+                radiotoilet.setChecked(false);
+                radioother.setChecked(false);
+                radioout.setChecked(true);
+            }
+        });
+
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimeService.TimeContainer.getInstance().start();
+                startUpdateTimer();
+                Log.d("check", "stop");
+                //btnStart.setText("PAUSE");
+                btnStart.setImageResource(R.mipmap.ic_pause);
+                btnComplete.setVisibility(View.VISIBLE);
+                dialog.dismiss();
+            }
+        });
+
+        dialogok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (radioother.isChecked()){
+                    totalunits.setText(unitsproduced.getText().toString());
+                    editor.clear();
+                    editor.commit();
+
+                    timerSession.clearTimer();
+                    timerSessionForAddTask.clearTimer();
+                } else if (radioout.isChecked()){
+                    totalunits.setText(unitsproduced.getText().toString());
+                    editor.clear();
+                    editor.commit();
+
+                    timerSession.clearTimer();
+                    timerSessionForAddTask.clearTimer();
+                }
+
+                // positive button logic
+                TimeService.TimeContainer tc = TimeService.TimeContainer.getInstance();
+                String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+
+                string1 = currentDateTimeString;
+                int pid = getpauseselection + 1;
+                totalunits.setText(unitsproduced.getText().toString());
+
+
+                boolean isconnect = ConnectivityReceiver.isConnected();
+                if (isconnect) {
+                    dbHelper.updateTaskStatus(taskid, "5", totalunits.getText().toString().trim(), tvTime.getText().toString());//pause status
+
+                    updateTaskStatus(userId, taskid, "5");
+                    if (taskselectedid != null && !taskselectedid.isEmpty()) {
+                        updateTaskStatus(userId, taskselectedid, "5");
+                        dbHelper.updateTaskStatus(taskselectedid, "5", totalunit2, tvTime.getText().toString());//pause status
+                        unitsdata2.setVisibility(View.GONE);
+
+                    }
+
+                } else {
+                    dbHelper.updateTaskStatusOffline(taskselectedid, "5", totalunit2, tvTime.getText().toString());//pause status
+                    dbHelper.updateTaskStatusOffline(taskid, "5", totalunits.getText().toString().trim(), tvTime.getText().toString());//pause status
+
+                }
+                unitsdata.setVisibility(View.GONE);
+                dialog.dismiss();
+                // updatePause(userId,taskid,String.valueOf(pid));
+                //Toast.makeText(TaskActivity.this, tvTime.getText().toString()+" "+pid, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     private void updatePause(String userId, String taskid, String s) {

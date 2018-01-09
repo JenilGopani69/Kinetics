@@ -13,7 +13,9 @@
     <item name="android:backgroundDimEnabled">false</item>
 </style>
     <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+
         <!--item RadioButton or CheckBox color-->
+        <item name="android:checkedButton">@drawable/custom_radio_button</item>
         <item name="colorControlNormal">@android:color/white</item>
         <item name="colorControlActivated">@color/pauseBtn</item>
         <item name="android:textSize">28sp</item>
